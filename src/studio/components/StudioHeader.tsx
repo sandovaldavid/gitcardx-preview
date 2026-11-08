@@ -52,7 +52,7 @@ export const StudioHeader: React.FC = () => {
       {/* Brand & Logo */}
       <div className="flex items-center gap-3">
         <Link href="/" className="flex items-center gap-2 group">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-400 p-[1px] shadow-sm shadow-blue-500/20 group-hover:scale-105 transition-transform">
+          <div className="w-8 h-8 rounded-lg bg-linear-to-tr from-blue-600 via-indigo-600 to-cyan-400 p-px shadow-sm shadow-blue-500/20 group-hover:scale-105 transition-transform">
             <div className="w-full h-full bg-zinc-950 rounded-[7px] flex items-center justify-center">
               <Sparkles className="w-4 h-4 text-blue-400" />
             </div>

@@ -63,7 +63,7 @@ const SimulatorCardPreview: React.FC<SimulatorCardPreviewProps> = ({
   return (
     <div
       ref={containerRef}
-      className={`w-full relative overflow-hidden aspect-[2/1] ${className}`}
+      className={`w-full relative overflow-hidden aspect-2/1 ${className}`}
       style={{
         maxWidth: maxWidth ? `${maxWidth}px` : undefined,
       }}
@@ -404,7 +404,7 @@ export const SocialSimulator: React.FC = () => {
 
                 {/* Discord Embed Box */}
                 <div
-                  className={`mt-2.5 rounded-lg p-3.5 border-l-4 flex flex-col gap-2 max-w-[440px] w-full ${
+                  className={`mt-2.5 rounded-lg p-3.5 border-l-4 flex flex-col gap-2 max-w-110 w-full ${
                     isDark ? 'bg-[#2b2d31]' : 'bg-[#f2f3f5] border border-zinc-200/60'
                   }`}
                   style={{ borderLeftColor: config.palette.accent }}
@@ -503,7 +503,7 @@ export const SocialSimulator: React.FC = () => {
 
                 {/* Slack Attachment */}
                 <div
-                  className="mt-2 pl-3 border-l-4 flex flex-col gap-1.5 max-w-[420px] w-full"
+                  className="mt-2 pl-3 border-l-4 flex flex-col gap-1.5 max-w-105 w-full"
                   style={{ borderLeftColor: config.palette.accent }}
                 >
                   <span

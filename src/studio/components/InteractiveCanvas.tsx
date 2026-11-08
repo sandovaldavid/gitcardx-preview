@@ -168,7 +168,7 @@ export const InteractiveCanvas: React.FC = () => {
               <ZoomIn className="w-3.5 h-3.5" />
             </button>
 
-            <div className="w-[1px] h-3 bg-zinc-700/60 mx-1" />
+            <div className="w-px h-3 bg-zinc-700/60 mx-1" />
 
             <button
               type="button"
