@@ -1,6 +1,6 @@
 import React from 'react';
 import type { CardRenderProps } from '../types';
-import { ArchitecturalGrid } from '../backgrounds/ArchitecturalGrid';
+import { BackgroundRenderer } from '../backgrounds/BackgroundRenderer';
 import { MetricPill } from '../primitives/MetricPill';
 import { StackBadgeRow } from '../primitives/StackBadgeRow';
 import { detectTechStack } from '@/core/domain/stackMapper';
@@ -11,7 +11,7 @@ export const BlueprintGridTemplate: React.FC<CardRenderProps> = ({
   config,
   showSafeZoneGuides = false,
 }) => {
-  const { palette, visibility } = config;
+  const { palette, visibility, backgroundPattern } = config;
   const techStack = detectTechStack(repo.languages, repo.topics, 5);
 
   return (
@@ -30,7 +30,12 @@ export const BlueprintGridTemplate: React.FC<CardRenderProps> = ({
         fontFamily: 'Inter',
       }}
     >
-      <ArchitecturalGrid accentColor={palette.accent} borderColor={palette.border} opacity={0.65} />
+      <BackgroundRenderer
+        pattern={backgroundPattern}
+        accentColor={palette.accent}
+        borderColor={palette.border}
+        customImageUrl={config.customLogoUrl}
+      />
 
       {/* Top Header: Technical Specs & Blueprint ID */}
       <div
