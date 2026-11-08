@@ -156,10 +156,14 @@ export const KNOWN_REPO_FALLBACKS: Record<string, RepoMetadata> = {
     stars: 8,
     forks: 2,
     primaryLanguage: { name: 'TypeScript', color: '#3178C6' },
-    languages: [{ name: 'TypeScript', color: '#3178C6', size: 100000 }],
+    languages: [
+      { name: 'TypeScript', color: '#3178C6', size: 372000 },
+      { name: 'Astro', color: '#BC52EE', size: 320000 },
+      { name: 'JavaScript', color: '#F7DF1E', size: 103000 },
+    ],
     topics: ['portfolio', 'nextjs', 'tailwindcss', 'developer-portfolio'],
     license: 'MIT',
-    latestRelease: null,
+    latestRelease: { tag: 'v2.0.1', publishedAt: '2026-11-05T13:00:09Z' },
     contributors: [
       { login: 'sandovaldavid', avatarUrl: 'https://avatars.githubusercontent.com/u/102970701' },
     ],
@@ -355,6 +359,99 @@ export class GitHubService {
     const langName: string | null = raw.language || null;
     const langColor = langName ? getLanguageColor(langName) : null;
 
+    // Concurrently enrich repository with real release, multi-language breakdown, and contributors
+    let latestRelease: { tag: string; publishedAt: string } | null = null;
+    let languagesList: Array<{ name: string; color: string; size: number }> = langName
+      ? [{ name: langName, color: langColor || '#3178C6', size: raw.size || 1000 }]
+      : [];
+    let contributorsList: Array<{ login: string; avatarUrl: string }> = [
+      {
+        login: raw.owner.login,
+        avatarUrl: raw.owner.avatar_url,
+      },
+    ];
+
+    try {
+      const authHeaders = this.authToken
+        ? { ...baseHeaders, Authorization: `token ${this.authToken}` }
+        : baseHeaders;
+
+      const [releaseRes, langsRes, contribsRes] = await Promise.allSettled([
+        fetch(
+          `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/releases/latest`,
+          { headers: authHeaders }
+        ),
+        fetch(
+          `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/languages`,
+          { headers: authHeaders }
+        ),
+        fetch(
+          `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/contributors?per_page=5`,
+          { headers: authHeaders }
+        ),
+      ]);
+
+      // 1. Process latest release (with tag fallback if no formal release published)
+      if (releaseRes.status === 'fulfilled' && releaseRes.value.ok) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const relData = (await releaseRes.value.json()) as any;
+        if (relData && relData.tag_name) {
+          latestRelease = {
+            tag: relData.tag_name,
+            publishedAt: relData.published_at || new Date().toISOString(),
+          };
+        }
+      } else if (releaseRes.status === 'fulfilled' && releaseRes.value.status === 404) {
+        try {
+          const tagsRes = await fetch(
+            `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/tags?per_page=1`,
+            { headers: authHeaders }
+          );
+          if (tagsRes.ok) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const tagsData = (await tagsRes.json()) as any;
+            if (Array.isArray(tagsData) && tagsData.length > 0 && tagsData[0]?.name) {
+              latestRelease = {
+                tag: tagsData[0].name,
+                publishedAt: new Date().toISOString(),
+              };
+            }
+          }
+        } catch {
+          // Tag fallback ignored
+        }
+      }
+
+      // 2. Process multi-language breakdown
+      if (langsRes.status === 'fulfilled' && langsRes.value.ok) {
+        const langsMap = (await langsRes.value.json()) as Record<string, number>;
+        if (langsMap && typeof langsMap === 'object') {
+          const entries = Object.entries(langsMap).slice(0, 4);
+          if (entries.length > 0) {
+            languagesList = entries.map(([name, size]) => ({
+              name,
+              color: getLanguageColor(name),
+              size,
+            }));
+          }
+        }
+      }
+
+      // 3. Process top contributors
+      if (contribsRes.status === 'fulfilled' && contribsRes.value.ok) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const contribsData = (await contribsRes.value.json()) as any[];
+        if (Array.isArray(contribsData) && contribsData.length > 0) {
+          contributorsList = contribsData.slice(0, 5).map((c) => ({
+            login: c.login,
+            avatarUrl: c.avatar_url,
+          }));
+        }
+      }
+    } catch {
+      // Enrichment failed gracefully; fallback to basic metadata
+    }
+
     const metadata: RepoMetadata = {
       owner: {
         login: raw.owner.login,
@@ -372,24 +469,11 @@ export class GitHubService {
             color: langColor || '#3178C6',
           }
         : null,
-      languages: langName
-        ? [
-            {
-              name: langName,
-              color: langColor || '#3178C6',
-              size: raw.size || 1000,
-            },
-          ]
-        : [],
+      languages: languagesList,
       topics: Array.isArray(raw.topics) ? raw.topics : [],
       license: raw.license?.spdx_id || raw.license?.name || null,
-      latestRelease: null,
-      contributors: [
-        {
-          login: raw.owner.login,
-          avatarUrl: raw.owner.avatar_url,
-        },
-      ],
+      latestRelease,
+      contributors: contributorsList,
     };
 
     const parsed = RepoMetadataSchema.parse(metadata);

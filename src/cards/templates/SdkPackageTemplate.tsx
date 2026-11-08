@@ -118,7 +118,12 @@ export const SdkPackageTemplate: React.FC<CardRenderProps> = ({
         </div>
 
         {visibility.techStack && techStack.length > 0 && (
-          <StackBadgeRow items={techStack} textColor={palette.text} borderColor={palette.border} />
+          <StackBadgeRow
+            items={techStack}
+            textColor={palette.text}
+            borderColor={palette.border}
+            showOfficialLogos={visibility.languageLogos}
+          />
         )}
       </div>
 

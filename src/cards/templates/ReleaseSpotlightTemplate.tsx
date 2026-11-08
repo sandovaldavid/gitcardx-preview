@@ -13,7 +13,8 @@ export const ReleaseSpotlightTemplate: React.FC<CardRenderProps> = ({
 }) => {
   const { palette, visibility, backgroundPattern } = config;
   const techStack = detectTechStack(repo.languages, repo.topics, 5);
-  const releaseTag = repo.latestRelease?.tag || 'v1.0.0';
+  const hasRealRelease = Boolean(repo.latestRelease?.tag);
+  const releaseTag = repo.latestRelease?.tag || 'main';
 
   return (
     <div
@@ -75,9 +76,11 @@ export const ReleaseSpotlightTemplate: React.FC<CardRenderProps> = ({
             paddingTop: 6,
             paddingBottom: 6,
             borderRadius: 9999,
-            backgroundColor: 'rgba(34, 197, 94, 0.12)',
-            border: '1px solid rgba(34, 197, 94, 0.4)',
-            color: '#22c55e',
+            backgroundColor: hasRealRelease
+              ? 'rgba(34, 197, 94, 0.12)'
+              : 'rgba(59, 130, 246, 0.12)',
+            border: `1px solid ${hasRealRelease ? 'rgba(34, 197, 94, 0.4)' : 'rgba(59, 130, 246, 0.4)'}`,
+            color: hasRealRelease ? '#22c55e' : '#60a5fa',
             fontSize: 14,
             fontWeight: 700,
           }}
@@ -87,10 +90,10 @@ export const ReleaseSpotlightTemplate: React.FC<CardRenderProps> = ({
               width: 8,
               height: 8,
               borderRadius: '50%',
-              backgroundColor: '#22c55e',
+              backgroundColor: hasRealRelease ? '#22c55e' : '#60a5fa',
             }}
           />
-          <span>NEW RELEASE</span>
+          <span>{hasRealRelease ? 'NEW RELEASE' : 'ACTIVE REPO'}</span>
         </div>
       </div>
 
@@ -178,7 +181,12 @@ export const ReleaseSpotlightTemplate: React.FC<CardRenderProps> = ({
         }}
       >
         {visibility.techStack && techStack.length > 0 ? (
-          <StackBadgeRow items={techStack} textColor={palette.text} borderColor={palette.border} />
+          <StackBadgeRow
+            items={techStack}
+            textColor={palette.text}
+            borderColor={palette.border}
+            showOfficialLogos={visibility.languageLogos}
+          />
         ) : (
           <div />
         )}

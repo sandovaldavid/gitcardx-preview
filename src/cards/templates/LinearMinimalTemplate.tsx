@@ -3,6 +3,7 @@ import type { CardRenderProps } from '../types';
 import { BackgroundRenderer } from '../backgrounds/BackgroundRenderer';
 import { MetricPill } from '../primitives/MetricPill';
 import { StackBadgeRow } from '../primitives/StackBadgeRow';
+import { TechIcon } from '../primitives/TechIcon';
 import { detectTechStack } from '@/core/domain/stackMapper';
 import { SafeZoneGuides } from '../primitives/SafeZoneGuides';
 
@@ -91,13 +92,11 @@ export const LinearMinimalTemplate: React.FC<CardRenderProps> = ({
               color: palette.text,
             }}
           >
-            <div
-              style={{
-                width: 10,
-                height: 10,
-                borderRadius: '50%',
-                backgroundColor: repo.primaryLanguage.color,
-              }}
+            <TechIcon
+              name={repo.primaryLanguage.name}
+              color={repo.primaryLanguage.color}
+              size={15}
+              showOfficialLogo={visibility.languageLogos}
             />
             <span>{repo.primaryLanguage.name}</span>
           </div>
@@ -157,7 +156,12 @@ export const LinearMinimalTemplate: React.FC<CardRenderProps> = ({
         }}
       >
         {visibility.techStack && techStack.length > 0 ? (
-          <StackBadgeRow items={techStack} textColor={palette.text} borderColor={palette.border} />
+          <StackBadgeRow
+            items={techStack}
+            textColor={palette.text}
+            borderColor={palette.border}
+            showOfficialLogos={visibility.languageLogos}
+          />
         ) : (
           <div />
         )}

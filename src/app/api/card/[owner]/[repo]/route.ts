@@ -141,6 +141,7 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
       license: searchParams.get('license') !== 'false',
       contributors: searchParams.get('contributors') !== 'false',
       techStack: searchParams.get('stack') !== 'false',
+      languageLogos: searchParams.get('logos') !== 'false',
     },
   };
 

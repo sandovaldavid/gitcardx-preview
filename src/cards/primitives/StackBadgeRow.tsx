@@ -1,13 +1,20 @@
 import React from 'react';
 import type { TechStackItem } from '@/core/domain/stackMapper';
+import { TechIcon } from './TechIcon';
 
 interface StackBadgeRowProps {
   items: TechStackItem[];
   textColor: string;
   borderColor: string;
+  showOfficialLogos?: boolean;
 }
 
-export const StackBadgeRow: React.FC<StackBadgeRowProps> = ({ items, textColor, borderColor }) => {
+export const StackBadgeRow: React.FC<StackBadgeRowProps> = ({
+  items,
+  textColor,
+  borderColor,
+  showOfficialLogos = true,
+}) => {
   if (!items || items.length === 0) return null;
 
   return (
@@ -38,13 +45,12 @@ export const StackBadgeRow: React.FC<StackBadgeRowProps> = ({ items, textColor, 
             color: textColor,
           }}
         >
-          <div
-            style={{
-              width: 9,
-              height: 9,
-              borderRadius: '50%',
-              backgroundColor: item.color || '#3b82f6',
-            }}
+          <TechIcon
+            name={item.name}
+            id={item.id}
+            color={item.color || '#3b82f6'}
+            size={15}
+            showOfficialLogo={showOfficialLogos}
           />
           <span>{item.name}</span>
         </div>

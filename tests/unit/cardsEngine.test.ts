@@ -61,6 +61,7 @@ const baseConfig: CardConfig = {
     license: true,
     contributors: true,
     techStack: true,
+    languageLogos: true,
   },
 };
 
@@ -165,5 +166,61 @@ describe('Cards Engine & Satori Renderer', () => {
 
     const svg = await renderCardToSvg(edgeRepo, edgeConfig);
     expect(svg.startsWith('<svg')).toBe(true);
+  });
+
+  it('renders official technology logos when languageLogos flag is true', async () => {
+    const configWithLogos: CardConfig = {
+      ...baseConfig,
+      templateId: 'linear-minimal',
+      visibility: {
+        ...baseConfig.visibility,
+        languageLogos: true,
+      },
+    };
+
+    const svg = await renderCardToSvg(mockRepo, configWithLogos);
+    // TypeScript official SVG path begins with M1.125
+    expect(svg).toContain('M1.125');
+  });
+
+  it('omits official technology logos when languageLogos flag is false', async () => {
+    const configWithoutLogos: CardConfig = {
+      ...baseConfig,
+      templateId: 'linear-minimal',
+      visibility: {
+        ...baseConfig.visibility,
+        languageLogos: false,
+      },
+    };
+
+    const svg = await renderCardToSvg(mockRepo, configWithoutLogos);
+    // When flag is false, official logo path is not rendered
+    expect(svg).not.toContain('M1.125');
+  });
+
+  it('renders release-spotlight with real release and handles repos without release accurately', async () => {
+    // 1. Repo with real release v2.0.1
+    const repoWithRelease: RepoMetadata = {
+      ...mockRepo,
+      latestRelease: { tag: 'v2.0.1', publishedAt: '2026-11-05T13:00:09Z' },
+    };
+    const configSpotlight: CardConfig = {
+      ...baseConfig,
+      templateId: 'release-spotlight',
+    };
+    const svgRelease = await renderCardToSvg(repoWithRelease, configSpotlight);
+    expect(svgRelease.startsWith('<svg')).toBe(true);
+    expect(svgRelease).toContain('width="1280"');
+    expect(svgRelease).toContain('height="640"');
+
+    // 2. Repo without release (renders cleanly without throwing)
+    const repoNoRelease: RepoMetadata = {
+      ...mockRepo,
+      latestRelease: null,
+    };
+    const svgNoRelease = await renderCardToSvg(repoNoRelease, configSpotlight);
+    expect(svgNoRelease.startsWith('<svg')).toBe(true);
+    expect(svgNoRelease).toContain('width="1280"');
+    expect(svgNoRelease).toContain('height="640"');
   });
 });

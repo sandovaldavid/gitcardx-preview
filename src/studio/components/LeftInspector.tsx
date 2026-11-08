@@ -24,6 +24,7 @@ export const LeftInspector: React.FC = () => {
     { key: 'license', label: 'License' },
     { key: 'techStack', label: 'Tech Stack Badges' },
     { key: 'contributors', label: 'Contributors' },
+    { key: 'languageLogos', label: 'Official Logos' },
   ];
 
   return (
@@ -219,6 +220,51 @@ export const LeftInspector: React.FC = () => {
                   placeholder="e.g. Rust, Go, Python"
                   className="w-full h-8 px-2 rounded bg-zinc-950 border border-zinc-800 text-xs text-zinc-200"
                 />
+              </div>
+
+              <div className="flex items-center gap-2">
+                <div className="flex-1">
+                  <label className="text-[11px] text-zinc-500">Release Version</label>
+                  <input
+                    type="text"
+                    value={repo.latestRelease?.tag || ''}
+                    onChange={(e) =>
+                      setRepo(
+                        {
+                          ...repo,
+                          latestRelease: e.target.value
+                            ? {
+                                tag: e.target.value,
+                                publishedAt:
+                                  repo.latestRelease?.publishedAt || new Date().toISOString(),
+                              }
+                            : null,
+                        },
+                        false
+                      )
+                    }
+                    placeholder="e.g. v2.0.1"
+                    className="w-full h-8 px-2 rounded bg-zinc-950 border border-zinc-800 text-xs text-zinc-200"
+                  />
+                </div>
+                <div className="flex-1">
+                  <label className="text-[11px] text-zinc-500">License</label>
+                  <input
+                    type="text"
+                    value={repo.license || ''}
+                    onChange={(e) =>
+                      setRepo(
+                        {
+                          ...repo,
+                          license: e.target.value ? e.target.value.toUpperCase() : null,
+                        },
+                        false
+                      )
+                    }
+                    placeholder="e.g. MIT, Apache-2.0"
+                    className="w-full h-8 px-2 rounded bg-zinc-950 border border-zinc-800 text-xs text-zinc-200"
+                  />
+                </div>
               </div>
             </div>
           )}

@@ -61,6 +61,7 @@ export const DEFAULT_CONFIG: CardConfig = {
     license: true,
     contributors: true,
     techStack: true,
+    languageLogos: true,
   },
 };
 

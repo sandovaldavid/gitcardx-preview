@@ -154,7 +154,12 @@ export const BlueprintGridTemplate: React.FC<CardRenderProps> = ({
         }}
       >
         {visibility.techStack && techStack.length > 0 ? (
-          <StackBadgeRow items={techStack} textColor={palette.text} borderColor={palette.border} />
+          <StackBadgeRow
+            items={techStack}
+            textColor={palette.text}
+            borderColor={palette.border}
+            showOfficialLogos={visibility.languageLogos}
+          />
         ) : (
           <div />
         )}

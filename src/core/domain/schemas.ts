@@ -51,6 +51,7 @@ export const CardVisibilitySchema = z.object({
   license: z.boolean(),
   contributors: z.boolean(),
   techStack: z.boolean(),
+  languageLogos: z.boolean().default(true),
 });
 
 export const CardConfigSchema = z.object({

@@ -127,6 +127,7 @@ export const AuroraMeshTemplate: React.FC<CardRenderProps> = ({
               items={techStack}
               textColor={palette.text}
               borderColor={palette.border}
+              showOfficialLogos={visibility.languageLogos}
             />
           ) : (
             <div />
