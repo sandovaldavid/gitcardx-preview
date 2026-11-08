@@ -52,12 +52,12 @@ export const StudioHeader: React.FC = () => {
     <header className="h-14 border-b border-zinc-800/80 bg-zinc-950/80 backdrop-blur-md px-4 flex items-center justify-between gap-4 z-40 shrink-0">
       {/* Brand & Logo */}
       <div className="flex items-center gap-3">
-        <Link href="/" className="flex items-center gap-2 group">
-          <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center group-hover:border-zinc-700 transition-colors">
-            <GitframeLogo className="w-5 h-5" />
-          </div>
+        <Link href="/" className="flex items-center gap-2.5 group">
+          <GitframeLogo className="w-7 h-7 transition-transform group-hover:scale-105" />
           <div className="flex items-center gap-1.5">
-            <span className="font-bold text-base tracking-tight text-white">Gitframe</span>
+            <span className="font-bold text-base tracking-tight text-white group-hover:text-zinc-100 transition-colors">
+              Gitframe
+            </span>
             <span className="text-[10px] uppercase font-mono font-semibold px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20 tracking-wider">
               {APP_VERSION_TAG}
             </span>

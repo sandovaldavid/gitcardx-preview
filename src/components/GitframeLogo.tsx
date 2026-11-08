@@ -37,15 +37,15 @@ export function GitframeLogo({ className = 'w-6 h-6' }: { className?: string }) 
 
       {/* Grafo Git central en Blanco Técnico */}
       <path
-        d="M8.5 8.5V15.5M8.5 12H12.5C13.6 12 14.5 11.1 14.5 10V8.5"
+        d="M9 8.5V15.5M9 12H13C14.1046 12 15 11.1046 15 10V8.5"
         stroke="#FAFAFA"
         strokeWidth="1.8"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <circle cx="8.5" cy="7.5" r="2" fill="#FAFAFA" />
-      <circle cx="8.5" cy="16.5" r="2" fill="#FAFAFA" />
-      <circle cx="14.5" cy="7.5" r="2" fill="#5E6AD2" stroke="#FAFAFA" strokeWidth="1.5" />
+      <circle cx="9" cy="7.5" r="2" fill="#FAFAFA" />
+      <circle cx="9" cy="16.5" r="2" fill="#FAFAFA" />
+      <circle cx="15" cy="7.5" r="2" fill="#5E6AD2" stroke="#FAFAFA" strokeWidth="1.5" />
     </svg>
   );
 }

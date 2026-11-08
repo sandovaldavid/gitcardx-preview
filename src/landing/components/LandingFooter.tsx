@@ -23,7 +23,7 @@ export const LandingFooter: React.FC = () => {
         {/* Brand & Copyright */}
         <div className="flex flex-col sm:flex-row items-center gap-3">
           <Link href="/" className="flex items-center gap-2 text-zinc-300 font-semibold text-sm">
-            <GitframeLogo className="w-4 h-4" />
+            <GitframeLogo className="w-5 h-5" />
             <span>Gitframe</span>
             <span className="text-[10px] font-mono text-zinc-400 bg-zinc-900 border border-zinc-800 px-1.5 py-0.5 rounded font-normal">
               {APP_VERSION_TAG}
