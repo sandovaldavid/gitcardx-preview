@@ -122,6 +122,32 @@ describe('Cards Engine & Satori Renderer', () => {
         expect(svg.startsWith('<svg')).toBe(true);
       });
     }
+
+    it('dynamically renders chosen background patterns in aurora-mesh and blueprint-grid templates', async () => {
+      const auroraWithDots: CardConfig = {
+        ...baseConfig,
+        templateId: 'aurora-mesh',
+        backgroundPattern: {
+          id: 'dot-matrix',
+          opacity: 0.8,
+        },
+      };
+
+      const svgAurora = await renderCardToSvg(mockRepo, auroraWithDots);
+      expect(svgAurora).toContain('dot-matrix-pattern');
+
+      const blueprintWithSpotlight: CardConfig = {
+        ...baseConfig,
+        templateId: 'blueprint-grid',
+        backgroundPattern: {
+          id: 'radial-spotlight',
+          opacity: 0.6,
+        },
+      };
+
+      const svgBlueprint = await renderCardToSvg(mockRepo, blueprintWithSpotlight);
+      expect(svgBlueprint).toContain('spotlight-primary');
+    });
   });
 
   it('renders to PNG using Resvg with valid PNG signature', async () => {

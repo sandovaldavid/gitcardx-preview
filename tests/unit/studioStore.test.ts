@@ -43,10 +43,18 @@ describe('useCardStore (Zustand state & history)', () => {
     expect(useCardStore.getState().config.title).toBe('New Custom Title');
   });
 
-  it('switches template correctly', () => {
-    const { setTemplateId } = useCardStore.getState();
+  it('switches template correctly and assigns signature background pattern when present', () => {
+    const { setTemplateId, setBackgroundPattern } = useCardStore.getState();
     setTemplateId('cli-terminal');
     expect(useCardStore.getState().config.templateId).toBe('cli-terminal');
+
+    setTemplateId('aurora-mesh');
+    expect(useCardStore.getState().config.templateId).toBe('aurora-mesh');
+    expect(useCardStore.getState().config.backgroundPattern.id).toBe('aurora-mesh');
+
+    // User can customize pattern afterwards
+    setBackgroundPattern({ id: 'dot-matrix' });
+    expect(useCardStore.getState().config.backgroundPattern.id).toBe('dot-matrix');
   });
 
   it('toggles visibility flags', () => {

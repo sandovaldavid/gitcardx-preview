@@ -65,6 +65,14 @@ export const DEFAULT_CONFIG: CardConfig = {
   },
 };
 
+export const TEMPLATE_SIGNATURE_PATTERNS: Partial<
+  Record<TemplateId, BackgroundPatternConfig['id']>
+> = {
+  'aurora-mesh': 'aurora-mesh',
+  'blueprint-grid': 'architectural-grid',
+  'release-spotlight': 'radial-spotlight',
+};
+
 interface CardStoreState {
   repo: RepoMetadata;
   config: CardConfig;
@@ -160,7 +168,18 @@ export const useCardStore = create<CardStoreState>((set, get) => ({
   },
 
   setTemplateId: (templateId) => {
-    get().updateConfig({ templateId });
+    const signaturePattern = TEMPLATE_SIGNATURE_PATTERNS[templateId];
+    if (signaturePattern) {
+      get().updateConfig({
+        templateId,
+        backgroundPattern: {
+          ...get().config.backgroundPattern,
+          id: signaturePattern,
+        },
+      });
+    } else {
+      get().updateConfig({ templateId });
+    }
   },
 
   setPalette: (palette) => {
