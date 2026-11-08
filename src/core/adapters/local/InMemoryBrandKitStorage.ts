@@ -5,9 +5,7 @@ export class InMemoryBrandKitStorage implements BrandKitStoragePort {
   private store = new Map<string, BrandKit>();
 
   async listBrandKits(): Promise<BrandKit[]> {
-    return Array.from(this.store.values()).sort((a, b) =>
-      b.updatedAt.localeCompare(a.updatedAt)
-    );
+    return Array.from(this.store.values()).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
   }
 
   async getBrandKit(id: string): Promise<BrandKit | null> {

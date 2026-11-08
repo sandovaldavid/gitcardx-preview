@@ -62,9 +62,7 @@ export const OssCredibilityTemplate: React.FC<CardRenderProps> = ({
             {repo.owner.login}
           </span>
           <span style={{ fontSize: 18, color: palette.border }}>/</span>
-          <span style={{ fontSize: 20, fontWeight: 700, color: palette.accent }}>
-            {repo.name}
-          </span>
+          <span style={{ fontSize: 20, fontWeight: 700, color: palette.accent }}>{repo.name}</span>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -122,7 +120,9 @@ export const OssCredibilityTemplate: React.FC<CardRenderProps> = ({
               maxWidth: 720,
             }}
           >
-            {config.tagline || repo.description || 'Open source software built for developers worldwide.'}
+            {config.tagline ||
+              repo.description ||
+              'Open source software built for developers worldwide.'}
           </p>
         </div>
 

@@ -158,7 +158,8 @@ describe('Cards Engine & Satori Renderer', () => {
     const edgeConfig: CardConfig = {
       ...baseConfig,
       templateId: 'cli-terminal',
-      title: 'Very Long Title For A Package Repository That Tests Wrapping In Satori Flexbox Layout',
+      title:
+        'Very Long Title For A Package Repository That Tests Wrapping In Satori Flexbox Layout',
       tagline: '',
     };
 

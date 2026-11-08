@@ -11,10 +11,13 @@ export const TemplateIdSchema = z.enum([
   'creator-signature',
 ]);
 
-export const ColorSchema = z.string().min(1).regex(
-  /^(#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})|rgb\([^\)]+\)|rgba\([^\)]+\)|hsl\([^\)]+\)|hsla\([^\)]+\)|transparent)$/,
-  'Invalid CSS color format'
-);
+export const ColorSchema = z
+  .string()
+  .min(1)
+  .regex(
+    /^(#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})|rgb\([^\)]+\)|rgba\([^\)]+\)|hsl\([^\)]+\)|hsla\([^\)]+\)|transparent)$/,
+    'Invalid CSS color format'
+  );
 
 export const PaletteSchema = z.object({
   background: ColorSchema,

@@ -140,11 +140,7 @@ export const InteractiveCanvas: React.FC = () => {
                   '0 25px 60px -15px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.08)',
               }}
             >
-              <CardRenderer
-                repo={repo}
-                config={config}
-                showSafeZoneGuides={showSafeZoneGuides}
-              />
+              <CardRenderer repo={repo} config={config} showSafeZoneGuides={showSafeZoneGuides} />
             </div>
           </div>
 

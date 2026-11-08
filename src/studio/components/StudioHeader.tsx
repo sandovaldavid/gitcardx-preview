@@ -2,14 +2,7 @@
 
 import React, { useEffect } from 'react';
 import Link from 'next/link';
-import {
-  Undo2,
-  Redo2,
-  Scan,
-  Download,
-  RotateCcw,
-  Sparkles,
-} from 'lucide-react';
+import { Undo2, Redo2, Scan, Download, RotateCcw, Sparkles } from 'lucide-react';
 import { Omnibar } from './Omnibar';
 import { useCardStore } from '../state/useCardStore';
 

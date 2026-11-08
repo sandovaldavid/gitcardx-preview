@@ -24,10 +24,7 @@ export async function GET(request: NextRequest) {
   }
 
   if (!owner || !repo) {
-    return NextResponse.json(
-      { error: 'Missing owner or repo query parameters' },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: 'Missing owner or repo query parameters' }, { status: 400 });
   }
 
   try {

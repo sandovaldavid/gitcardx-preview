@@ -24,15 +24,25 @@ export const BackgroundRenderer: React.FC<BackgroundRendererProps> = ({
 
   switch (pattern.id) {
     case 'architectural-grid':
-      return <ArchitecturalGrid accentColor={accentColor} borderColor={borderColor} opacity={opacity} />;
+      return (
+        <ArchitecturalGrid accentColor={accentColor} borderColor={borderColor} opacity={opacity} />
+      );
     case 'dot-matrix':
       return <DotMatrix accentColor={accentColor} borderColor={borderColor} opacity={opacity} />;
     case 'radial-spotlight':
-      return <RadialSpotlight accentColor={accentColor} borderColor={borderColor} opacity={opacity} />;
+      return (
+        <RadialSpotlight accentColor={accentColor} borderColor={borderColor} opacity={opacity} />
+      );
     case 'aurora-mesh':
       return <AuroraMesh accentColor={accentColor} borderColor={borderColor} opacity={opacity} />;
     case 'topographic-contours':
-      return <TopographicContours accentColor={accentColor} borderColor={borderColor} opacity={opacity} />;
+      return (
+        <TopographicContours
+          accentColor={accentColor}
+          borderColor={borderColor}
+          opacity={opacity}
+        />
+      );
     case 'custom-image':
       return (
         <CustomImageBackground
@@ -43,6 +53,8 @@ export const BackgroundRenderer: React.FC<BackgroundRendererProps> = ({
         />
       );
     default:
-      return <ArchitecturalGrid accentColor={accentColor} borderColor={borderColor} opacity={opacity} />;
+      return (
+        <ArchitecturalGrid accentColor={accentColor} borderColor={borderColor} opacity={opacity} />
+      );
   }
 };

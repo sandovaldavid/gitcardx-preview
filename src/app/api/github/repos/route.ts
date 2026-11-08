@@ -19,10 +19,7 @@ export async function GET(request: NextRequest) {
   }
 
   if (!owner) {
-    return NextResponse.json(
-      { error: 'Missing owner or input query parameter' },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: 'Missing owner or input query parameter' }, { status: 400 });
   }
 
   try {
@@ -35,9 +32,6 @@ export async function GET(request: NextRequest) {
     });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Failed to fetch user repositories';
-    return NextResponse.json(
-      { error: message },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

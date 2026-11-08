@@ -14,10 +14,7 @@ describe('ThemeEngine', () => {
     it('preset palettes have proper contrast on primary text', () => {
       for (const [name, palette] of Object.entries(PRESET_PALETTES)) {
         const rating = ThemeEngine.checkWcag(palette.background, palette.text);
-        expect(
-          rating.aa,
-          `Preset ${name} does not meet WCAG AA: ratio ${rating.ratio}`
-        ).toBe(true);
+        expect(rating.aa, `Preset ${name} does not meet WCAG AA: ratio ${rating.ratio}`).toBe(true);
       }
     });
   });

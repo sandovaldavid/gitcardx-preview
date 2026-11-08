@@ -58,21 +58,21 @@ describe('stackMapper', () => {
 
   describe('suggestInstallCommand', () => {
     it('suggests cargo for Rust projects', () => {
-      expect(
-        suggestInstallCommand([{ name: 'Rust' }], ['cli'], 'my-tool')
-      ).toBe('cargo add my-tool');
+      expect(suggestInstallCommand([{ name: 'Rust' }], ['cli'], 'my-tool')).toBe(
+        'cargo add my-tool'
+      );
     });
 
     it('suggests pip for Python projects', () => {
-      expect(
-        suggestInstallCommand([{ name: 'Python' }], ['ai'], 'ml-agent')
-      ).toBe('pip install ml-agent');
+      expect(suggestInstallCommand([{ name: 'Python' }], ['ai'], 'ml-agent')).toBe(
+        'pip install ml-agent'
+      );
     });
 
     it('suggests go get with full repository path for Go projects', () => {
-      expect(
-        suggestInstallCommand([{ name: 'Go' }], [], 'fiber', 'gofiber')
-      ).toBe('go get github.com/gofiber/fiber');
+      expect(suggestInstallCommand([{ name: 'Go' }], [], 'fiber', 'gofiber')).toBe(
+        'go get github.com/gofiber/fiber'
+      );
     });
 
     it('suggests docker pull for dockerized projects', () => {
@@ -82,15 +82,13 @@ describe('stackMapper', () => {
     });
 
     it('suggests npx for CLI / terminal tools', () => {
-      expect(
-        suggestInstallCommand([], ['cli', 'terminal'], 'create-app')
-      ).toBe('npx create-app');
+      expect(suggestInstallCommand([], ['cli', 'terminal'], 'create-app')).toBe('npx create-app');
     });
 
     it('defaults to bun add for general JS/TS repositories', () => {
-      expect(
-        suggestInstallCommand([{ name: 'TypeScript' }], [], 'gitcardx-preview')
-      ).toBe('bun add gitcardx-preview');
+      expect(suggestInstallCommand([{ name: 'TypeScript' }], [], 'gitcardx-preview')).toBe(
+        'bun add gitcardx-preview'
+      );
     });
   });
 });

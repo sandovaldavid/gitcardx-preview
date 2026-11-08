@@ -29,11 +29,7 @@ export const AuroraMeshTemplate: React.FC<CardRenderProps> = ({
         fontFamily: 'Inter',
       }}
     >
-      <AuroraMesh
-        accentColor={palette.accent}
-        borderColor={palette.border}
-        opacity={0.7}
-      />
+      <AuroraMesh accentColor={palette.accent} borderColor={palette.border} opacity={0.7} />
 
       {/* Frosted Container Card */}
       <div

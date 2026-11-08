@@ -141,7 +141,9 @@ export const LinearMinimalTemplate: React.FC<CardRenderProps> = ({
             overflow: 'hidden',
           }}
         >
-          {config.tagline || repo.description || 'Give your GitHub repository a modern visual identity.'}
+          {config.tagline ||
+            repo.description ||
+            'Give your GitHub repository a modern visual identity.'}
         </p>
       </div>
 
@@ -155,11 +157,7 @@ export const LinearMinimalTemplate: React.FC<CardRenderProps> = ({
         }}
       >
         {visibility.techStack && techStack.length > 0 ? (
-          <StackBadgeRow
-            items={techStack}
-            textColor={palette.text}
-            borderColor={palette.border}
-          />
+          <StackBadgeRow items={techStack} textColor={palette.text} borderColor={palette.border} />
         ) : (
           <div />
         )}

@@ -7,11 +7,7 @@ interface StackBadgeRowProps {
   borderColor: string;
 }
 
-export const StackBadgeRow: React.FC<StackBadgeRowProps> = ({
-  items,
-  textColor,
-  borderColor,
-}) => {
+export const StackBadgeRow: React.FC<StackBadgeRowProps> = ({ items, textColor, borderColor }) => {
   if (!items || items.length === 0) return null;
 
   return (

@@ -111,15 +111,14 @@ export const SocialSimulator: React.FC = () => {
                 <div className="flex items-center gap-1.5 leading-tight">
                   <span className="font-bold text-sm truncate">{repo.owner.login}</span>
                   <span
-                    className={`text-xs truncate ${
-                      isDark ? 'text-zinc-500' : 'text-zinc-400'
-                    }`}
+                    className={`text-xs truncate ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}
                   >
                     @{repo.owner.login} · 2h
                   </span>
                 </div>
                 <p className="mt-1 text-sm leading-normal">
-                  Just dropped a major update to <strong>{repo.name}</strong>! Check out the social preview card below and let us know your thoughts 🚀
+                  Just dropped a major update to <strong>{repo.name}</strong>! Check out the social
+                  preview card below and let us know your thoughts 🚀
                 </p>
 
                 {/* Twitter Large Image Card */}
@@ -227,7 +226,8 @@ export const SocialSimulator: React.FC = () => {
             </div>
 
             <p className="text-sm mb-3 leading-normal">
-              Excited to announce the new visual identity for <strong>{repo.name}</strong>. Built for developers seeking clean architecture and fast delivery.
+              Excited to announce the new visual identity for <strong>{repo.name}</strong>. Built
+              for developers seeking clean architecture and fast delivery.
             </p>
 
             {/* LinkedIn Preview Banner */}
@@ -266,9 +266,7 @@ export const SocialSimulator: React.FC = () => {
             {/* Reaction Bar */}
             <div
               className={`mt-3 pt-2 border-t flex items-center justify-between text-xs font-semibold ${
-                isDark
-                  ? 'border-zinc-800 text-zinc-400'
-                  : 'border-zinc-200 text-zinc-600'
+                isDark ? 'border-zinc-800 text-zinc-400' : 'border-zinc-200 text-zinc-600'
               }`}
             >
               <div className="flex items-center gap-1.5 hover:text-blue-500 cursor-pointer">
@@ -335,7 +333,9 @@ export const SocialSimulator: React.FC = () => {
                     rel="noreferrer"
                     className="font-bold text-sm text-blue-400 hover:underline flex items-center gap-1"
                   >
-                    <span>{repo.owner.login}/{repo.name}</span>
+                    <span>
+                      {repo.owner.login}/{repo.name}
+                    </span>
                     <ExternalLink className="w-3.5 h-3.5" />
                   </a>
                   <p className="text-xs text-zinc-300 line-clamp-2">
@@ -391,7 +391,11 @@ export const SocialSimulator: React.FC = () => {
                   <span className="text-xs text-zinc-500">9:41 AM</span>
                 </div>
                 <p className="text-xs mt-1 text-zinc-300">
-                  Repo preview for <code className="text-blue-400 bg-blue-950/60 px-1 py-0.5 rounded">{repo.name}</code>:
+                  Repo preview for{' '}
+                  <code className="text-blue-400 bg-blue-950/60 px-1 py-0.5 rounded">
+                    {repo.name}
+                  </code>
+                  :
                 </p>
 
                 {/* Slack Attachment */}

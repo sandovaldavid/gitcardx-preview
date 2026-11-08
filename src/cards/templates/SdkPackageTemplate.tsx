@@ -14,7 +14,12 @@ export const SdkPackageTemplate: React.FC<CardRenderProps> = ({
 }) => {
   const { palette, visibility, backgroundPattern } = config;
   const techStack = detectTechStack(repo.languages, repo.topics, 4);
-  const defaultCmd = suggestInstallCommand(repo.languages, repo.topics, repo.name, repo.owner.login);
+  const defaultCmd = suggestInstallCommand(
+    repo.languages,
+    repo.topics,
+    repo.name,
+    repo.owner.login
+  );
   const command = config.installCommand || defaultCmd;
 
   return (
@@ -106,16 +111,14 @@ export const SdkPackageTemplate: React.FC<CardRenderProps> = ({
               margin: 0,
             }}
           >
-            {config.tagline || repo.description || 'Lightweight, modern library built for production.'}
+            {config.tagline ||
+              repo.description ||
+              'Lightweight, modern library built for production.'}
           </p>
         </div>
 
         {visibility.techStack && techStack.length > 0 && (
-          <StackBadgeRow
-            items={techStack}
-            textColor={palette.text}
-            borderColor={palette.border}
-          />
+          <StackBadgeRow items={techStack} textColor={palette.text} borderColor={palette.border} />
         )}
       </div>
 

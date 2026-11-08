@@ -7,8 +7,18 @@ export interface TechStackItem {
 
 const TECH_CATALOG: Record<string, TechStackItem> = {
   // Languages
-  typescript: { id: 'typescript', name: 'TypeScript', icon: 'simple-icons:typescript', color: '#3178C6' },
-  javascript: { id: 'javascript', name: 'JavaScript', icon: 'simple-icons:javascript', color: '#F7DF1E' },
+  typescript: {
+    id: 'typescript',
+    name: 'TypeScript',
+    icon: 'simple-icons:typescript',
+    color: '#3178C6',
+  },
+  javascript: {
+    id: 'javascript',
+    name: 'JavaScript',
+    icon: 'simple-icons:javascript',
+    color: '#F7DF1E',
+  },
   rust: { id: 'rust', name: 'Rust', icon: 'simple-icons:rust', color: '#DEA584' },
   python: { id: 'python', name: 'Python', icon: 'simple-icons:python', color: '#3776AB' },
   go: { id: 'go', name: 'Go', icon: 'simple-icons:go', color: '#00ADD8' },
@@ -33,16 +43,36 @@ const TECH_CATALOG: Record<string, TechStackItem> = {
   svelte: { id: 'svelte', name: 'Svelte', icon: 'simple-icons:svelte', color: '#FF3E00' },
   angular: { id: 'angular', name: 'Angular', icon: 'simple-icons:angular', color: '#DD0031' },
   astro: { id: 'astro', name: 'Astro', icon: 'simple-icons:astro', color: '#BC52EE' },
-  tailwind: { id: 'tailwindcss', name: 'Tailwind CSS', icon: 'simple-icons:tailwindcss', color: '#06B6D4' },
-  tailwindcss: { id: 'tailwindcss', name: 'Tailwind CSS', icon: 'simple-icons:tailwindcss', color: '#06B6D4' },
+  tailwind: {
+    id: 'tailwindcss',
+    name: 'Tailwind CSS',
+    icon: 'simple-icons:tailwindcss',
+    color: '#06B6D4',
+  },
+  tailwindcss: {
+    id: 'tailwindcss',
+    name: 'Tailwind CSS',
+    icon: 'simple-icons:tailwindcss',
+    color: '#06B6D4',
+  },
   node: { id: 'nodedotjs', name: 'Node.js', icon: 'simple-icons:nodedotjs', color: '#5FA04E' },
   bun: { id: 'bun', name: 'Bun', icon: 'simple-icons:bun', color: '#FBF0DF' },
   deno: { id: 'deno', name: 'Deno', icon: 'simple-icons:deno', color: '#000000' },
 
   // Data & Backend
   graphql: { id: 'graphql', name: 'GraphQL', icon: 'simple-icons:graphql', color: '#E10098' },
-  postgresql: { id: 'postgresql', name: 'PostgreSQL', icon: 'simple-icons:postgresql', color: '#4169E1' },
-  postgres: { id: 'postgresql', name: 'PostgreSQL', icon: 'simple-icons:postgresql', color: '#4169E1' },
+  postgresql: {
+    id: 'postgresql',
+    name: 'PostgreSQL',
+    icon: 'simple-icons:postgresql',
+    color: '#4169E1',
+  },
+  postgres: {
+    id: 'postgresql',
+    name: 'PostgreSQL',
+    icon: 'simple-icons:postgresql',
+    color: '#4169E1',
+  },
   sqlite: { id: 'sqlite', name: 'SQLite', icon: 'simple-icons:sqlite', color: '#003B57' },
   mongodb: { id: 'mongodb', name: 'MongoDB', icon: 'simple-icons:mongodb', color: '#47A248' },
   redis: { id: 'redis', name: 'Redis', icon: 'simple-icons:redis', color: '#FF4438' },
@@ -52,9 +82,24 @@ const TECH_CATALOG: Record<string, TechStackItem> = {
 
   // Infra & DevOps
   docker: { id: 'docker', name: 'Docker', icon: 'simple-icons:docker', color: '#2496ED' },
-  kubernetes: { id: 'kubernetes', name: 'Kubernetes', icon: 'simple-icons:kubernetes', color: '#326CE5' },
-  aws: { id: 'amazonwebservices', name: 'AWS', icon: 'simple-icons:amazonwebservices', color: '#FF9900' },
-  cloudflare: { id: 'cloudflare', name: 'Cloudflare', icon: 'simple-icons:cloudflare', color: '#F38020' },
+  kubernetes: {
+    id: 'kubernetes',
+    name: 'Kubernetes',
+    icon: 'simple-icons:kubernetes',
+    color: '#326CE5',
+  },
+  aws: {
+    id: 'amazonwebservices',
+    name: 'AWS',
+    icon: 'simple-icons:amazonwebservices',
+    color: '#FF9900',
+  },
+  cloudflare: {
+    id: 'cloudflare',
+    name: 'Cloudflare',
+    icon: 'simple-icons:cloudflare',
+    color: '#F38020',
+  },
   vercel: { id: 'vercel', name: 'Vercel', icon: 'simple-icons:vercel', color: '#000000' },
   linux: { id: 'linux', name: 'Linux', icon: 'simple-icons:linux', color: '#FCC624' },
 };

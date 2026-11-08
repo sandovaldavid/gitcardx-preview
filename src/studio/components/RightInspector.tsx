@@ -37,12 +37,32 @@ export const RightInspector: React.FC = () => {
     name: string;
     description: string;
   }> = [
-    { id: 'architectural-grid', name: 'Architectural Grid', description: 'Blueprint grid with coordinate crosshairs' },
-    { id: 'dot-matrix', name: 'Dot Matrix', description: 'Polka dot developer matrix with radial fade' },
-    { id: 'radial-spotlight', name: 'Radial Spotlight', description: 'Luminous accent glow from top' },
+    {
+      id: 'architectural-grid',
+      name: 'Architectural Grid',
+      description: 'Blueprint grid with coordinate crosshairs',
+    },
+    {
+      id: 'dot-matrix',
+      name: 'Dot Matrix',
+      description: 'Polka dot developer matrix with radial fade',
+    },
+    {
+      id: 'radial-spotlight',
+      name: 'Radial Spotlight',
+      description: 'Luminous accent glow from top',
+    },
     { id: 'aurora-mesh', name: 'Aurora Mesh', description: 'Organic fluid gradient glow' },
-    { id: 'topographic-contours', name: 'Topographic Lines', description: 'Flowing topographic elevation curves' },
-    { id: 'custom-image', name: 'Custom Image', description: 'Upload or link custom backdrop texture' },
+    {
+      id: 'topographic-contours',
+      name: 'Topographic Lines',
+      description: 'Flowing topographic elevation curves',
+    },
+    {
+      id: 'custom-image',
+      name: 'Custom Image',
+      description: 'Upload or link custom backdrop texture',
+    },
   ];
 
   // Contrast check
@@ -186,8 +206,8 @@ export const RightInspector: React.FC = () => {
                     {wcagRating.aaa
                       ? 'Grade AAA — Ultra High Legibility'
                       : wcagRating.aa
-                      ? 'Grade AA — Standard Accessible'
-                      : 'Low Contrast Warning'}
+                        ? 'Grade AA — Standard Accessible'
+                        : 'Low Contrast Warning'}
                   </span>
                 </div>
               </div>
@@ -281,9 +301,7 @@ export const RightInspector: React.FC = () => {
                   <input
                     type="color"
                     value={config.palette.background}
-                    onChange={(e) =>
-                      setPalette({ ...config.palette, background: e.target.value })
-                    }
+                    onChange={(e) => setPalette({ ...config.palette, background: e.target.value })}
                     className="w-7 h-7 rounded cursor-pointer bg-transparent border-0"
                   />
                 </div>
@@ -296,9 +314,7 @@ export const RightInspector: React.FC = () => {
                   <input
                     type="color"
                     value={config.palette.text}
-                    onChange={(e) =>
-                      setPalette({ ...config.palette, text: e.target.value })
-                    }
+                    onChange={(e) => setPalette({ ...config.palette, text: e.target.value })}
                     className="w-7 h-7 rounded cursor-pointer bg-transparent border-0"
                   />
                 </div>
@@ -311,9 +327,7 @@ export const RightInspector: React.FC = () => {
                   <input
                     type="color"
                     value={config.palette.accent}
-                    onChange={(e) =>
-                      setPalette({ ...config.palette, accent: e.target.value })
-                    }
+                    onChange={(e) => setPalette({ ...config.palette, accent: e.target.value })}
                     className="w-7 h-7 rounded cursor-pointer bg-transparent border-0"
                   />
                 </div>
@@ -326,9 +340,7 @@ export const RightInspector: React.FC = () => {
                   <input
                     type="color"
                     value={config.palette.border}
-                    onChange={(e) =>
-                      setPalette({ ...config.palette, border: e.target.value })
-                    }
+                    onChange={(e) => setPalette({ ...config.palette, border: e.target.value })}
                     className="w-7 h-7 rounded cursor-pointer bg-transparent border-0"
                   />
                 </div>
@@ -381,9 +393,7 @@ export const RightInspector: React.FC = () => {
                 min="0"
                 max="100"
                 value={Math.round((config.backgroundPattern.opacity ?? 0.4) * 100)}
-                onChange={(e) =>
-                  setBackgroundPattern({ opacity: parseInt(e.target.value) / 100 })
-                }
+                onChange={(e) => setBackgroundPattern({ opacity: parseInt(e.target.value) / 100 })}
                 className="w-full accent-blue-500 cursor-pointer"
               />
             </div>

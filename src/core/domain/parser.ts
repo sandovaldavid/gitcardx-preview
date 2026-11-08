@@ -32,7 +32,11 @@ export function parseGitHubInput(rawInput: string): GitHubInputResult {
   }
 
   // Handle URL formats
-  if (input.startsWith('http://') || input.startsWith('https://') || input.startsWith('github.com/')) {
+  if (
+    input.startsWith('http://') ||
+    input.startsWith('https://') ||
+    input.startsWith('github.com/')
+  ) {
     try {
       const urlString = input.startsWith('http') ? input : `https://${input}`;
       const url = new URL(urlString);

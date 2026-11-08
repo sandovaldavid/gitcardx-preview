@@ -5,25 +5,19 @@ import { CardRenderer } from '../templates/CardTemplateRegistry';
 import { getCardFonts } from '../fonts/fontLoader';
 import type { RepoMetadata, CardConfig } from '@/core/domain/schemas';
 
-export async function renderCardToSvg(
-  repo: RepoMetadata,
-  config: CardConfig
-): Promise<string> {
+export async function renderCardToSvg(repo: RepoMetadata, config: CardConfig): Promise<string> {
   const fonts = await getCardFonts();
 
-  const svg = await satori(
-    <CardRenderer repo={repo} config={config} />,
-    {
-      width: 1280,
-      height: 640,
-      fonts: fonts.map((f) => ({
-        name: f.name,
-        data: f.data,
-        weight: f.weight,
-        style: f.style,
-      })),
-    }
-  );
+  const svg = await satori(<CardRenderer repo={repo} config={config} />, {
+    width: 1280,
+    height: 640,
+    fonts: fonts.map((f) => ({
+      name: f.name,
+      data: f.data,
+      weight: f.weight,
+      style: f.style,
+    })),
+  });
 
   return svg;
 }

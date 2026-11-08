@@ -6,10 +6,7 @@ interface BackgroundProps {
   opacity?: number;
 }
 
-export const DotMatrix: React.FC<BackgroundProps> = ({
-  borderColor,
-  opacity = 0.4,
-}) => {
+export const DotMatrix: React.FC<BackgroundProps> = ({ borderColor, opacity = 0.4 }) => {
   return (
     <svg
       width="1280"
@@ -27,12 +24,7 @@ export const DotMatrix: React.FC<BackgroundProps> = ({
       xmlns="http://www.w3.org/2000/svg"
     >
       <defs>
-        <pattern
-          id="dot-matrix-pattern"
-          width="32"
-          height="32"
-          patternUnits="userSpaceOnUse"
-        >
+        <pattern id="dot-matrix-pattern" width="32" height="32" patternUnits="userSpaceOnUse">
           <circle cx="16" cy="16" r="1.5" fill={borderColor} />
         </pattern>
         <radialGradient id="dot-fade-mask" cx="50%" cy="40%" r="65%">
@@ -45,12 +37,7 @@ export const DotMatrix: React.FC<BackgroundProps> = ({
         </mask>
       </defs>
 
-      <rect
-        width="1280"
-        height="640"
-        fill="url(#dot-matrix-pattern)"
-        mask="url(#dot-mask)"
-      />
+      <rect width="1280" height="640" fill="url(#dot-matrix-pattern)" mask="url(#dot-mask)" />
     </svg>
   );
 };

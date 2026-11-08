@@ -9,6 +9,7 @@ Official Platform: [https://gitcardx.dev](https://gitcardx.dev)
 ## Overview
 
 **GitCardX Preview** is a modern DevTool designed to solve developer portfolio and repository presentation:
+
 - **Instant Social Previews (`1280×640px` / `2:1`)**: Generate crisp, high-impact preview cards for your GitHub repositories in seconds.
 - **Dynamic README Hero Banners (`/api/card/[owner]/[repo].svg`)**: Keep stars, latest releases, and tech stack badges automatically synchronized in your project `README.md`.
 - **Social Simulator**: Real-time live previews inside simulated X (Twitter), LinkedIn, Discord, Slack, and GitHub feed layouts.

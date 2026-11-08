@@ -12,7 +12,12 @@ export const CliTerminalTemplate: React.FC<CardRenderProps> = ({
   showSafeZoneGuides = false,
 }) => {
   const { palette, visibility, backgroundPattern } = config;
-  const defaultCmd = suggestInstallCommand(repo.languages, repo.topics, repo.name, repo.owner.login);
+  const defaultCmd = suggestInstallCommand(
+    repo.languages,
+    repo.topics,
+    repo.name,
+    repo.owner.login
+  );
   const command = config.installCommand || defaultCmd;
 
   return (

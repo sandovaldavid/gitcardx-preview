@@ -45,10 +45,7 @@ describe('GitHubService', () => {
             ],
           },
           repositoryTopics: {
-            nodes: [
-              { topic: { name: 'nextjs' } },
-              { topic: { name: 'social-preview' } },
-            ],
+            nodes: [{ topic: { name: 'nextjs' } }, { topic: { name: 'social-preview' } }],
           },
           licenseInfo: {
             spdxId: 'MIT',
@@ -121,19 +118,17 @@ describe('GitHubService', () => {
         new Error('Could not resolve to a Repository with the name of nonexistent/repo.')
       );
 
-      await expect(
-        service.getRepository('nonexistent', 'repo')
-      ).rejects.toThrow("Repository 'nonexistent/repo' was not found or is private.");
+      await expect(service.getRepository('nonexistent', 'repo')).rejects.toThrow(
+        "Repository 'nonexistent/repo' was not found or is private."
+      );
     });
 
     it('throws friendly error when rate limit is exceeded', async () => {
-      mockGraphql.mockRejectedValueOnce(
-        new Error('API rate limit exceeded for user ID 12345.')
-      );
+      mockGraphql.mockRejectedValueOnce(new Error('API rate limit exceeded for user ID 12345.'));
 
-      await expect(
-        service.getRepository('some', 'repo')
-      ).rejects.toThrow('GitHub API rate limit exceeded. Please try again shortly.');
+      await expect(service.getRepository('some', 'repo')).rejects.toThrow(
+        'GitHub API rate limit exceeded. Please try again shortly.'
+      );
     });
   });
 

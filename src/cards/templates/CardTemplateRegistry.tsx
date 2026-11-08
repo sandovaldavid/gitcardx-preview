@@ -57,7 +57,8 @@ export const CARD_TEMPLATES: Record<TemplateId, TemplateDefinition> = {
   'blueprint-grid': {
     id: 'blueprint-grid',
     name: 'Blueprint Grid',
-    description: 'Precision architectural blueprint styling with coordinate lines and technical badges.',
+    description:
+      'Precision architectural blueprint styling with coordinate lines and technical badges.',
     recommendedFor: 'System architectures, databases, cloud native tools',
     component: BlueprintGridTemplate,
   },
@@ -71,7 +72,8 @@ export const CARD_TEMPLATES: Record<TemplateId, TemplateDefinition> = {
   'creator-signature': {
     id: 'creator-signature',
     name: 'Creator Signature',
-    description: 'Highlights the project creator with prominent author avatar and project identity.',
+    description:
+      'Highlights the project creator with prominent author avatar and project identity.',
     recommendedFor: 'Indie hackers, solo founders, personal portfolio repos',
     component: CreatorSignatureTemplate,
   },

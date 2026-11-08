@@ -1,16 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import {
-  X,
-  Download,
-  Copy,
-  Check,
-  ExternalLink,
-  Code2,
-  FileImage,
-  Sparkles,
-} from 'lucide-react';
+import { X, Download, Copy, Check, ExternalLink, Code2, FileImage, Sparkles } from 'lucide-react';
 import { useCardStore } from '../state/useCardStore';
 
 export const ExportModal: React.FC = () => {
@@ -47,7 +38,9 @@ export const ExportModal: React.FC = () => {
         URL.revokeObjectURL(blobUrl);
       } else {
         // Fallback info notification
-        alert(`Direct image download will be fully active in Milestone 5. You can copy the dynamic README snippet now!`);
+        alert(
+          `Direct image download will be fully active in Milestone 5. You can copy the dynamic README snippet now!`
+        );
       }
     } catch {
       alert(`Exporting format ${format}...`);
@@ -125,7 +118,9 @@ export const ExportModal: React.FC = () => {
           {activeTab === 'download' && (
             <div className="flex flex-col gap-4">
               <p className="text-xs text-zinc-400 leading-relaxed">
-                Download the official <strong className="text-zinc-200">1280×640 px</strong> banner ready to be uploaded in your repository settings under <span className="font-mono text-zinc-300">General → Social preview</span>.
+                Download the official <strong className="text-zinc-200">1280×640 px</strong> banner
+                ready to be uploaded in your repository settings under{' '}
+                <span className="font-mono text-zinc-300">General → Social preview</span>.
               </p>
 
               <div className="grid grid-cols-2 gap-3">
@@ -177,7 +172,9 @@ export const ExportModal: React.FC = () => {
           {activeTab === 'readme' && (
             <div className="flex flex-col gap-3">
               <p className="text-xs text-zinc-400 leading-relaxed">
-                Paste this snippet at the very top of your repository <span className="font-mono text-zinc-300">README.md</span> to display a real-time banner that updates automatically whenever your repo gets new stars or releases.
+                Paste this snippet at the very top of your repository{' '}
+                <span className="font-mono text-zinc-300">README.md</span> to display a real-time
+                banner that updates automatically whenever your repo gets new stars or releases.
               </p>
 
               <div className="relative">
@@ -208,7 +205,9 @@ export const ExportModal: React.FC = () => {
           {activeTab === 'meta' && (
             <div className="flex flex-col gap-3">
               <p className="text-xs text-zinc-400 leading-relaxed">
-                Add these Open Graph tags to your project documentation or homepage <span className="font-mono text-zinc-300">&lt;head&gt;</span> to generate high-conversion preview cards when shared on X, LinkedIn, Discord, and Slack.
+                Add these Open Graph tags to your project documentation or homepage{' '}
+                <span className="font-mono text-zinc-300">&lt;head&gt;</span> to generate
+                high-conversion preview cards when shared on X, LinkedIn, Discord, and Slack.
               </p>
 
               <div className="relative">

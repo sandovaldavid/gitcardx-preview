@@ -65,11 +65,7 @@ export class ThemeEngine {
    * Evaluates WCAG compliance for normal text (threshold: 4.5 AA / 7.0 AAA)
    * or large text (threshold: 3.0 AA / 4.5 AAA).
    */
-  static checkWcag(
-    background: string,
-    foreground: string,
-    isLargeText = false
-  ): WcagRating {
+  static checkWcag(background: string, foreground: string, isLargeText = false): WcagRating {
     const ratio = this.getContrastRatio(background, foreground);
     const aaThreshold = isLargeText ? 3.0 : 4.5;
     const aaaThreshold = isLargeText ? 4.5 : 7.0;
@@ -126,9 +122,7 @@ export class ThemeEngine {
     languageHex: string,
     mode: 'dark' | 'light' = 'dark'
   ): Palette {
-    const baseColor = colord(languageHex).isValid()
-      ? colord(languageHex)
-      : colord('#3b82f6');
+    const baseColor = colord(languageHex).isValid() ? colord(languageHex) : colord('#3b82f6');
 
     if (mode === 'dark') {
       // Subtly tint deep background with language hue

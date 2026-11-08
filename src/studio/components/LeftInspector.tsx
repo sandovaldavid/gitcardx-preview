@@ -42,9 +42,7 @@ export const LeftInspector: React.FC = () => {
         <div className="flex flex-col gap-1.5">
           <label className="text-xs font-medium text-zinc-400 flex items-center justify-between">
             <span>Card Title</span>
-            <span className="text-[10px] font-mono text-zinc-600">
-              {config.title.length}/100
-            </span>
+            <span className="text-[10px] font-mono text-zinc-600">{config.title.length}/100</span>
           </label>
           <input
             type="text"
@@ -60,9 +58,7 @@ export const LeftInspector: React.FC = () => {
         <div className="flex flex-col gap-1.5">
           <label className="text-xs font-medium text-zinc-400 flex items-center justify-between">
             <span>Tagline / Description</span>
-            <span className="text-[10px] font-mono text-zinc-600">
-              {config.tagline.length}/300
-            </span>
+            <span className="text-[10px] font-mono text-zinc-600">{config.tagline.length}/300</span>
           </label>
           <textarea
             value={config.tagline}
@@ -164,10 +160,7 @@ export const LeftInspector: React.FC = () => {
                     min="0"
                     value={repo.stars}
                     onChange={(e) =>
-                      setRepo(
-                        { ...repo, stars: Math.max(0, parseInt(e.target.value) || 0) },
-                        false
-                      )
+                      setRepo({ ...repo, stars: Math.max(0, parseInt(e.target.value) || 0) }, false)
                     }
                     className="w-full h-8 px-2 rounded bg-zinc-950 border border-zinc-800 text-xs text-zinc-200"
                   />
@@ -179,10 +172,7 @@ export const LeftInspector: React.FC = () => {
                     min="0"
                     value={repo.forks}
                     onChange={(e) =>
-                      setRepo(
-                        { ...repo, forks: Math.max(0, parseInt(e.target.value) || 0) },
-                        false
-                      )
+                      setRepo({ ...repo, forks: Math.max(0, parseInt(e.target.value) || 0) }, false)
                     }
                     className="w-full h-8 px-2 rounded bg-zinc-950 border border-zinc-800 text-xs text-zinc-200"
                   />

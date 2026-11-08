@@ -120,10 +120,7 @@ export const useCardStore = create<CardStoreState>((set, get) => ({
     let newPalette = currentConfig.palette;
 
     if (autoTheme && repo.primaryLanguage?.color) {
-      newPalette = ThemeEngine.generatePaletteFromLanguageColor(
-        repo.primaryLanguage.color,
-        'dark'
-      );
+      newPalette = ThemeEngine.generatePaletteFromLanguageColor(repo.primaryLanguage.color, 'dark');
     }
 
     const suggestedCmd = suggestInstallCommand(

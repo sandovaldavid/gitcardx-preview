@@ -29,11 +29,7 @@ export const BlueprintGridTemplate: React.FC<CardRenderProps> = ({
         fontFamily: 'Inter',
       }}
     >
-      <ArchitecturalGrid
-        accentColor={palette.accent}
-        borderColor={palette.border}
-        opacity={0.65}
-      />
+      <ArchitecturalGrid accentColor={palette.accent} borderColor={palette.border} opacity={0.65} />
 
       {/* Top Header: Technical Specs & Blueprint ID */}
       <div
@@ -140,7 +136,9 @@ export const BlueprintGridTemplate: React.FC<CardRenderProps> = ({
             maxWidth: 880,
           }}
         >
-          {config.tagline || repo.description || 'System architecture and developer infrastructure module.'}
+          {config.tagline ||
+            repo.description ||
+            'System architecture and developer infrastructure module.'}
         </p>
       </div>
 
@@ -156,11 +154,7 @@ export const BlueprintGridTemplate: React.FC<CardRenderProps> = ({
         }}
       >
         {visibility.techStack && techStack.length > 0 ? (
-          <StackBadgeRow
-            items={techStack}
-            textColor={palette.text}
-            borderColor={palette.border}
-          />
+          <StackBadgeRow items={techStack} textColor={palette.text} borderColor={palette.border} />
         ) : (
           <div />
         )}

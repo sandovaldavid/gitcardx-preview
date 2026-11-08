@@ -90,7 +90,9 @@ export const Omnibar: React.FC = () => {
       const res = await fetch(`/api/github/repo?owner=${parsed.owner}&repo=${parsed.repo}`);
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData.error || `Repository '${parsed.owner}/${parsed.repo}' could not be loaded.`);
+        throw new Error(
+          errorData.error || `Repository '${parsed.owner}/${parsed.repo}' could not be loaded.`
+        );
       }
 
       const repoData = await res.json();

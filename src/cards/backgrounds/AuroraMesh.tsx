@@ -7,10 +7,7 @@ interface BackgroundProps {
   opacity?: number;
 }
 
-export const AuroraMesh: React.FC<BackgroundProps> = ({
-  accentColor,
-  opacity = 0.5,
-}) => {
+export const AuroraMesh: React.FC<BackgroundProps> = ({ accentColor, opacity = 0.5 }) => {
   const primary = colord(accentColor).isValid() ? colord(accentColor) : colord('#3b82f6');
   // Secondary color shifted 45 degrees in hue
   const secondary = primary.rotate(45).toHex();

@@ -249,9 +249,7 @@ export class GitHubService {
       }>(GET_USER_REPOS_QUERY, { login });
 
       const nodes =
-        response.organization?.repositories?.nodes ||
-        response.user?.repositories?.nodes ||
-        [];
+        response.organization?.repositories?.nodes || response.user?.repositories?.nodes || [];
 
       return nodes.map((n) => ({
         name: n.name,

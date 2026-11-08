@@ -1,15 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import {
-  Bookmark,
-  Plus,
-  Trash2,
-  Download,
-  Upload,
-  Check,
-  Layers,
-} from 'lucide-react';
+import { Bookmark, Plus, Trash2, Download, Upload, Check, Layers } from 'lucide-react';
 import { useCardStore } from '../state/useCardStore';
 import { IndexedDBBrandKitStorage } from '@/core/adapters/local/IndexedDBBrandKitStorage';
 import { FreeTierEntitlement } from '@/core/adapters/local/FreeTierEntitlement';
@@ -19,8 +11,7 @@ const storage = new IndexedDBBrandKitStorage();
 const entitlement = new FreeTierEntitlement();
 
 export const BrandKitVault: React.FC = () => {
-  const { config, setTemplateId, setPalette, setBackgroundPattern, updateConfig } =
-    useCardStore();
+  const { config, setTemplateId, setPalette, setBackgroundPattern, updateConfig } = useCardStore();
 
   const [savedKits, setSavedKits] = useState<BrandKit[]>([]);
   const [isSavingNew, setIsSavingNew] = useState(false);
@@ -44,11 +35,14 @@ export const BrandKitVault: React.FC = () => {
 
   useEffect(() => {
     let isMounted = true;
-    storage.listBrandKits().then((list) => {
-      if (isMounted) setSavedKits(list);
-    }).catch(() => {
-      if (isMounted) setSavedKits([]);
-    });
+    storage
+      .listBrandKits()
+      .then((list) => {
+        if (isMounted) setSavedKits(list);
+      })
+      .catch(() => {
+        if (isMounted) setSavedKits([]);
+      });
 
     return () => {
       isMounted = false;
@@ -110,7 +104,8 @@ export const BrandKitVault: React.FC = () => {
   };
 
   const handleExportJson = () => {
-    const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(savedKits, null, 2));
+    const dataStr =
+      'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(savedKits, null, 2));
     const a = document.createElement('a');
     a.href = dataStr;
     a.download = `gitcardx-brand-kits-${new Date().toISOString().slice(0, 10)}.json`;
@@ -232,7 +227,8 @@ export const BrandKitVault: React.FC = () => {
           <div className="p-6 rounded-xl border border-dashed border-zinc-800 text-center flex flex-col items-center gap-2">
             <Layers className="w-6 h-6 text-zinc-600" />
             <p className="text-xs text-zinc-500 max-w-xs">
-              No Brand Kits saved yet. Save your favorite palette, template, and pattern combinations here for 1-click reuse across all your repositories.
+              No Brand Kits saved yet. Save your favorite palette, template, and pattern
+              combinations here for 1-click reuse across all your repositories.
             </p>
           </div>
         ) : (
@@ -249,9 +245,7 @@ export const BrandKitVault: React.FC = () => {
               >
                 <div className="flex flex-col gap-1 min-w-0 pr-2">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-semibold text-zinc-200 truncate">
-                      {kit.name}
-                    </span>
+                    <span className="text-xs font-semibold text-zinc-200 truncate">{kit.name}</span>
                     {appliedId === kit.id && (
                       <span className="text-[10px] text-blue-400 font-mono flex items-center gap-1">
                         <Check className="w-3 h-3" /> Applied

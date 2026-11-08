@@ -129,7 +129,12 @@ export const ReleaseSpotlightTemplate: React.FC<CardRenderProps> = ({
                 fontFamily: 'JetBrains Mono',
               }}
             >
-              released {new Date(repo.latestRelease.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+              released{' '}
+              {new Date(repo.latestRelease.publishedAt).toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric',
+              })}
             </span>
           )}
         </div>
@@ -157,7 +162,9 @@ export const ReleaseSpotlightTemplate: React.FC<CardRenderProps> = ({
             maxWidth: 960,
           }}
         >
-          {config.tagline || repo.description || 'Major performance improvements, new features, and bug fixes.'}
+          {config.tagline ||
+            repo.description ||
+            'Major performance improvements, new features, and bug fixes.'}
         </p>
       </div>
 
@@ -171,11 +178,7 @@ export const ReleaseSpotlightTemplate: React.FC<CardRenderProps> = ({
         }}
       >
         {visibility.techStack && techStack.length > 0 ? (
-          <StackBadgeRow
-            items={techStack}
-            textColor={palette.text}
-            borderColor={palette.border}
-          />
+          <StackBadgeRow items={techStack} textColor={palette.text} borderColor={palette.border} />
         ) : (
           <div />
         )}
