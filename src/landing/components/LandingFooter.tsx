@@ -2,7 +2,8 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Sparkles, Heart } from 'lucide-react';
+import { Heart } from 'lucide-react';
+import { GitframeLogo } from '@/components/GitframeLogo';
 import { APP_VERSION_TAG } from '@/lib/version';
 
 const GithubIcon: React.FC<{ className?: string }> = ({ className = 'w-3.5 h-3.5' }) => (
@@ -22,8 +23,8 @@ export const LandingFooter: React.FC = () => {
         {/* Brand & Copyright */}
         <div className="flex flex-col sm:flex-row items-center gap-3">
           <Link href="/" className="flex items-center gap-2 text-zinc-300 font-semibold text-sm">
-            <Sparkles className="w-4 h-4 text-blue-400" />
-            <span>GitCardX Preview</span>
+            <GitframeLogo className="w-4 h-4" />
+            <span>Gitframe</span>
             <span className="text-[10px] font-mono text-zinc-400 bg-zinc-900 border border-zinc-800 px-1.5 py-0.5 rounded font-normal">
               {APP_VERSION_TAG}
             </span>
@@ -50,7 +51,7 @@ export const LandingFooter: React.FC = () => {
             Studio
           </Link>
           <a
-            href="https://github.com/sandovaldavid/gitcardx-preview"
+            href="https://github.com/sandovaldavid/gitframe"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-1.5 hover:text-zinc-300 transition-colors"
@@ -59,7 +60,7 @@ export const LandingFooter: React.FC = () => {
             <span>Repository</span>
           </a>
           <a
-            href="https://github.com/sandovaldavid/gitcardx-preview/blob/main/LICENSE"
+            href="https://github.com/sandovaldavid/gitframe/blob/main/LICENSE"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-zinc-300 transition-colors"

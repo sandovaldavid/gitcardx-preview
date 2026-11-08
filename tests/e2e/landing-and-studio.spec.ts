@@ -1,11 +1,11 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('GitCardX Landing Page & Studio E2E', () => {
+test.describe('Gitframe Landing Page & Studio E2E', () => {
   test('landing page renders all major sections and metadata', async ({ page }) => {
     await page.goto('/');
 
     // Check title & meta
-    await expect(page).toHaveTitle(/GitCardX/i);
+    await expect(page).toHaveTitle(/Gitframe/i);
 
     // Hero title
     const heroHeading = page.getByRole('heading', { name: /Give your GitHub projects/i });
@@ -23,12 +23,12 @@ test.describe('GitCardX Landing Page & Studio E2E', () => {
     // Comparison section
     const comparisonSection = page.locator('#comparison');
     await expect(comparisonSection).toBeVisible();
-    await expect(comparisonSection).toContainText(/Default GitHub Card vs. GitCardX/i);
+    await expect(comparisonSection).toContainText(/Default GitHub Card vs. Gitframe/i);
 
     // URL shortcut section
     const urlTrickSection = page.locator('#url-trick');
     await expect(urlTrickSection).toBeVisible();
-    await expect(urlTrickSection).toContainText(/gitcardx\.dev/i);
+    await expect(urlTrickSection).toContainText(/gitframe\.dev/i);
 
     // Dynamic API section
     const dynamicApiSection = page.locator('#dynamic-api');

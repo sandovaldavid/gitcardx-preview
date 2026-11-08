@@ -20,7 +20,7 @@ export const ExportModal: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'download' | 'readme' | 'meta'>('download');
   const [copiedType, setCopiedType] = useState<string | null>(null);
   const [isExporting, setIsExporting] = useState(false);
-  const [linkTarget, setLinkTarget] = useState<'gitcardx' | 'github' | 'none'>('gitcardx');
+  const [linkTarget, setLinkTarget] = useState<'gitframe' | 'github' | 'none'>('gitframe');
   const [readmeSnippetFormat, setReadmeSnippetFormat] = useState<'markdown' | 'picture'>('picture');
 
   if (!isExportModalOpen) return null;
@@ -147,21 +147,21 @@ export const ExportModal: React.FC = () => {
 
   // Determine target link for README snippet
   const targetUrl =
-    linkTarget === 'gitcardx'
-      ? `https://gitcardx.dev/${owner}/${repoName}?ref=readme`
+    linkTarget === 'gitframe'
+      ? `https://gitframe.dev/${owner}/${repoName}?ref=readme`
       : linkTarget === 'github'
         ? `https://github.com/${owner}/${repoName}`
         : null;
 
   const markdownSnippet = targetUrl
-    ? `[![${config.title || repoName}](https://gitcardx.dev/api/card/${owner}/${repoName}.png)](${targetUrl})`
-    : `![${config.title || repoName}](https://gitcardx.dev/api/card/${owner}/${repoName}.png)`;
+    ? `[![${config.title || repoName}](https://gitframe.dev/api/card/${owner}/${repoName}.png)](${targetUrl})`
+    : `![${config.title || repoName}](https://gitframe.dev/api/card/${owner}/${repoName}.png)`;
 
   const pictureSnippet = targetUrl
-    ? `<a href="${targetUrl}">\n  <picture>\n    <source media="(prefers-color-scheme: dark)" srcset="https://gitcardx.dev/api/card/${owner}/${repoName}.png?theme=dark" />\n    <source media="(prefers-color-scheme: light)" srcset="https://gitcardx.dev/api/card/${owner}/${repoName}.png?theme=light" />\n    <img src="https://gitcardx.dev/api/card/${owner}/${repoName}.png" alt="${config.title || repoName} Preview" width="100%" />\n  </picture>\n</a>`
-    : `<picture>\n  <source media="(prefers-color-scheme: dark)" srcset="https://gitcardx.dev/api/card/${owner}/${repoName}.png?theme=dark" />\n  <source media="(prefers-color-scheme: light)" srcset="https://gitcardx.dev/api/card/${owner}/${repoName}.png?theme=light" />\n  <img src="https://gitcardx.dev/api/card/${owner}/${repoName}.png" alt="${config.title || repoName} Preview" width="100%" />\n</picture>`;
+    ? `<a href="${targetUrl}">\n  <picture>\n    <source media="(prefers-color-scheme: dark)" srcset="https://gitframe.dev/api/card/${owner}/${repoName}.png?theme=dark" />\n    <source media="(prefers-color-scheme: light)" srcset="https://gitframe.dev/api/card/${owner}/${repoName}.png?theme=light" />\n    <img src="https://gitframe.dev/api/card/${owner}/${repoName}.png" alt="${config.title || repoName} Preview" width="100%" />\n  </picture>\n</a>`
+    : `<picture>\n  <source media="(prefers-color-scheme: dark)" srcset="https://gitframe.dev/api/card/${owner}/${repoName}.png?theme=dark" />\n  <source media="(prefers-color-scheme: light)" srcset="https://gitframe.dev/api/card/${owner}/${repoName}.png?theme=light" />\n  <img src="https://gitframe.dev/api/card/${owner}/${repoName}.png" alt="${config.title || repoName} Preview" width="100%" />\n</picture>`;
 
-  const htmlMetaSnippet = `<meta property="og:title" content="${config.title || repoName}" />\n<meta property="og:description" content="${config.tagline || repo.description || ''}" />\n<meta property="og:image" content="https://gitcardx.dev/api/card/${owner}/${repoName}.png" />\n<meta property="og:image:width" content="1280" />\n<meta property="og:image:height" content="640" />\n<meta name="twitter:card" content="summary_large_image" />\n<meta name="twitter:image" content="https://gitcardx.dev/api/card/${owner}/${repoName}.png" />`;
+  const htmlMetaSnippet = `<meta property="og:title" content="${config.title || repoName}" />\n<meta property="og:description" content="${config.tagline || repo.description || ''}" />\n<meta property="og:image" content="https://gitframe.dev/api/card/${owner}/${repoName}.png" />\n<meta property="og:image:width" content="1280" />\n<meta property="og:image:height" content="640" />\n<meta name="twitter:card" content="summary_large_image" />\n<meta name="twitter:image" content="https://gitframe.dev/api/card/${owner}/${repoName}.png" />`;
 
   return (
     <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-150">
@@ -348,10 +348,10 @@ export const ExportModal: React.FC = () => {
                 <span className="text-zinc-400">Click target:</span>
                 <select
                   value={linkTarget}
-                  onChange={(e) => setLinkTarget(e.target.value as 'gitcardx' | 'github' | 'none')}
+                  onChange={(e) => setLinkTarget(e.target.value as 'gitframe' | 'github' | 'none')}
                   className="bg-zinc-900 border border-zinc-800 rounded px-2 py-0.5 text-zinc-200 outline-none"
                 >
-                  <option value="gitcardx">GitCardX Studio Page</option>
+                  <option value="gitframe">Gitframe Studio Page</option>
                   <option value="github">GitHub Repo</option>
                   <option value="none">No link (image only)</option>
                 </select>

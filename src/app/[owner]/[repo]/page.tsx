@@ -15,9 +15,9 @@ const githubService = new GitHubService();
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { owner, repo } = await params;
-  const title = `${owner}/${repo} — GitCardX Preview`;
+  const title = `${owner}/${repo} — Gitframe`;
   const description = `Create an instant GitHub Social Preview card for ${owner}/${repo}`;
-  const cardOgUrl = `https://gitcardx.dev/api/card/${owner}/${repo}`;
+  const cardOgUrl = `https://gitframe.dev/api/card/${owner}/${repo}`;
 
   return {
     title,

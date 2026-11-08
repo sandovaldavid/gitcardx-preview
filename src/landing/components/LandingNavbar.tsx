@@ -2,7 +2,8 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Sparkles, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
+import { GitframeLogo } from '@/components/GitframeLogo';
 import { APP_VERSION_TAG } from '@/lib/version';
 
 const GithubIcon: React.FC<{ className?: string }> = ({ className = 'w-4 h-4' }) => (
@@ -21,13 +22,11 @@ export const LandingNavbar: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Brand Logo */}
         <Link href="/" className="flex items-center gap-2.5 group">
-          <div className="w-9 h-9 rounded-xl bg-linear-to-tr from-blue-600 via-indigo-600 to-violet-500 p-px shadow-lg shadow-blue-500/20 group-hover:shadow-blue-500/40 transition-shadow">
-            <div className="w-full h-full bg-zinc-950 rounded-[11px] flex items-center justify-center">
-              <Sparkles className="w-4 h-4 text-blue-400 group-hover:rotate-12 transition-transform" />
-            </div>
+          <div className="w-9 h-9 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center group-hover:border-zinc-700 transition-colors">
+            <GitframeLogo className="w-5 h-5" />
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="font-bold text-base tracking-tight text-white">GitCardX</span>
+            <span className="font-bold text-base tracking-tight text-white">Gitframe</span>
             <span className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">
               {APP_VERSION_TAG}
             </span>

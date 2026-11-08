@@ -8,12 +8,12 @@ describe('parseGitHubInput', () => {
   });
 
   it('parses full https GitHub repository URLs', () => {
-    const res = parseGitHubInput('https://github.com/sandovaldavid/gitcardx-preview');
+    const res = parseGitHubInput('https://github.com/sandovaldavid/gitframe');
     expect(res).toEqual({
       type: 'repo',
       owner: 'sandovaldavid',
-      repo: 'gitcardx-preview',
-      original: 'https://github.com/sandovaldavid/gitcardx-preview',
+      repo: 'gitframe',
+      original: 'https://github.com/sandovaldavid/gitframe',
     });
   });
 

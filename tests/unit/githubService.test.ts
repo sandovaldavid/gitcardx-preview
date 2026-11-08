@@ -25,9 +25,9 @@ describe('GitHubService', () => {
     it('fetches and maps full repository metadata correctly', async () => {
       mockGraphql.mockResolvedValueOnce({
         repository: {
-          name: 'gitcardx-preview',
+          name: 'gitframe',
           description: 'GitHub Social Preview card generator',
-          homepageUrl: 'https://gitcardx.dev',
+          homepageUrl: 'https://gitframe.dev',
           stargazerCount: 120,
           forkCount: 15,
           isArchived: false,
@@ -67,9 +67,9 @@ describe('GitHubService', () => {
         },
       });
 
-      const repo = await service.getRepository('sandovaldavid', 'gitcardx-preview');
+      const repo = await service.getRepository('sandovaldavid', 'gitframe');
 
-      expect(repo.name).toBe('gitcardx-preview');
+      expect(repo.name).toBe('gitframe');
       expect(repo.owner.login).toBe('sandovaldavid');
       expect(repo.owner.isOrg).toBe(false);
       expect(repo.stars).toBe(120);

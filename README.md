@@ -1,28 +1,28 @@
-# GitCardX Preview
+# Gitframe
 
 <div align="center">
 
-[![GitCardX Preview](https://gitcardx.dev/api/card/sandovaldavid/gitcardx-preview.png)](https://gitcardx.dev)
+[![Gitframe](https://gitframe.dev/api/card/sandovaldavid/gitframe.png)](https://gitframe.dev)
 
 **Instant, high-impact GitHub Social Preview cards (`1280×640px`) & dynamic README heroes in 5 seconds.**
 
-[![CI](https://github.com/sandovaldavid/gitcardx-preview/actions/workflows/ci.yml/badge.svg)](https://github.com/sandovaldavid/gitcardx-preview/actions/workflows/ci.yml)
+[![CI](https://github.com/sandovaldavid/gitframe/actions/workflows/ci.yml/badge.svg)](https://github.com/sandovaldavid/gitframe/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Release Please](https://img.shields.io/badge/Release-Please-orange.svg)](https://github.com/googleapis/release-please)
 [![Next.js 16](https://img.shields.io/badge/Next.js-16.4-black)](https://nextjs.org)
 [![Tailwind CSS v4](https://img.shields.io/badge/Tailwind-v4-38bdf8)](https://tailwindcss.com)
 
-[**Launch Studio**](https://gitcardx.dev/studio) · [**Explore Templates**](https://gitcardx.dev/#templates) · [**Dynamic README API**](#dynamic-readme--open-graph-api)
+[**Launch Studio**](https://gitframe.dev/studio) · [**Explore Templates**](https://gitframe.dev/#templates) · [**Dynamic README API**](#dynamic-readme--open-graph-api)
 
 </div>
 
 ---
 
-## Why GitCardX?
+## Why Gitframe?
 
-Default GitHub social previews are dull grey boxes that get cropped and ignored on social feeds. **GitCardX Preview** turns overlooked repository links into iconic, high-contrast visual assets with **zero mandatory sign-up**, **zero database overhead**, and **100% free stateless execution**.
+Default GitHub social previews are dull grey boxes that get cropped and ignored on social feeds. **Gitframe** turns overlooked repository links into iconic, high-contrast visual assets with **zero mandatory sign-up**, **zero database overhead**, and **100% free stateless execution**.
 
-- **⚡ Instant 5-Second Generation**: Prepend `gitcardx.dev/` to any GitHub repository URL (`gitcardx.dev/owner/repo`) to open the studio with all metadata preloaded via Next.js 16 Partial Prerendering.
+- **⚡ Instant 5-Second Generation**: Prepend `gitframe.dev/` to any GitHub repository URL (`gitframe.dev/owner/repo`) to open the studio with all metadata preloaded via Next.js 16 Partial Prerendering.
 - **🎨 8 Satori-Safe Archetypes**: Purpose-built templates engineered for Vercel Satori and `@resvg/resvg-js` with guaranteed pixel-identical rendering across browsers and feed crawlers.
 - **🌐 Photo-Realistic Social Simulator**: Test how your card looks inside real feeds on **X (Twitter)**, **LinkedIn**, **Discord**, **Slack**, and **GitHub Feed** in dark and light modes.
 - **🛡️ Local Brand Kit Vault (IndexedDB)**: Store up to 10 custom brand palettes, typography choices, and background presets locally in your browser. Zero server-side tracking.
@@ -50,10 +50,10 @@ Default GitHub social previews are dull grey boxes that get cropped and ignored 
 Jump straight into the studio from any browser tab:
 
 ```text
-gitcardx.dev/{owner}/{repo}
+gitframe.dev/{owner}/{repo}
 ```
 
-_Example: Replace `github.com/shadcn/ui` with `gitcardx.dev/shadcn/ui`._
+_Example: Replace `github.com/shadcn/ui` with `gitframe.dev/shadcn/ui`._
 
 ---
 
@@ -64,7 +64,7 @@ Embed an auto-updating live card in your `README.md` or website:
 ### Standard Markdown
 
 ```markdown
-[![Social Preview](https://gitcardx.dev/api/card/{owner}/{repo}.png)](https://gitcardx.dev/{owner}/{repo})
+[![Social Preview](https://gitframe.dev/api/card/{owner}/{repo}.png)](https://gitframe.dev/{owner}/{repo})
 ```
 
 ### Adaptive Dark / Light `<picture>`
@@ -73,13 +73,13 @@ Embed an auto-updating live card in your `README.md` or website:
 <picture>
   <source
     media="(prefers-color-scheme: dark)"
-    srcset="https://gitcardx.dev/api/card/{owner}/{repo}.png?theme=dark"
+    srcset="https://gitframe.dev/api/card/{owner}/{repo}.png?theme=dark"
   />
   <source
     media="(prefers-color-scheme: light)"
-    srcset="https://gitcardx.dev/api/card/{owner}/{repo}.png?theme=light"
+    srcset="https://gitframe.dev/api/card/{owner}/{repo}.png?theme=light"
   />
-  <img alt="Social Card Preview" src="https://gitcardx.dev/api/card/{owner}/{repo}.png" />
+  <img alt="Social Card Preview" src="https://gitframe.dev/api/card/{owner}/{repo}.png" />
 </picture>
 ```
 
@@ -122,8 +122,8 @@ Embed an auto-updating live card in your `README.md` or website:
 
 ```bash
 # Clone the repository
-git clone git@github.com:sandovaldavid/gitcardx-preview.git
-cd gitcardx-preview
+git clone git@github.com:sandovaldavid/gitframe.git
+cd gitframe
 
 # Install dependencies
 bun install

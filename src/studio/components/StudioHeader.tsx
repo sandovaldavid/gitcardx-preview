@@ -2,7 +2,8 @@
 
 import React, { useEffect } from 'react';
 import Link from 'next/link';
-import { Undo2, Redo2, Scan, Download, RotateCcw, Sparkles } from 'lucide-react';
+import { Undo2, Redo2, Scan, Download, RotateCcw } from 'lucide-react';
+import { GitframeLogo } from '@/components/GitframeLogo';
 import { Omnibar } from './Omnibar';
 import { useCardStore } from '../state/useCardStore';
 import { APP_VERSION_TAG } from '@/lib/version';
@@ -52,15 +53,11 @@ export const StudioHeader: React.FC = () => {
       {/* Brand & Logo */}
       <div className="flex items-center gap-3">
         <Link href="/" className="flex items-center gap-2 group">
-          <div className="w-8 h-8 rounded-lg bg-linear-to-tr from-blue-600 via-indigo-600 to-cyan-400 p-px shadow-sm shadow-blue-500/20 group-hover:scale-105 transition-transform">
-            <div className="w-full h-full bg-zinc-950 rounded-[7px] flex items-center justify-center">
-              <Sparkles className="w-4 h-4 text-blue-400" />
-            </div>
+          <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center group-hover:border-zinc-700 transition-colors">
+            <GitframeLogo className="w-5 h-5" />
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="font-bold text-base tracking-tight text-white">
-              GitCard<span className="text-blue-500">X</span>
-            </span>
+            <span className="font-bold text-base tracking-tight text-white">Gitframe</span>
             <span className="text-[10px] uppercase font-mono font-semibold px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20 tracking-wider">
               {APP_VERSION_TAG}
             </span>

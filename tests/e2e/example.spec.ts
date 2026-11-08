@@ -2,5 +2,5 @@ import { test, expect } from '@playwright/test';
 
 test('homepage loads and displays title', async ({ page }) => {
   await page.goto('/');
-  await expect(page).toHaveTitle(/gitcardx/i);
+  await expect(page).toHaveTitle(/gitframe/i);
 });

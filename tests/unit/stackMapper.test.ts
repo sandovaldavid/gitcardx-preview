@@ -86,8 +86,8 @@ describe('stackMapper', () => {
     });
 
     it('defaults to bun add for general JS/TS repositories', () => {
-      expect(suggestInstallCommand([{ name: 'TypeScript' }], [], 'gitcardx-preview')).toBe(
-        'bun add gitcardx-preview'
+      expect(suggestInstallCommand([{ name: 'TypeScript' }], [], 'gitframe')).toBe(
+        'bun add gitframe'
       );
     });
   });

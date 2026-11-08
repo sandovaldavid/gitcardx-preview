@@ -14,11 +14,11 @@ export const ComparisonSection: React.FC = () => {
             <span>The 5-Second Difference</span>
           </div>
           <h2 className="text-3xl sm:text-5xl font-bold tracking-tight text-white">
-            Default GitHub Card vs. GitCardX
+            Default GitHub Card vs. Gitframe
           </h2>
           <p className="mt-4 text-base text-zinc-400">
             Social platforms crop and compress previews. A generic card makes your repo look like an
-            abandoned project. A GitCardX preview builds instant credibility.
+            abandoned project. A Gitframe preview builds instant credibility.
           </p>
         </div>
 
@@ -41,7 +41,7 @@ export const ComparisonSection: React.FC = () => {
               <div className="flex items-start justify-between">
                 <div>
                   <div className="text-zinc-500 font-mono text-xs">sandovaldavid /</div>
-                  <div className="text-zinc-200 font-semibold text-xl mt-1">gitcardx-preview</div>
+                  <div className="text-zinc-200 font-semibold text-xl mt-1">gitframe</div>
                 </div>
                 <div className="w-10 h-10 rounded-full bg-[#161b22] border border-[#30363d] flex items-center justify-center text-zinc-400 font-bold text-xs">
                   GP
@@ -84,19 +84,19 @@ export const ComparisonSection: React.FC = () => {
             </ul>
           </div>
 
-          {/* GitCardX Preview (After) */}
+          {/* Gitframe Preview (After) */}
           <div className="flex flex-col rounded-2xl border border-blue-600/40 bg-linear-to-b from-blue-950/20 via-zinc-900/60 to-zinc-950/80 p-6 md:p-8 relative overflow-hidden group shadow-2xl shadow-blue-500/10">
             <div className="flex items-center justify-between pb-6 border-b border-zinc-800/80 mb-6">
               <div className="flex items-center gap-2 text-blue-400 font-semibold text-sm">
                 <CheckCircle2 className="w-4 h-4" />
-                <span>GitCardX Social Preview</span>
+                <span>Gitframe Social Preview</span>
               </div>
               <span className="text-[11px] font-mono text-blue-300 font-medium px-2 py-0.5 rounded bg-blue-500/20 border border-blue-500/30">
                 1280×640 Retina & SVG
               </span>
             </div>
 
-            {/* Mock of GitCardX Preview */}
+            {/* Mock of Gitframe Preview */}
             <div className="w-full aspect-2/1 rounded-xl bg-zinc-950 border border-blue-500/30 p-8 flex flex-col justify-between shadow-2xl relative overflow-hidden">
               {/* Subtle background grid pattern */}
               <div
@@ -110,13 +110,11 @@ export const ComparisonSection: React.FC = () => {
               <div className="flex items-center justify-between relative z-10">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-blue-600/20 border border-blue-500/40 flex items-center justify-center font-bold text-blue-400 text-sm">
-                    GX
+                    GF
                   </div>
                   <div>
                     <span className="text-xs text-blue-400 font-mono">sandovaldavid /</span>
-                    <h3 className="text-xl font-bold text-white tracking-tight">
-                      gitcardx-preview
-                    </h3>
+                    <h3 className="text-xl font-bold text-white tracking-tight">gitframe</h3>
                   </div>
                 </div>
 
