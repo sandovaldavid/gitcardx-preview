@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { getCardFonts } from '@/cards/fonts/fontLoader';
 import { renderCardToSvg, renderCardToPng } from '@/cards/engine/satoriRenderer';
+import { getLanguageLogo } from '@/cards/icons/languageLogos';
 import { CARD_TEMPLATES } from '@/cards/templates/CardTemplateRegistry';
 import type { RepoMetadata, CardConfig, TemplateId } from '@/core/domain/schemas';
 
@@ -230,8 +231,9 @@ describe('Cards Engine & Satori Renderer', () => {
     };
 
     const svg = await renderCardToSvg(mockRepo, configWithLogos);
-    // TypeScript official SVG path begins with M1.125
-    expect(svg).toContain('M1.125');
+    const tsLogo = getLanguageLogo('TypeScript');
+    expect(tsLogo).not.toBeNull();
+    expect(svg).toContain(tsLogo!.dataUri);
   });
 
   it('omits official technology logos when languageLogos flag is false', async () => {
@@ -245,8 +247,10 @@ describe('Cards Engine & Satori Renderer', () => {
     };
 
     const svg = await renderCardToSvg(mockRepo, configWithoutLogos);
-    // When flag is false, official logo path is not rendered
-    expect(svg).not.toContain('M1.125');
+    const tsLogo = getLanguageLogo('TypeScript');
+    expect(tsLogo).not.toBeNull();
+    // When flag is false, official logo data URI is not rendered
+    expect(svg).not.toContain(tsLogo!.dataUri);
   });
 
   it('renders release-spotlight with real release and handles repos without release accurately', async () => {

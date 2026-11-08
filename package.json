@@ -13,7 +13,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "icons:extract": "node scripts/extract-svgl-languages.mjs"
   },
   "dependencies": {
     "@iconify/react": "^6.0.4",
