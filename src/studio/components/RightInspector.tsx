@@ -10,11 +10,13 @@ import {
   Check,
   CheckCircle2,
   AlertTriangle,
+  Bookmark,
 } from 'lucide-react';
 import { useCardStore } from '../state/useCardStore';
 import { CARD_TEMPLATES } from '@/cards/templates/CardTemplateRegistry';
 import { PRESET_PALETTES, ThemeEngine } from '@/core/theme/ThemeEngine';
 import type { BackgroundPatternConfig } from '@/core/domain/schemas';
+import { BrandKitVault } from './BrandKitVault';
 
 export const RightInspector: React.FC = () => {
   const {
@@ -49,18 +51,18 @@ export const RightInspector: React.FC = () => {
   return (
     <aside className="w-80 lg:w-92 border-l border-zinc-800/80 bg-zinc-950/70 backdrop-blur-md flex flex-col h-[calc(100vh-3.5rem)] overflow-y-auto z-20 shrink-0">
       {/* Tab Switcher Header */}
-      <div className="p-2 border-b border-zinc-800/80 grid grid-cols-4 gap-1">
+      <div className="p-2 border-b border-zinc-800/80 grid grid-cols-5 gap-1">
         <button
           type="button"
           onClick={() => setActiveRightTab('templates')}
           title="Templates"
-          className={`flex flex-col items-center justify-center py-2 rounded-lg text-[11px] font-medium transition-all ${
+          className={`flex flex-col items-center justify-center py-2 rounded-lg text-[10px] font-medium transition-all ${
             activeRightTab === 'templates'
               ? 'bg-zinc-800 text-blue-400 font-semibold'
               : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900'
           }`}
         >
-          <LayoutTemplate className="w-4 h-4 mb-1" />
+          <LayoutTemplate className="w-3.5 h-3.5 mb-1" />
           <span>Templates</span>
         </button>
 
@@ -68,13 +70,13 @@ export const RightInspector: React.FC = () => {
           type="button"
           onClick={() => setActiveRightTab('theme')}
           title="Theme & Colors"
-          className={`flex flex-col items-center justify-center py-2 rounded-lg text-[11px] font-medium transition-all ${
+          className={`flex flex-col items-center justify-center py-2 rounded-lg text-[10px] font-medium transition-all ${
             activeRightTab === 'theme'
               ? 'bg-zinc-800 text-blue-400 font-semibold'
               : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900'
           }`}
         >
-          <PaletteIcon className="w-4 h-4 mb-1" />
+          <PaletteIcon className="w-3.5 h-3.5 mb-1" />
           <span>Theme</span>
         </button>
 
@@ -82,13 +84,13 @@ export const RightInspector: React.FC = () => {
           type="button"
           onClick={() => setActiveRightTab('background')}
           title="Backgrounds"
-          className={`flex flex-col items-center justify-center py-2 rounded-lg text-[11px] font-medium transition-all ${
+          className={`flex flex-col items-center justify-center py-2 rounded-lg text-[10px] font-medium transition-all ${
             activeRightTab === 'background'
               ? 'bg-zinc-800 text-blue-400 font-semibold'
               : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900'
           }`}
         >
-          <Layers className="w-4 h-4 mb-1" />
+          <Layers className="w-3.5 h-3.5 mb-1" />
           <span>Pattern</span>
         </button>
 
@@ -96,14 +98,28 @@ export const RightInspector: React.FC = () => {
           type="button"
           onClick={() => setActiveRightTab('typography')}
           title="Typography"
-          className={`flex flex-col items-center justify-center py-2 rounded-lg text-[11px] font-medium transition-all ${
+          className={`flex flex-col items-center justify-center py-2 rounded-lg text-[10px] font-medium transition-all ${
             activeRightTab === 'typography'
               ? 'bg-zinc-800 text-blue-400 font-semibold'
               : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900'
           }`}
         >
-          <Type className="w-4 h-4 mb-1" />
+          <Type className="w-3.5 h-3.5 mb-1" />
           <span>Fonts</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveRightTab('vault')}
+          title="Brand Vault"
+          className={`flex flex-col items-center justify-center py-2 rounded-lg text-[10px] font-medium transition-all ${
+            activeRightTab === 'vault'
+              ? 'bg-zinc-800 text-blue-400 font-semibold'
+              : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900'
+          }`}
+        >
+          <Bookmark className="w-3.5 h-3.5 mb-1" />
+          <span>Vault</span>
         </button>
       </div>
 
@@ -416,6 +432,9 @@ export const RightInspector: React.FC = () => {
             </div>
           </div>
         )}
+
+        {/* TAB 5: BRAND KIT VAULT */}
+        {activeRightTab === 'vault' && <BrandKitVault />}
       </div>
     </aside>
   );

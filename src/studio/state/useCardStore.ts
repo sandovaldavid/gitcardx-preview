@@ -73,8 +73,9 @@ interface CardStoreState {
   showSafeZoneGuides: boolean;
   isFetchingRepo: boolean;
   fetchError: string | null;
-  activeRightTab: 'templates' | 'theme' | 'background' | 'typography';
+  activeRightTab: 'templates' | 'theme' | 'background' | 'typography' | 'vault';
   isExportModalOpen: boolean;
+  viewMode: 'canvas' | 'social';
 
   // Actions
   setRepo: (repo: RepoMetadata, autoTheme?: boolean) => void;
@@ -85,7 +86,8 @@ interface CardStoreState {
   toggleVisibility: (key: keyof CardVisibility) => void;
   setZoom: (zoom: number) => void;
   toggleSafeZoneGuides: () => void;
-  setActiveRightTab: (tab: 'templates' | 'theme' | 'background' | 'typography') => void;
+  setActiveRightTab: (tab: 'templates' | 'theme' | 'background' | 'typography' | 'vault') => void;
+  setViewMode: (mode: 'canvas' | 'social') => void;
   setIsExportModalOpen: (open: boolean) => void;
   setIsFetchingRepo: (fetching: boolean) => void;
   setFetchError: (error: string | null) => void;
@@ -111,6 +113,7 @@ export const useCardStore = create<CardStoreState>((set, get) => ({
   fetchError: null,
   activeRightTab: 'templates',
   isExportModalOpen: false,
+  viewMode: 'canvas',
 
   setRepo: (repo, autoTheme = true) => {
     const currentConfig = get().config;
@@ -197,6 +200,10 @@ export const useCardStore = create<CardStoreState>((set, get) => ({
 
   setActiveRightTab: (activeRightTab) => {
     set({ activeRightTab });
+  },
+
+  setViewMode: (viewMode) => {
+    set({ viewMode });
   },
 
   setIsExportModalOpen: (isExportModalOpen) => {
