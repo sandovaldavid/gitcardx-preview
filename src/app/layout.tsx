@@ -12,16 +12,75 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 });
 
+const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://gitcardx.dev';
+
 export const metadata: Metadata = {
-  title: 'GitCardX — GitHub Repository Social Preview & Dynamic README Hero Generator',
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: 'GitCardX — Instant GitHub Social Preview & Open Graph Card Studio',
+    template: '%s | GitCardX',
+  },
   description:
-    'Give your GitHub repositories real visual identity in seconds. Beautiful social previews, dynamic README banners, and brand kits.',
+    'Generate pixel-perfect GitHub social preview cards (1280×640) in 5 seconds. 8 Satori-safe templates, generative SVG backgrounds, social simulator, and zero mandatory sign-up.',
+  keywords: [
+    'github social preview',
+    'open graph generator',
+    'github og image',
+    'readme banner generator',
+    'satori cards',
+    'developer branding',
+    'gitcardx',
+  ],
+  authors: [{ name: 'David Sandoval', url: 'https://github.com/sandovaldavid' }],
+  creator: 'David Sandoval',
+  openGraph: {
+    title: 'GitCardX — Instant GitHub Social Preview & Open Graph Card Studio',
+    description:
+      'Turn underused GitHub Social Previews into iconic visual identities in 5 seconds. 8 Satori templates, generative backgrounds, zero sign-up.',
+    url: siteUrl,
+    siteName: 'GitCardX',
+    images: [
+      {
+        url: '/api/card/sandovaldavid/gitcardx-preview.png',
+        width: 1280,
+        height: 640,
+        alt: 'GitCardX Social Preview',
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'GitCardX — Instant GitHub Social Preview Generator',
+    description:
+      'Transform boring GitHub social cards into modern visual identities in 5 seconds. 100% free and developer-first.',
+    images: ['/api/card/sandovaldavid/gitcardx-preview.png'],
+    creator: '@sandovaldavid',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
 };
 
-export default function RootLayout({ children }: LayoutProps<'/'>) {
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col bg-zinc-950 text-zinc-100 selection:bg-blue-600 selection:text-white">
+        {children}
+      </body>
     </html>
   );
 }
