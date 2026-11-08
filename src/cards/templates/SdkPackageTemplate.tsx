@@ -13,6 +13,7 @@ export const SdkPackageTemplate: React.FC<CardRenderProps> = ({
   showSafeZoneGuides = false,
 }) => {
   const { palette, visibility, backgroundPattern } = config;
+  const isCenter = config.contentAlign === 'center';
   const techStack = detectTechStack(repo.languages, repo.topics, 4);
   const defaultCmd = suggestInstallCommand(
     repo.languages,
@@ -51,46 +52,60 @@ export const SdkPackageTemplate: React.FC<CardRenderProps> = ({
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
+          alignItems: isCenter ? 'center' : 'flex-start',
+          textAlign: isCenter ? 'center' : 'left',
           height: '100%',
           width: 640,
           zIndex: 1,
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={config.customLogoUrl || repo.owner.avatarUrl}
-            alt={repo.owner.login}
-            width={44}
-            height={44}
-            style={{
-              width: 44,
-              height: 44,
-              borderRadius: 10,
-              border: `1px solid ${palette.border}`,
-            }}
-          />
-          <span style={{ fontSize: 20, fontWeight: 600, color: palette.text, opacity: 0.9 }}>
-            {repo.owner.login}
-          </span>
-          <span
-            style={{
-              fontSize: 12,
-              fontFamily: 'JetBrains Mono',
-              paddingLeft: 8,
-              paddingRight: 8,
-              paddingTop: 3,
-              paddingBottom: 3,
-              borderRadius: 6,
-              backgroundColor: 'rgba(255, 255, 255, 0.06)',
-              color: palette.accent,
-            }}
-          >
-            PACKAGE
-          </span>
-        </div>
+        {visibility.author ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={config.customLogoUrl || repo.owner.avatarUrl}
+              alt={repo.owner.login}
+              width={44}
+              height={44}
+              style={{
+                width: 44,
+                height: 44,
+                borderRadius: 10,
+                border: `1px solid ${palette.border}`,
+              }}
+            />
+            <span style={{ fontSize: 20, fontWeight: 600, color: palette.text, opacity: 0.9 }}>
+              {repo.owner.login}
+            </span>
+            <span
+              style={{
+                fontSize: 12,
+                fontFamily: 'JetBrains Mono',
+                paddingLeft: 8,
+                paddingRight: 8,
+                paddingTop: 3,
+                paddingBottom: 3,
+                borderRadius: 6,
+                backgroundColor: 'rgba(255, 255, 255, 0.06)',
+                color: palette.accent,
+              }}
+            >
+              PACKAGE
+            </span>
+          </div>
+        ) : (
+          <div />
+        )}
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: isCenter ? 'center' : 'flex-start',
+            textAlign: isCenter ? 'center' : 'left',
+            gap: 14,
+          }}
+        >
           <h1
             style={{
               fontSize: 52,
@@ -103,28 +118,32 @@ export const SdkPackageTemplate: React.FC<CardRenderProps> = ({
           >
             {config.title || repo.name}
           </h1>
-          <p
-            style={{
-              fontSize: 22,
-              lineHeight: 1.4,
-              color: palette.text,
-              opacity: 0.9,
-              margin: 0,
-            }}
-          >
-            {config.tagline ||
-              repo.description ||
-              'Lightweight, modern library built for production.'}
-          </p>
+          {visibility.tagline && (
+            <p
+              style={{
+                fontSize: 22,
+                lineHeight: 1.4,
+                color: palette.text,
+                opacity: 0.9,
+                margin: 0,
+              }}
+            >
+              {config.tagline ||
+                repo.description ||
+                'Lightweight, modern library built for production.'}
+            </p>
+          )}
         </div>
 
-        {visibility.techStack && techStack.length > 0 && (
+        {visibility.techStack && techStack.length > 0 ? (
           <StackBadgeRow
             items={techStack}
             textColor={palette.text}
             borderColor={palette.border}
             showOfficialLogos={visibility.languageLogos}
           />
+        ) : (
+          <div />
         )}
       </div>
 
@@ -160,13 +179,17 @@ export const SdkPackageTemplate: React.FC<CardRenderProps> = ({
           )}
         </div>
 
-        <TerminalWindow
-          command={command}
-          textColor={palette.text}
-          borderColor={palette.border}
-          accentColor={palette.accent}
-          title="terminal"
-        />
+        {visibility.installCommand ? (
+          <TerminalWindow
+            command={command}
+            textColor={palette.text}
+            borderColor={palette.border}
+            accentColor={palette.accent}
+            title="terminal"
+          />
+        ) : (
+          <div />
+        )}
 
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
           {visibility.stars && (

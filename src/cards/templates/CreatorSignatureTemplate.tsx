@@ -13,6 +13,7 @@ export const CreatorSignatureTemplate: React.FC<CardRenderProps> = ({
   showSafeZoneGuides = false,
 }) => {
   const { palette, visibility, backgroundPattern } = config;
+  const isCenter = config.contentAlign === 'center';
   const techStack = detectTechStack(repo.languages, repo.topics, 4);
 
   return (
@@ -39,70 +40,72 @@ export const CreatorSignatureTemplate: React.FC<CardRenderProps> = ({
       />
 
       {/* Left Column: Creator Identity & Brand Card */}
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: 16,
-          width: 320,
-          height: '100%',
-          borderRadius: 20,
-          border: `1px solid ${palette.border}`,
-          backgroundColor: 'rgba(255, 255, 255, 0.02)',
-          zIndex: 1,
-        }}
-      >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={config.customLogoUrl || repo.owner.avatarUrl}
-          alt={repo.owner.login}
-          width={120}
-          height={120}
+      {visibility.author ? (
+        <div
           style={{
-            width: 120,
-            height: 120,
-            borderRadius: '50%',
-            border: `3px solid ${palette.accent}`,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 16,
+            width: 320,
+            height: '100%',
+            borderRadius: 20,
+            border: `1px solid ${palette.border}`,
+            backgroundColor: 'rgba(255, 255, 255, 0.02)',
+            zIndex: 1,
           }}
-        />
-
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-          <span style={{ fontSize: 24, fontWeight: 700, color: palette.text }}>
-            @{repo.owner.login}
-          </span>
-          <span style={{ fontSize: 14, color: palette.text, opacity: 0.88 }}>
-            Project Creator & Author
-          </span>
-        </div>
-
-        {repo.primaryLanguage && (
-          <div
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={config.customLogoUrl || repo.owner.avatarUrl}
+            alt={repo.owner.login}
+            width={120}
+            height={120}
             style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              paddingLeft: 12,
-              paddingRight: 14,
-              paddingTop: 5,
-              paddingBottom: 5,
-              borderRadius: 9999,
-              border: `1px solid ${palette.border}`,
-              fontSize: 13,
-              color: palette.text,
+              width: 120,
+              height: 120,
+              borderRadius: '50%',
+              border: `3px solid ${palette.accent}`,
             }}
-          >
-            <TechIcon
-              name={repo.primaryLanguage.name}
-              color={repo.primaryLanguage.color}
-              size={14}
-              showOfficialLogo={visibility.languageLogos}
-            />
-            <span>{repo.primaryLanguage.name}</span>
+          />
+
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+            <span style={{ fontSize: 24, fontWeight: 700, color: palette.text }}>
+              @{repo.owner.login}
+            </span>
+            <span style={{ fontSize: 14, color: palette.text, opacity: 0.88 }}>
+              Project Creator & Author
+            </span>
           </div>
-        )}
-      </div>
+
+          {repo.primaryLanguage && (
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                paddingLeft: 12,
+                paddingRight: 14,
+                paddingTop: 5,
+                paddingBottom: 5,
+                borderRadius: 9999,
+                border: `1px solid ${palette.border}`,
+                fontSize: 13,
+                color: palette.text,
+              }}
+            >
+              <TechIcon
+                name={repo.primaryLanguage.name}
+                color={repo.primaryLanguage.color}
+                size={14}
+                showOfficialLogo={visibility.languageLogos}
+              />
+              <span>{repo.primaryLanguage.name}</span>
+            </div>
+          )}
+        </div>
+      ) : null}
 
       {/* Right Column: Repo Details & Metrics */}
       <div
@@ -110,12 +113,20 @@ export const CreatorSignatureTemplate: React.FC<CardRenderProps> = ({
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
+          alignItems: isCenter ? 'center' : 'stretch',
           height: '100%',
-          width: 780,
+          width: visibility.author ? 780 : 1160,
           zIndex: 1,
         }}
       >
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: isCenter ? 'center' : 'flex-end',
+            width: '100%',
+            gap: 10,
+          }}
+        >
           {visibility.release && repo.latestRelease && (
             <MetricPill
               type="release"
@@ -136,7 +147,15 @@ export const CreatorSignatureTemplate: React.FC<CardRenderProps> = ({
           )}
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: isCenter ? 'center' : 'flex-start',
+            textAlign: isCenter ? 'center' : 'left',
+            gap: 14,
+          }}
+        >
           <h1
             style={{
               fontSize: 54,
@@ -150,24 +169,28 @@ export const CreatorSignatureTemplate: React.FC<CardRenderProps> = ({
             {config.title || repo.name}
           </h1>
 
-          <p
-            style={{
-              fontSize: 22,
-              lineHeight: 1.4,
-              color: palette.text,
-              opacity: 0.9,
-              margin: 0,
-            }}
-          >
-            {config.tagline || repo.description || 'Crafted with precision by indie developer.'}
-          </p>
+          {visibility.tagline && (
+            <p
+              style={{
+                fontSize: 22,
+                lineHeight: 1.4,
+                color: palette.text,
+                opacity: 0.9,
+                margin: 0,
+              }}
+            >
+              {config.tagline || repo.description || 'Crafted with precision by indie developer.'}
+            </p>
+          )}
         </div>
 
         <div
           style={{
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'space-between',
+            justifyContent: isCenter ? 'center' : 'space-between',
+            gap: isCenter ? 24 : 0,
+            width: '100%',
           }}
         >
           {visibility.techStack && techStack.length > 0 ? (

@@ -40,6 +40,7 @@ const baseConfig: CardConfig = {
   title: 'GitCardX Preview',
   tagline: 'Give your GitHub repository a memorable visual identity.',
   installCommand: 'bun add gitcardx-preview',
+  contentAlign: 'left',
   palette: {
     background: '#0a0a0a',
     text: '#ffffff',
@@ -62,6 +63,9 @@ const baseConfig: CardConfig = {
     contributors: true,
     techStack: true,
     languageLogos: true,
+    author: true,
+    tagline: true,
+    installCommand: true,
   },
 };
 
@@ -292,5 +296,86 @@ describe('Cards Engine & Satori Renderer', () => {
       expect(maxX).toBeLessThanOrEqual(1280);
       expect(maxY).toBeLessThanOrEqual(640);
     }
+  });
+
+  it('renders all 8 templates with contentAlign: "center" without overflow', async () => {
+    const templates = [
+      'linear-minimal',
+      'cli-terminal',
+      'oss-credibility',
+      'sdk-package',
+      'aurora-mesh',
+      'blueprint-grid',
+      'release-spotlight',
+      'creator-signature',
+    ] as const;
+
+    for (const templateId of templates) {
+      const config: CardConfig = {
+        ...baseConfig,
+        templateId,
+        contentAlign: 'center',
+      };
+
+      const svg = await renderCardToSvg(mockRepo, config);
+
+      expect(svg).toContain('viewBox="0 0 1280 640"');
+      expect(svg).toContain('<rect x="0" y="0" width="1280" height="640"');
+
+      const xMatches = [...svg.matchAll(/x="([0-9.]+)"/g)].map((m) => parseFloat(m[1]));
+      const yMatches = [...svg.matchAll(/y="([0-9.]+)"/g)].map((m) => parseFloat(m[1]));
+
+      const maxX = Math.max(...xMatches);
+      const maxY = Math.max(...yMatches);
+
+      expect(maxX).toBeLessThanOrEqual(1280);
+      expect(maxY).toBeLessThanOrEqual(640);
+    }
+  });
+
+  it('hides author and tagline elements when visibility toggles are false', async () => {
+    const configHidden: CardConfig = {
+      ...baseConfig,
+      templateId: 'linear-minimal',
+      visibility: {
+        ...baseConfig.visibility,
+        author: false,
+        tagline: false,
+      },
+    };
+
+    const svg = await renderCardToSvg(mockRepo, configHidden);
+    expect(svg).not.toContain(mockRepo.owner.login);
+    expect(svg).not.toContain('Give your GitHub repository a memorable visual identity.');
+  });
+
+  it('hides install command terminal when installCommand visibility is false', async () => {
+    const configWithoutInstall: CardConfig = {
+      ...baseConfig,
+      templateId: 'cli-terminal',
+      installCommand: 'bun add custom-test-cli',
+      visibility: {
+        ...baseConfig.visibility,
+        installCommand: false,
+      },
+    };
+
+    const svg = await renderCardToSvg(mockRepo, configWithoutInstall);
+    expect(svg).not.toContain('bun add custom-test-cli');
+  });
+
+  it('renders install command terminal when installCommand visibility is true', async () => {
+    const configWithInstall: CardConfig = {
+      ...baseConfig,
+      templateId: 'cli-terminal',
+      installCommand: 'bun add custom-test-cli',
+      visibility: {
+        ...baseConfig.visibility,
+        installCommand: true,
+      },
+    };
+
+    const svg = await renderCardToSvg(mockRepo, configWithInstall);
+    expect(svg).toContain('bun add custom-test-cli');
   });
 });

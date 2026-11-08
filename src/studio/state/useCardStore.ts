@@ -6,6 +6,7 @@ import type {
   Palette,
   BackgroundPatternConfig,
   CardVisibility,
+  ContentAlign,
 } from '@/core/domain/schemas';
 import { PRESET_PALETTES, ThemeEngine } from '@/core/theme/ThemeEngine';
 import { suggestInstallCommand } from '@/core/domain/stackMapper';
@@ -45,6 +46,7 @@ export const DEFAULT_CONFIG: CardConfig = {
   title: 'GitCardX Preview',
   tagline: 'Give your GitHub repository a memorable visual identity.',
   installCommand: 'bun add gitcardx-preview',
+  contentAlign: 'left',
   palette: PRESET_PALETTES['slate-minimal'],
   typography: {
     fontHeading: 'Inter',
@@ -62,6 +64,9 @@ export const DEFAULT_CONFIG: CardConfig = {
     contributors: true,
     techStack: true,
     languageLogos: true,
+    author: true,
+    tagline: true,
+    installCommand: true,
   },
 };
 
@@ -90,6 +95,7 @@ interface CardStoreState {
   setRepo: (repo: RepoMetadata, autoTheme?: boolean) => void;
   updateConfig: (partial: Partial<CardConfig>) => void;
   setTemplateId: (templateId: TemplateId) => void;
+  setContentAlign: (align: ContentAlign) => void;
   setPalette: (palette: Palette) => void;
   setBackgroundPattern: (pattern: Partial<BackgroundPatternConfig>) => void;
   toggleVisibility: (key: keyof CardVisibility) => void;
@@ -180,6 +186,10 @@ export const useCardStore = create<CardStoreState>((set, get) => ({
     } else {
       get().updateConfig({ templateId });
     }
+  },
+
+  setContentAlign: (contentAlign) => {
+    get().updateConfig({ contentAlign });
   },
 
   setPalette: (palette) => {

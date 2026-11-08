@@ -12,6 +12,7 @@ export const AuroraMeshTemplate: React.FC<CardRenderProps> = ({
   showSafeZoneGuides = false,
 }) => {
   const { palette, visibility, backgroundPattern } = config;
+  const isCenter = config.contentAlign === 'center';
   const techStack = detectTechStack(repo.languages, repo.topics, 5);
 
   return (
@@ -58,27 +59,34 @@ export const AuroraMeshTemplate: React.FC<CardRenderProps> = ({
           style={{
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'space-between',
+            justifyContent:
+              isCenter && (!visibility.author || !visibility.release || !repo.latestRelease)
+                ? 'center'
+                : 'space-between',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={config.customLogoUrl || repo.owner.avatarUrl}
-              alt={repo.owner.login}
-              width={44}
-              height={44}
-              style={{
-                width: 44,
-                height: 44,
-                borderRadius: 12,
-                border: `1px solid ${palette.border}`,
-              }}
-            />
-            <span style={{ fontSize: 20, fontWeight: 700, color: palette.text }}>
-              {repo.owner.login}
-            </span>
-          </div>
+          {visibility.author ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={config.customLogoUrl || repo.owner.avatarUrl}
+                alt={repo.owner.login}
+                width={44}
+                height={44}
+                style={{
+                  width: 44,
+                  height: 44,
+                  borderRadius: 12,
+                  border: `1px solid ${palette.border}`,
+                }}
+              />
+              <span style={{ fontSize: 20, fontWeight: 700, color: palette.text }}>
+                {repo.owner.login}
+              </span>
+            </div>
+          ) : (
+            <div />
+          )}
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             {visibility.release && repo.latestRelease && (
@@ -94,7 +102,15 @@ export const AuroraMeshTemplate: React.FC<CardRenderProps> = ({
         </div>
 
         {/* Center Title & Tagline */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: isCenter ? 'center' : 'flex-start',
+            textAlign: isCenter ? 'center' : 'left',
+            gap: 16,
+          }}
+        >
           <h1
             style={{
               fontSize: 60,
@@ -107,18 +123,20 @@ export const AuroraMeshTemplate: React.FC<CardRenderProps> = ({
           >
             {config.title || repo.name}
           </h1>
-          <p
-            style={{
-              fontSize: 24,
-              lineHeight: 1.4,
-              color: palette.text,
-              opacity: 0.9,
-              margin: 0,
-              maxWidth: 960,
-            }}
-          >
-            {config.tagline || repo.description || 'Next-generation architecture for developers.'}
-          </p>
+          {visibility.tagline && (
+            <p
+              style={{
+                fontSize: 24,
+                lineHeight: 1.4,
+                color: palette.text,
+                opacity: 0.9,
+                margin: 0,
+                maxWidth: 960,
+              }}
+            >
+              {config.tagline || repo.description || 'Next-generation architecture for developers.'}
+            </p>
+          )}
         </div>
 
         {/* Bottom Bar: Stack & Metrics */}
@@ -126,7 +144,8 @@ export const AuroraMeshTemplate: React.FC<CardRenderProps> = ({
           style={{
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'space-between',
+            justifyContent: isCenter ? 'center' : 'space-between',
+            gap: isCenter ? 24 : 0,
           }}
         >
           {visibility.techStack && techStack.length > 0 ? (

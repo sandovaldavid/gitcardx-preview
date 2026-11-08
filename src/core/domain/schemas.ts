@@ -44,6 +44,8 @@ export const BackgroundPatternConfigSchema = z.object({
   scale: z.number().positive().optional(),
 });
 
+export const ContentAlignSchema = z.enum(['left', 'center']).default('left');
+
 export const CardVisibilitySchema = z.object({
   stars: z.boolean(),
   forks: z.boolean(),
@@ -52,6 +54,9 @@ export const CardVisibilitySchema = z.object({
   contributors: z.boolean(),
   techStack: z.boolean(),
   languageLogos: z.boolean().default(true),
+  author: z.boolean().default(true),
+  tagline: z.boolean().default(true),
+  installCommand: z.boolean().default(true),
 });
 
 export const CardConfigSchema = z.object({
@@ -60,6 +65,7 @@ export const CardConfigSchema = z.object({
   tagline: z.string().max(300),
   installCommand: z.string().max(120).optional(),
   customLogoUrl: z.string().url().or(z.string().startsWith('data:')).optional(),
+  contentAlign: ContentAlignSchema,
   palette: PaletteSchema,
   typography: TypographySchema,
   backgroundPattern: BackgroundPatternConfigSchema,
@@ -123,6 +129,7 @@ export type TemplateId = z.infer<typeof TemplateIdSchema>;
 export type Palette = z.infer<typeof PaletteSchema>;
 export type Typography = z.infer<typeof TypographySchema>;
 export type BackgroundPatternConfig = z.infer<typeof BackgroundPatternConfigSchema>;
+export type ContentAlign = z.infer<typeof ContentAlignSchema>;
 export type CardVisibility = z.infer<typeof CardVisibilitySchema>;
 export type CardConfig = z.infer<typeof CardConfigSchema>;
 export type RepoMetadata = z.infer<typeof RepoMetadataSchema>;

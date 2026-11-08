@@ -12,6 +12,7 @@ export const BlueprintGridTemplate: React.FC<CardRenderProps> = ({
   showSafeZoneGuides = false,
 }) => {
   const { palette, visibility, backgroundPattern } = config;
+  const isCenter = config.contentAlign === 'center';
   const techStack = detectTechStack(repo.languages, repo.topics, 5);
 
   return (
@@ -42,38 +43,42 @@ export const BlueprintGridTemplate: React.FC<CardRenderProps> = ({
         style={{
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between',
+          justifyContent: isCenter && !visibility.author ? 'center' : 'space-between',
           zIndex: 1,
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <div
-            style={{
-              paddingLeft: 10,
-              paddingRight: 10,
-              paddingTop: 4,
-              paddingBottom: 4,
-              borderRadius: 4,
-              backgroundColor: palette.accent,
-              color: '#000000',
-              fontFamily: 'JetBrains Mono',
-              fontSize: 12,
-              fontWeight: 800,
-            }}
-          >
-            SYS//SPEC
+        {visibility.author ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+            <div
+              style={{
+                paddingLeft: 10,
+                paddingRight: 10,
+                paddingTop: 4,
+                paddingBottom: 4,
+                borderRadius: 4,
+                backgroundColor: palette.accent,
+                color: '#000000',
+                fontFamily: 'JetBrains Mono',
+                fontSize: 12,
+                fontWeight: 800,
+              }}
+            >
+              SYS//SPEC
+            </div>
+            <span
+              style={{
+                fontFamily: 'JetBrains Mono',
+                fontSize: 16,
+                color: palette.text,
+                opacity: 0.95,
+              }}
+            >
+              {repo.owner.login} / {repo.name}
+            </span>
           </div>
-          <span
-            style={{
-              fontFamily: 'JetBrains Mono',
-              fontSize: 16,
-              color: palette.text,
-              opacity: 0.95,
-            }}
-          >
-            {repo.owner.login} / {repo.name}
-          </span>
-        </div>
+        ) : (
+          <div />
+        )}
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
           <span
@@ -103,10 +108,12 @@ export const BlueprintGridTemplate: React.FC<CardRenderProps> = ({
         style={{
           display: 'flex',
           flexDirection: 'column',
+          alignItems: isCenter ? 'center' : 'flex-start',
+          textAlign: isCenter ? 'center' : 'left',
           gap: 16,
           zIndex: 1,
-          borderLeft: `4px solid ${palette.accent}`,
-          paddingLeft: 24,
+          borderLeft: isCenter ? undefined : `4px solid ${palette.accent}`,
+          paddingLeft: isCenter ? 0 : 24,
         }}
       >
         <span
@@ -132,20 +139,22 @@ export const BlueprintGridTemplate: React.FC<CardRenderProps> = ({
         >
           {config.title || repo.name}
         </h1>
-        <p
-          style={{
-            fontSize: 22,
-            lineHeight: 1.4,
-            color: palette.text,
-            opacity: 0.9,
-            margin: 0,
-            maxWidth: 880,
-          }}
-        >
-          {config.tagline ||
-            repo.description ||
-            'System architecture and developer infrastructure module.'}
-        </p>
+        {visibility.tagline && (
+          <p
+            style={{
+              fontSize: 22,
+              lineHeight: 1.4,
+              color: palette.text,
+              opacity: 0.9,
+              margin: 0,
+              maxWidth: 880,
+            }}
+          >
+            {config.tagline ||
+              repo.description ||
+              'System architecture and developer infrastructure module.'}
+          </p>
+        )}
       </div>
 
       {/* Bottom Footer: Tech Modules & Metric Indicators */}
@@ -153,7 +162,8 @@ export const BlueprintGridTemplate: React.FC<CardRenderProps> = ({
         style={{
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between',
+          justifyContent: isCenter ? 'center' : 'space-between',
+          gap: isCenter ? 24 : 0,
           zIndex: 1,
           borderTop: `1px solid ${palette.border}`,
           paddingTop: 20,

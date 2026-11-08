@@ -9,22 +9,28 @@ import {
   ChevronDown,
   ChevronUp,
   Sparkles,
+  AlignLeft,
+  AlignCenter,
+  Layout,
 } from 'lucide-react';
 import { useCardStore } from '../state/useCardStore';
 import type { CardVisibility } from '@/core/domain/schemas';
 
 export const LeftInspector: React.FC = () => {
-  const { config, updateConfig, toggleVisibility, repo, setRepo } = useCardStore();
+  const { config, updateConfig, setContentAlign, toggleVisibility, repo, setRepo } = useCardStore();
   const [isManualModeOpen, setIsManualModeOpen] = useState(false);
 
   const visibilityKeys: Array<{ key: keyof CardVisibility; label: string }> = [
+    { key: 'author', label: 'Owner / Avatar' },
+    { key: 'tagline', label: 'Tagline' },
     { key: 'stars', label: 'GitHub Stars' },
     { key: 'forks', label: 'Forks' },
     { key: 'release', label: 'Latest Release' },
     { key: 'license', label: 'License' },
     { key: 'techStack', label: 'Tech Stack Badges' },
-    { key: 'contributors', label: 'Contributors' },
     { key: 'languageLogos', label: 'Official Logos' },
+    { key: 'installCommand', label: 'Install Command' },
+    { key: 'contributors', label: 'Contributors' },
   ];
 
   return (
@@ -39,6 +45,45 @@ export const LeftInspector: React.FC = () => {
       </div>
 
       <div className="p-4 flex flex-col gap-6">
+        {/* Content Alignment */}
+        <div className="flex flex-col gap-1.5">
+          <label className="text-xs font-medium text-zinc-400 flex items-center justify-between">
+            <span className="flex items-center gap-1.5">
+              <Layout className="w-3.5 h-3.5 text-blue-400" />
+              Content Alignment
+            </span>
+            <span className="text-[10px] font-mono text-zinc-500 uppercase">
+              {config.contentAlign}
+            </span>
+          </label>
+          <div className="grid grid-cols-2 gap-1.5 p-1 rounded-lg bg-zinc-900 border border-zinc-800">
+            <button
+              type="button"
+              onClick={() => setContentAlign('left')}
+              className={`h-8 px-3 rounded-md text-xs font-medium flex items-center justify-center gap-2 transition-all ${
+                config.contentAlign === 'left'
+                  ? 'bg-blue-600/10 border border-blue-500/40 text-blue-300 shadow-sm'
+                  : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50'
+              }`}
+            >
+              <AlignLeft className="w-3.5 h-3.5" />
+              <span>Left</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setContentAlign('center')}
+              className={`h-8 px-3 rounded-md text-xs font-medium flex items-center justify-center gap-2 transition-all ${
+                config.contentAlign === 'center'
+                  ? 'bg-blue-600/10 border border-blue-500/40 text-blue-300 shadow-sm'
+                  : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50'
+              }`}
+            >
+              <AlignCenter className="w-3.5 h-3.5" />
+              <span>Center</span>
+            </button>
+          </div>
+        </div>
+
         {/* Title Input */}
         <div className="flex flex-col gap-1.5">
           <label className="text-xs font-medium text-zinc-400 flex items-center justify-between">

@@ -12,6 +12,7 @@ export const ReleaseSpotlightTemplate: React.FC<CardRenderProps> = ({
   showSafeZoneGuides = false,
 }) => {
   const { palette, visibility, backgroundPattern } = config;
+  const isCenter = config.contentAlign === 'center';
   const techStack = detectTechStack(repo.languages, repo.topics, 5);
   const hasRealRelease = Boolean(repo.latestRelease?.tag);
   const releaseTag = repo.latestRelease?.tag || 'main';
@@ -44,28 +45,32 @@ export const ReleaseSpotlightTemplate: React.FC<CardRenderProps> = ({
         style={{
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between',
+          justifyContent: isCenter && !visibility.author ? 'center' : 'space-between',
           zIndex: 1,
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={config.customLogoUrl || repo.owner.avatarUrl}
-            alt={repo.owner.login}
-            width={44}
-            height={44}
-            style={{
-              width: 44,
-              height: 44,
-              borderRadius: 12,
-              border: `1px solid ${palette.border}`,
-            }}
-          />
-          <span style={{ fontSize: 20, fontWeight: 600, color: palette.text }}>
-            {repo.owner.login}
-          </span>
-        </div>
+        {visibility.author ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={config.customLogoUrl || repo.owner.avatarUrl}
+              alt={repo.owner.login}
+              width={44}
+              height={44}
+              style={{
+                width: 44,
+                height: 44,
+                borderRadius: 12,
+                border: `1px solid ${palette.border}`,
+              }}
+            />
+            <span style={{ fontSize: 20, fontWeight: 600, color: palette.text }}>
+              {repo.owner.login}
+            </span>
+          </div>
+        ) : (
+          <div />
+        )}
 
         <div
           style={{
@@ -103,45 +108,56 @@ export const ReleaseSpotlightTemplate: React.FC<CardRenderProps> = ({
         style={{
           display: 'flex',
           flexDirection: 'column',
+          alignItems: isCenter ? 'center' : 'flex-start',
+          textAlign: isCenter ? 'center' : 'left',
           gap: 20,
           zIndex: 1,
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
+        {visibility.release && (
           <div
             style={{
-              paddingLeft: 20,
-              paddingRight: 20,
-              paddingTop: 8,
-              paddingBottom: 8,
-              borderRadius: 12,
-              backgroundColor: palette.accent,
-              color: '#000000',
-              fontFamily: 'JetBrains Mono',
-              fontSize: 28,
-              fontWeight: 800,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: isCenter ? 'center' : 'flex-start',
+              gap: 18,
             }}
           >
-            {releaseTag}
-          </div>
-          {repo.latestRelease?.publishedAt && (
-            <span
+            <div
               style={{
-                fontSize: 18,
-                color: palette.text,
-                opacity: 0.88,
+                paddingLeft: 20,
+                paddingRight: 20,
+                paddingTop: 8,
+                paddingBottom: 8,
+                borderRadius: 12,
+                backgroundColor: palette.accent,
+                color: '#000000',
                 fontFamily: 'JetBrains Mono',
+                fontSize: 28,
+                fontWeight: 800,
               }}
             >
-              released{' '}
-              {new Date(repo.latestRelease.publishedAt).toLocaleDateString('en-US', {
-                month: 'short',
-                day: 'numeric',
-                year: 'numeric',
-              })}
-            </span>
-          )}
-        </div>
+              {releaseTag}
+            </div>
+            {repo.latestRelease?.publishedAt && (
+              <span
+                style={{
+                  fontSize: 18,
+                  color: palette.text,
+                  opacity: 0.88,
+                  fontFamily: 'JetBrains Mono',
+                }}
+              >
+                released{' '}
+                {new Date(repo.latestRelease.publishedAt).toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                })}
+              </span>
+            )}
+          </div>
+        )}
 
         <h1
           style={{
@@ -156,20 +172,22 @@ export const ReleaseSpotlightTemplate: React.FC<CardRenderProps> = ({
           {config.title || repo.name}
         </h1>
 
-        <p
-          style={{
-            fontSize: 24,
-            lineHeight: 1.4,
-            color: palette.text,
-            opacity: 0.9,
-            margin: 0,
-            maxWidth: 960,
-          }}
-        >
-          {config.tagline ||
-            repo.description ||
-            'Major performance improvements, new features, and bug fixes.'}
-        </p>
+        {visibility.tagline && (
+          <p
+            style={{
+              fontSize: 24,
+              lineHeight: 1.4,
+              color: palette.text,
+              opacity: 0.9,
+              margin: 0,
+              maxWidth: 960,
+            }}
+          >
+            {config.tagline ||
+              repo.description ||
+              'Major performance improvements, new features, and bug fixes.'}
+          </p>
+        )}
       </div>
 
       {/* Bottom Footer */}
@@ -177,7 +195,8 @@ export const ReleaseSpotlightTemplate: React.FC<CardRenderProps> = ({
         style={{
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between',
+          justifyContent: isCenter ? 'center' : 'space-between',
+          gap: isCenter ? 24 : 0,
           zIndex: 1,
         }}
       >

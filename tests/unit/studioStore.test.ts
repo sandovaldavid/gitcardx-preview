@@ -57,11 +57,30 @@ describe('useCardStore (Zustand state & history)', () => {
     expect(useCardStore.getState().config.backgroundPattern.id).toBe('dot-matrix');
   });
 
-  it('toggles visibility flags', () => {
+  it('toggles visibility flags including author, tagline, and installCommand', () => {
     const { toggleVisibility } = useCardStore.getState();
-    const initialStars = useCardStore.getState().config.visibility.stars;
-    toggleVisibility('stars');
-    expect(useCardStore.getState().config.visibility.stars).toBe(!initialStars);
+    const initialAuthor = useCardStore.getState().config.visibility.author;
+    const initialTagline = useCardStore.getState().config.visibility.tagline;
+    const initialInstall = useCardStore.getState().config.visibility.installCommand;
+
+    toggleVisibility('author');
+    toggleVisibility('tagline');
+    toggleVisibility('installCommand');
+
+    expect(useCardStore.getState().config.visibility.author).toBe(!initialAuthor);
+    expect(useCardStore.getState().config.visibility.tagline).toBe(!initialTagline);
+    expect(useCardStore.getState().config.visibility.installCommand).toBe(!initialInstall);
+  });
+
+  it('updates content alignment with setContentAlign', () => {
+    const { setContentAlign, undo } = useCardStore.getState();
+    expect(useCardStore.getState().config.contentAlign).toBe('left');
+
+    setContentAlign('center');
+    expect(useCardStore.getState().config.contentAlign).toBe('center');
+
+    undo();
+    expect(useCardStore.getState().config.contentAlign).toBe('left');
   });
 
   it('clamps zoom between 0.4 and 1.6', () => {

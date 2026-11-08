@@ -12,6 +12,7 @@ export const OssCredibilityTemplate: React.FC<CardRenderProps> = ({
   showSafeZoneGuides = false,
 }) => {
   const { palette, visibility, backgroundPattern } = config;
+  const isCenter = config.contentAlign === 'center';
 
   return (
     <div
@@ -41,30 +42,36 @@ export const OssCredibilityTemplate: React.FC<CardRenderProps> = ({
         style={{
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between',
+          justifyContent: isCenter && !visibility.author ? 'center' : 'space-between',
           zIndex: 1,
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={config.customLogoUrl || repo.owner.avatarUrl}
-            alt={repo.owner.login}
-            width={44}
-            height={44}
-            style={{
-              width: 44,
-              height: 44,
-              borderRadius: '50%',
-              border: `1px solid ${palette.border}`,
-            }}
-          />
-          <span style={{ fontSize: 20, fontWeight: 600, color: palette.text }}>
-            {repo.owner.login}
-          </span>
-          <span style={{ fontSize: 18, color: palette.border }}>/</span>
-          <span style={{ fontSize: 20, fontWeight: 700, color: palette.accent }}>{repo.name}</span>
-        </div>
+        {visibility.author ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={config.customLogoUrl || repo.owner.avatarUrl}
+              alt={repo.owner.login}
+              width={44}
+              height={44}
+              style={{
+                width: 44,
+                height: 44,
+                borderRadius: '50%',
+                border: `1px solid ${palette.border}`,
+              }}
+            />
+            <span style={{ fontSize: 20, fontWeight: 600, color: palette.text }}>
+              {repo.owner.login}
+            </span>
+            <span style={{ fontSize: 18, color: palette.border }}>/</span>
+            <span style={{ fontSize: 20, fontWeight: 700, color: palette.accent }}>
+              {repo.name}
+            </span>
+          </div>
+        ) : (
+          <div />
+        )}
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           {visibility.license && repo.license && (
@@ -92,13 +99,23 @@ export const OssCredibilityTemplate: React.FC<CardRenderProps> = ({
       <div
         style={{
           display: 'flex',
-          justifyContent: 'space-between',
+          flexDirection: isCenter ? 'column' : 'row',
+          justifyContent: isCenter ? 'center' : 'space-between',
           alignItems: 'center',
-          gap: 40,
+          gap: isCenter ? 20 : 40,
           zIndex: 1,
         }}
       >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 14, flex: 1 }}>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: isCenter ? 'center' : 'flex-start',
+            textAlign: isCenter ? 'center' : 'left',
+            gap: 14,
+            flex: isCenter ? undefined : 1,
+          }}
+        >
           <h1
             style={{
               fontSize: 54,
@@ -111,20 +128,22 @@ export const OssCredibilityTemplate: React.FC<CardRenderProps> = ({
           >
             {config.title || repo.name}
           </h1>
-          <p
-            style={{
-              fontSize: 22,
-              lineHeight: 1.4,
-              color: palette.text,
-              opacity: 0.9,
-              margin: 0,
-              maxWidth: 720,
-            }}
-          >
-            {config.tagline ||
-              repo.description ||
-              'Open source software built for developers worldwide.'}
-          </p>
+          {visibility.tagline && (
+            <p
+              style={{
+                fontSize: 22,
+                lineHeight: 1.4,
+                color: palette.text,
+                opacity: 0.9,
+                margin: 0,
+                maxWidth: 720,
+              }}
+            >
+              {config.tagline ||
+                repo.description ||
+                'Open source software built for developers worldwide.'}
+            </p>
+          )}
         </div>
 
         {/* Hero Stat Box */}
@@ -199,7 +218,8 @@ export const OssCredibilityTemplate: React.FC<CardRenderProps> = ({
           style={{
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'space-between',
+            justifyContent: isCenter ? 'center' : 'space-between',
+            gap: isCenter ? 24 : 0,
           }}
         >
           {visibility.contributors && repo.contributors.length > 0 && (

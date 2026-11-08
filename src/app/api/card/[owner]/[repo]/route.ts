@@ -125,6 +125,7 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
       repoMetadata.description ||
       'GitHub repository visual identity',
     installCommand: searchParams.get('command') || undefined,
+    contentAlign: searchParams.get('align') === 'center' ? 'center' : 'left',
     palette,
     typography: {
       fontHeading: 'Inter',
@@ -142,6 +143,10 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
       contributors: searchParams.get('contributors') !== 'false',
       techStack: searchParams.get('stack') !== 'false',
       languageLogos: searchParams.get('logos') !== 'false',
+      author: searchParams.get('author') !== 'false',
+      tagline: searchParams.get('tagline') !== 'false',
+      installCommand:
+        searchParams.get('install') !== 'false' && searchParams.get('installCommand') !== 'false',
     },
   };
 

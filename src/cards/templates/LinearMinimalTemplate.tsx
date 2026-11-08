@@ -13,6 +13,7 @@ export const LinearMinimalTemplate: React.FC<CardRenderProps> = ({
   showSafeZoneGuides = false,
 }) => {
   const { palette, visibility, backgroundPattern } = config;
+  const isCenter = config.contentAlign === 'center';
   const techStack = detectTechStack(repo.languages, repo.topics, 5);
 
   return (
@@ -43,37 +44,42 @@ export const LinearMinimalTemplate: React.FC<CardRenderProps> = ({
         style={{
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between',
+          justifyContent:
+            isCenter && (!visibility.author || !repo.primaryLanguage) ? 'center' : 'space-between',
           zIndex: 1,
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={config.customLogoUrl || repo.owner.avatarUrl}
-            alt={repo.owner.login}
-            width={48}
-            height={48}
-            style={{
-              width: 48,
-              height: 48,
-              borderRadius: 12,
-              border: `1px solid ${palette.border}`,
-            }}
-          />
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <span
+        {visibility.author ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={config.customLogoUrl || repo.owner.avatarUrl}
+              alt={repo.owner.login}
+              width={48}
+              height={48}
               style={{
-                fontSize: 20,
-                fontWeight: 600,
-                color: palette.text,
-                opacity: 0.95,
+                width: 48,
+                height: 48,
+                borderRadius: 12,
+                border: `1px solid ${palette.border}`,
               }}
-            >
-              {repo.owner.login}
-            </span>
+            />
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <span
+                style={{
+                  fontSize: 20,
+                  fontWeight: 600,
+                  color: palette.text,
+                  opacity: 0.95,
+                }}
+              >
+                {repo.owner.login}
+              </span>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div />
+        )}
 
         {repo.primaryLanguage && (
           <div
@@ -109,9 +115,12 @@ export const LinearMinimalTemplate: React.FC<CardRenderProps> = ({
         style={{
           display: 'flex',
           flexDirection: 'column',
+          alignItems: isCenter ? 'center' : 'flex-start',
+          textAlign: isCenter ? 'center' : 'left',
           gap: 16,
           zIndex: 1,
           maxWidth: 1080,
+          margin: isCenter ? '0 auto' : undefined,
         }}
       >
         <h1
@@ -127,24 +136,26 @@ export const LinearMinimalTemplate: React.FC<CardRenderProps> = ({
           {config.title || repo.name}
         </h1>
 
-        <p
-          style={{
-            fontSize: 24,
-            lineHeight: 1.4,
-            fontWeight: 400,
-            color: palette.text,
-            opacity: 0.9,
-            margin: 0,
-            display: '-webkit-box',
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: 'vertical',
-            overflow: 'hidden',
-          }}
-        >
-          {config.tagline ||
-            repo.description ||
-            'Give your GitHub repository a modern visual identity.'}
-        </p>
+        {visibility.tagline && (
+          <p
+            style={{
+              fontSize: 24,
+              lineHeight: 1.4,
+              fontWeight: 400,
+              color: palette.text,
+              opacity: 0.9,
+              margin: 0,
+              display: '-webkit-box',
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: 'vertical',
+              overflow: 'hidden',
+            }}
+          >
+            {config.tagline ||
+              repo.description ||
+              'Give your GitHub repository a modern visual identity.'}
+          </p>
+        )}
       </div>
 
       {/* Bottom Footer: Stack Badges & Metric Pills */}
@@ -152,7 +163,8 @@ export const LinearMinimalTemplate: React.FC<CardRenderProps> = ({
         style={{
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between',
+          justifyContent: isCenter ? 'center' : 'space-between',
+          gap: isCenter ? 24 : 0,
           zIndex: 1,
         }}
       >

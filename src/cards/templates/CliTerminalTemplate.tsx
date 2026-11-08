@@ -12,6 +12,7 @@ export const CliTerminalTemplate: React.FC<CardRenderProps> = ({
   showSafeZoneGuides = false,
 }) => {
   const { palette, visibility, backgroundPattern } = config;
+  const isCenter = config.contentAlign === 'center';
   const defaultCmd = suggestInstallCommand(
     repo.languages,
     repo.topics,
@@ -48,33 +49,37 @@ export const CliTerminalTemplate: React.FC<CardRenderProps> = ({
         style={{
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between',
+          justifyContent: isCenter && !visibility.author ? 'center' : 'space-between',
           zIndex: 1,
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <span
-            style={{
-              fontFamily: 'JetBrains Mono',
-              fontSize: 16,
-              color: palette.accent,
-              fontWeight: 600,
-            }}
-          >
-            ~/
-          </span>
-          <span
-            style={{
-              fontFamily: 'JetBrains Mono',
-              fontSize: 18,
-              color: palette.text,
-              opacity: 0.9,
-              fontWeight: 500,
-            }}
-          >
-            {repo.owner.login}/{repo.name}
-          </span>
-        </div>
+        {visibility.author ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span
+              style={{
+                fontFamily: 'JetBrains Mono',
+                fontSize: 16,
+                color: palette.accent,
+                fontWeight: 600,
+              }}
+            >
+              ~/
+            </span>
+            <span
+              style={{
+                fontFamily: 'JetBrains Mono',
+                fontSize: 18,
+                color: palette.text,
+                opacity: 0.9,
+                fontWeight: 500,
+              }}
+            >
+              {repo.owner.login}/{repo.name}
+            </span>
+          </div>
+        ) : (
+          <div />
+        )}
 
         {visibility.release && repo.latestRelease && (
           <MetricPill
@@ -96,7 +101,15 @@ export const CliTerminalTemplate: React.FC<CardRenderProps> = ({
           zIndex: 1,
         }}
       >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: isCenter ? 'center' : 'flex-start',
+            textAlign: isCenter ? 'center' : 'left',
+            gap: 10,
+          }}
+        >
           <h1
             style={{
               fontSize: 54,
@@ -109,26 +122,30 @@ export const CliTerminalTemplate: React.FC<CardRenderProps> = ({
           >
             {config.title || repo.name}
           </h1>
-          <p
-            style={{
-              fontSize: 22,
-              lineHeight: 1.4,
-              color: palette.text,
-              opacity: 0.9,
-              margin: 0,
-            }}
-          >
-            {config.tagline || repo.description || 'Command line utility & developer tool'}
-          </p>
+          {visibility.tagline && (
+            <p
+              style={{
+                fontSize: 22,
+                lineHeight: 1.4,
+                color: palette.text,
+                opacity: 0.9,
+                margin: 0,
+              }}
+            >
+              {config.tagline || repo.description || 'Command line utility & developer tool'}
+            </p>
+          )}
         </div>
 
-        <TerminalWindow
-          command={command}
-          textColor={palette.text}
-          borderColor={palette.border}
-          accentColor={palette.accent}
-          title={`${repo.name} — zsh`}
-        />
+        {visibility.installCommand && (
+          <TerminalWindow
+            command={command}
+            textColor={palette.text}
+            borderColor={palette.border}
+            accentColor={palette.accent}
+            title={`${repo.name} — zsh`}
+          />
+        )}
       </div>
 
       {/* Bottom Footer: Stats */}
@@ -136,7 +153,8 @@ export const CliTerminalTemplate: React.FC<CardRenderProps> = ({
         style={{
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between',
+          justifyContent: isCenter ? 'center' : 'space-between',
+          gap: isCenter ? 24 : 0,
           zIndex: 1,
         }}
       >
