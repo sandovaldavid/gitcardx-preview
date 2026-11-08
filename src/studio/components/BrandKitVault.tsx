@@ -108,7 +108,7 @@ export const BrandKitVault: React.FC = () => {
       'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(savedKits, null, 2));
     const a = document.createElement('a');
     a.href = dataStr;
-    a.download = `gitcardx-brand-kits-${new Date().toISOString().slice(0, 10)}.json`;
+    a.download = `gitframe-brand-kits-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
   };
 

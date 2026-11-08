@@ -3,7 +3,7 @@
   "packages": {
     ".": {
       "release-type": "node",
-      "package-name": "gitcardx-preview",
+      "package-name": "gitframe",
       "initial-version": "0.1.0",
       "release-as": "0.1.0"
     }
