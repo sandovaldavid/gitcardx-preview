@@ -108,7 +108,7 @@ export const SdkPackageTemplate: React.FC<CardRenderProps> = ({
               fontSize: 22,
               lineHeight: 1.4,
               color: palette.text,
-              opacity: 0.72,
+              opacity: 0.9,
               margin: 0,
             }}
           >

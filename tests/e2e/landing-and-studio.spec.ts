@@ -111,5 +111,15 @@ test.describe('GitCardX Landing Page & Studio E2E', () => {
     // 5. GitHub Feed
     await page.getByRole('button', { name: 'GitHub Feed' }).click();
     await expect(page.getByText(/Starred repository by community/i)).toBeVisible();
+
+    // 6. Test Dark / Light mode simulation toggling
+    const lightBtn = page.getByTitle('Light Mode Simulation');
+    const darkBtn = page.getByTitle('Dark Mode Simulation');
+
+    await lightBtn.click();
+    await expect(page.locator('.bg-white.text-zinc-900').first()).toBeVisible();
+
+    await darkBtn.click();
+    await expect(page.locator('.text-zinc-100, .text-\\[\\#c9d1d9\\]').first()).toBeVisible();
   });
 });

@@ -63,7 +63,7 @@ export const BlueprintGridTemplate: React.FC<CardRenderProps> = ({
               fontFamily: 'JetBrains Mono',
               fontSize: 16,
               color: palette.text,
-              opacity: 0.85,
+              opacity: 0.95,
             }}
           >
             {repo.owner.login} / {repo.name}
@@ -76,7 +76,7 @@ export const BlueprintGridTemplate: React.FC<CardRenderProps> = ({
               fontFamily: 'JetBrains Mono',
               fontSize: 13,
               color: palette.text,
-              opacity: 0.6,
+              opacity: 0.85,
             }}
           >
             ARCH_V1.0 // 1280×640
@@ -132,7 +132,7 @@ export const BlueprintGridTemplate: React.FC<CardRenderProps> = ({
             fontSize: 22,
             lineHeight: 1.4,
             color: palette.text,
-            opacity: 0.75,
+            opacity: 0.9,
             margin: 0,
             maxWidth: 880,
           }}

@@ -72,9 +72,12 @@ const SimulatorCardPreview: React.FC<SimulatorCardPreviewProps> = ({
         style={{
           width: 1280,
           height: 640,
-          transform: `scale(${scale})`,
+          transform: `scale(${scale}) translateZ(0)`,
           transformOrigin: 'top left',
           pointerEvents: 'none',
+          WebkitFontSmoothing: 'antialiased',
+          MozOsxFontSmoothing: 'grayscale',
+          textRendering: 'geometricPrecision',
         }}
       >
         <CardRenderer repo={repo} config={config} />
@@ -166,23 +169,36 @@ export const SocialSimulator: React.FC = () => {
               />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5 leading-tight">
-                  <span className="font-bold text-sm truncate">{repo.owner.login}</span>
                   <span
-                    className={`text-xs truncate ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}
+                    className={`font-bold text-sm truncate ${
+                      isDark ? 'text-white' : 'text-zinc-900'
+                    }`}
+                  >
+                    {repo.owner.login}
+                  </span>
+                  <span
+                    className={`text-xs truncate ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}
                   >
                     @{repo.owner.login} · 2h
                   </span>
                 </div>
-                <p className="mt-1 text-sm leading-normal">
-                  Just dropped a major update to <strong>{repo.name}</strong>! Check out the social
-                  preview card below and let us know your thoughts 🚀
+                <p
+                  className={`mt-1 text-sm leading-normal ${
+                    isDark ? 'text-zinc-100' : 'text-zinc-800'
+                  }`}
+                >
+                  Just dropped a major update to{' '}
+                  <strong className={isDark ? 'text-white font-bold' : 'text-zinc-950 font-bold'}>
+                    {repo.name}
+                  </strong>
+                  ! Check out the social preview card below and let us know your thoughts 🚀
                 </p>
 
                 {/* Twitter Large Image Card */}
                 <div
                   className={`mt-3 rounded-2xl overflow-hidden border transition-colors ${
                     isDark
-                      ? 'border-zinc-800 bg-zinc-950 hover:bg-zinc-900/60'
+                      ? 'border-zinc-800 bg-[#16181c] hover:bg-[#1e2126]'
                       : 'border-zinc-200 bg-zinc-50 hover:bg-zinc-100/80'
                   }`}
                 >
@@ -192,18 +208,22 @@ export const SocialSimulator: React.FC = () => {
                   {/* Card Bottom Meta */}
                   <div className="p-3 flex flex-col gap-0.5">
                     <span
-                      className={`text-[11px] uppercase font-mono ${
-                        isDark ? 'text-zinc-500' : 'text-zinc-400'
+                      className={`text-[11px] uppercase font-mono font-medium ${
+                        isDark ? 'text-zinc-400' : 'text-zinc-500'
                       }`}
                     >
                       gitcardx.dev
                     </span>
-                    <span className="text-sm font-semibold truncate leading-tight">
+                    <span
+                      className={`text-sm font-semibold truncate leading-tight ${
+                        isDark ? 'text-white' : 'text-zinc-900'
+                      }`}
+                    >
                       {config.title || repo.name}
                     </span>
                     <p
                       className={`text-xs line-clamp-1 ${
-                        isDark ? 'text-zinc-400' : 'text-zinc-600'
+                        isDark ? 'text-zinc-300' : 'text-zinc-600'
                       }`}
                     >
                       {config.tagline || repo.description}
@@ -214,7 +234,7 @@ export const SocialSimulator: React.FC = () => {
                 {/* Tweet Action Icons */}
                 <div
                   className={`mt-3 flex items-center justify-between text-xs px-2 ${
-                    isDark ? 'text-zinc-500' : 'text-zinc-400'
+                    isDark ? 'text-zinc-400' : 'text-zinc-500'
                   }`}
                 >
                   <div className="flex items-center gap-1.5 hover:text-blue-500 cursor-pointer">
@@ -246,7 +266,7 @@ export const SocialSimulator: React.FC = () => {
           <div
             className={`w-full max-w-xl rounded-xl border p-4 sm:p-5 font-sans shadow-2xl transition-colors ${
               isDark
-                ? 'bg-zinc-900 border-zinc-800 text-zinc-100'
+                ? 'bg-[#1b1f23] border-[#30363d] text-zinc-100'
                 : 'bg-white border-zinc-200 text-zinc-900'
             }`}
           >
@@ -261,35 +281,60 @@ export const SocialSimulator: React.FC = () => {
                 className="w-11 h-11 rounded-full object-cover shrink-0"
               />
               <div className="flex flex-col min-w-0">
-                <span className="font-semibold text-sm leading-tight truncate">
+                <span
+                  className={`font-semibold text-sm leading-tight truncate ${
+                    isDark ? 'text-white' : 'text-zinc-900'
+                  }`}
+                >
                   {repo.owner.login}
                 </span>
-                <span className={`text-xs truncate ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>
+                <span className={`text-xs truncate ${isDark ? 'text-zinc-300' : 'text-zinc-600'}`}>
                   Full Stack Engineer & Open Source Builder · 1h · 🌐
                 </span>
               </div>
             </div>
 
-            <p className="text-sm mb-3 leading-normal">
-              Excited to announce the new visual identity for <strong>{repo.name}</strong>. Built
-              for developers seeking clean architecture and fast delivery.
+            <p
+              className={`text-sm mb-3 leading-normal ${
+                isDark ? 'text-zinc-100' : 'text-zinc-800'
+              }`}
+            >
+              Excited to announce the new visual identity for{' '}
+              <strong className={isDark ? 'text-white font-bold' : 'text-zinc-950 font-bold'}>
+                {repo.name}
+              </strong>
+              . Built for developers seeking clean architecture and fast delivery.
             </p>
 
             {/* LinkedIn Preview Banner */}
             <div
               className={`rounded-lg overflow-hidden border ${
-                isDark ? 'border-zinc-800 bg-zinc-950' : 'border-zinc-200 bg-zinc-50'
+                isDark ? 'border-zinc-700/80 bg-[#12161a]' : 'border-zinc-200 bg-zinc-50'
               }`}
             >
               {/* Responsive Card Embed */}
               <SimulatorCardPreview repo={repo} config={config} />
 
               <div className="p-3">
-                <span className="text-xs font-semibold text-blue-500 uppercase tracking-wider">
+                <span
+                  className={`text-xs font-semibold uppercase tracking-wider ${
+                    isDark ? 'text-blue-400' : 'text-blue-600'
+                  }`}
+                >
                   gitcardx.dev
                 </span>
-                <h4 className="font-bold text-sm truncate mt-0.5">{config.title || repo.name}</h4>
-                <p className={`text-xs line-clamp-1 ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
+                <h4
+                  className={`font-bold text-sm truncate mt-0.5 ${
+                    isDark ? 'text-white' : 'text-zinc-900'
+                  }`}
+                >
+                  {config.title || repo.name}
+                </h4>
+                <p
+                  className={`text-xs line-clamp-1 mt-0.5 ${
+                    isDark ? 'text-zinc-300' : 'text-zinc-600'
+                  }`}
+                >
                   {config.tagline || repo.description}
                 </p>
               </div>
@@ -298,7 +343,7 @@ export const SocialSimulator: React.FC = () => {
             {/* Reaction Bar */}
             <div
               className={`mt-3 pt-2 border-t flex items-center justify-between text-xs font-semibold ${
-                isDark ? 'border-zinc-800 text-zinc-400' : 'border-zinc-200 text-zinc-600'
+                isDark ? 'border-zinc-800 text-zinc-300' : 'border-zinc-200 text-zinc-600'
               }`}
             >
               <div className="flex items-center gap-1.5 hover:text-blue-500 cursor-pointer">
@@ -326,7 +371,7 @@ export const SocialSimulator: React.FC = () => {
           <div
             className={`w-full max-w-xl rounded-xl border p-4 sm:p-5 font-sans shadow-2xl transition-colors ${
               isDark
-                ? 'bg-[#313338] border-zinc-800 text-zinc-100'
+                ? 'bg-[#313338] border-zinc-700/60 text-zinc-100'
                 : 'bg-white border-zinc-200 text-zinc-900'
             }`}
           >
@@ -345,32 +390,50 @@ export const SocialSimulator: React.FC = () => {
                   <span className="bg-[#5865f2] text-white text-[10px] px-1 py-0.5 rounded font-bold uppercase">
                     APP
                   </span>
-                  <span className="text-xs text-zinc-500">Today at 4:20 PM</span>
+                  <span className={`text-xs ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>
+                    Today at 4:20 PM
+                  </span>
                 </div>
-                <p className="text-xs mt-1 text-zinc-300">
+                <p
+                  className={`text-xs mt-1 leading-normal ${
+                    isDark ? 'text-zinc-200' : 'text-zinc-700'
+                  }`}
+                >
                   New star milestone reached on repository!
                 </p>
 
                 {/* Discord Embed Box */}
                 <div
                   className={`mt-2.5 rounded-lg p-3.5 border-l-4 flex flex-col gap-2 max-w-[440px] w-full ${
-                    isDark ? 'bg-[#2b2d31]' : 'bg-[#f2f3f5]'
+                    isDark ? 'bg-[#2b2d31]' : 'bg-[#f2f3f5] border border-zinc-200/60'
                   }`}
                   style={{ borderLeftColor: config.palette.accent }}
                 >
-                  <span className="text-[11px] font-semibold text-zinc-400">GitHub Repository</span>
+                  <span
+                    className={`text-[11px] font-semibold ${
+                      isDark ? 'text-zinc-300' : 'text-zinc-600'
+                    }`}
+                  >
+                    GitHub Repository
+                  </span>
                   <a
                     href={`https://github.com/${repo.owner.login}/${repo.name}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="font-bold text-sm text-blue-400 hover:underline flex items-center gap-1 truncate"
+                    className={`font-bold text-sm hover:underline flex items-center gap-1 truncate ${
+                      isDark ? 'text-[#58a6ff]' : 'text-blue-600'
+                    }`}
                   >
                     <span className="truncate">
                       {repo.owner.login}/{repo.name}
                     </span>
                     <ExternalLink className="w-3.5 h-3.5 shrink-0" />
                   </a>
-                  <p className="text-xs text-zinc-300 line-clamp-2">
+                  <p
+                    className={`text-xs line-clamp-2 leading-relaxed ${
+                      isDark ? 'text-zinc-200' : 'text-zinc-700'
+                    }`}
+                  >
                     {config.tagline || repo.description}
                   </p>
 
@@ -389,7 +452,7 @@ export const SocialSimulator: React.FC = () => {
           <div
             className={`w-full max-w-xl rounded-xl border p-4 sm:p-5 font-sans shadow-2xl transition-colors ${
               isDark
-                ? 'bg-[#1a1d21] border-zinc-800 text-zinc-100'
+                ? 'bg-[#1a1d21] border-zinc-700/60 text-zinc-100'
                 : 'bg-white border-zinc-200 text-zinc-900'
             }`}
           >
@@ -404,15 +467,35 @@ export const SocialSimulator: React.FC = () => {
               />
               <div className="flex-1 min-w-0">
                 <div className="flex items-baseline gap-2">
-                  <span className="font-bold text-sm">GitHub</span>
-                  <span className="bg-zinc-800 text-zinc-400 text-[10px] px-1 rounded uppercase font-semibold">
+                  <span className={`font-bold text-sm ${isDark ? 'text-white' : 'text-zinc-900'}`}>
+                    GitHub
+                  </span>
+                  <span
+                    className={`text-[10px] px-1 rounded uppercase font-semibold ${
+                      isDark
+                        ? 'bg-zinc-800 text-zinc-300 border border-zinc-700/60'
+                        : 'bg-zinc-100 text-zinc-700 border border-zinc-300'
+                    }`}
+                  >
                     APP
                   </span>
-                  <span className="text-xs text-zinc-500">9:41 AM</span>
+                  <span className={`text-xs ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>
+                    9:41 AM
+                  </span>
                 </div>
-                <p className="text-xs mt-1 text-zinc-300">
+                <p
+                  className={`text-xs mt-1 leading-normal ${
+                    isDark ? 'text-zinc-200' : 'text-zinc-700'
+                  }`}
+                >
                   Repo preview for{' '}
-                  <code className="text-blue-400 bg-blue-950/60 px-1 py-0.5 rounded">
+                  <code
+                    className={`px-1 py-0.5 rounded font-mono ${
+                      isDark
+                        ? 'text-blue-300 bg-blue-950/80 border border-blue-900/60'
+                        : 'text-blue-700 bg-blue-50 border border-blue-200'
+                    }`}
+                  >
                     {repo.name}
                   </code>
                   :
@@ -423,14 +506,26 @@ export const SocialSimulator: React.FC = () => {
                   className="mt-2 pl-3 border-l-4 flex flex-col gap-1.5 max-w-[420px] w-full"
                   style={{ borderLeftColor: config.palette.accent }}
                 >
-                  <span className="font-bold text-sm text-blue-400 hover:underline cursor-pointer truncate">
+                  <span
+                    className={`font-bold text-sm hover:underline cursor-pointer truncate ${
+                      isDark ? 'text-[#1d9bd1]' : 'text-blue-600'
+                    }`}
+                  >
                     {config.title || repo.name}
                   </span>
-                  <p className="text-xs text-zinc-400 line-clamp-2">
+                  <p
+                    className={`text-xs line-clamp-2 leading-relaxed ${
+                      isDark ? 'text-zinc-200' : 'text-zinc-700'
+                    }`}
+                  >
                     {config.tagline || repo.description}
                   </p>
 
-                  <div className="rounded-lg overflow-hidden border border-zinc-800/80 mt-1">
+                  <div
+                    className={`rounded-lg overflow-hidden border mt-1 ${
+                      isDark ? 'border-zinc-700/80' : 'border-zinc-200'
+                    }`}
+                  >
                     <SimulatorCardPreview repo={repo} config={config} />
                   </div>
                 </div>
@@ -448,34 +543,54 @@ export const SocialSimulator: React.FC = () => {
                 : 'bg-white border-zinc-200 text-zinc-900'
             }`}
           >
-            <div className="flex items-center gap-2 mb-3 text-xs text-zinc-400">
+            <div
+              className={`flex items-center gap-2 mb-3 text-xs ${
+                isDark ? 'text-zinc-300 font-medium' : 'text-zinc-700 font-medium'
+              }`}
+            >
               <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
               <span>Starred repository by community</span>
             </div>
 
             <div
               className={`rounded-xl border p-4 flex flex-col gap-3 w-full ${
-                isDark ? 'bg-[#161b22] border-[#30363d]' : 'bg-zinc-50 border-zinc-200'
+                isDark ? 'bg-[#161b22] border-[#30363d]' : 'bg-zinc-50 border-zinc-300'
               }`}
             >
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2 min-w-0">
-                  <span className="text-sm font-semibold text-blue-400 hover:underline cursor-pointer truncate">
+                  <span
+                    className={`text-sm font-semibold hover:underline cursor-pointer truncate ${
+                      isDark ? 'text-[#58a6ff]' : 'text-blue-600'
+                    }`}
+                  >
                     {repo.owner.login} / {repo.name}
                   </span>
                 </div>
-                <div className="flex items-center gap-1.5 text-xs text-zinc-400 shrink-0">
+                <div
+                  className={`flex items-center gap-1.5 text-xs font-medium shrink-0 ${
+                    isDark ? 'text-zinc-300' : 'text-zinc-700'
+                  }`}
+                >
                   <Star className="w-3.5 h-3.5" />
                   <span>{repo.stars}</span>
                 </div>
               </div>
 
-              <p className="text-xs text-zinc-400 line-clamp-2">
+              <p
+                className={`text-xs line-clamp-2 leading-relaxed ${
+                  isDark ? 'text-zinc-200' : 'text-zinc-700'
+                }`}
+              >
                 {config.tagline || repo.description}
               </p>
 
               {/* Card Banner Preview */}
-              <div className="rounded-lg overflow-hidden border border-zinc-800/80">
+              <div
+                className={`rounded-lg overflow-hidden border ${
+                  isDark ? 'border-[#30363d]' : 'border-zinc-200'
+                }`}
+              >
                 <SimulatorCardPreview repo={repo} config={config} />
               </div>
             </div>

@@ -114,7 +114,7 @@ export const CliTerminalTemplate: React.FC<CardRenderProps> = ({
               fontSize: 22,
               lineHeight: 1.4,
               color: palette.text,
-              opacity: 0.72,
+              opacity: 0.9,
               margin: 0,
             }}
           >
@@ -154,7 +154,7 @@ export const CliTerminalTemplate: React.FC<CardRenderProps> = ({
               fontFamily: 'JetBrains Mono',
               fontSize: 14,
               color: palette.text,
-              opacity: 0.7,
+              opacity: 0.88,
             }}
           >
             ready for production

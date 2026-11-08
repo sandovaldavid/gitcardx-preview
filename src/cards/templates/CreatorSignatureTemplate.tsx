@@ -72,7 +72,7 @@ export const CreatorSignatureTemplate: React.FC<CardRenderProps> = ({
           <span style={{ fontSize: 24, fontWeight: 700, color: palette.text }}>
             @{repo.owner.login}
           </span>
-          <span style={{ fontSize: 14, color: palette.text, opacity: 0.65 }}>
+          <span style={{ fontSize: 14, color: palette.text, opacity: 0.88 }}>
             Project Creator & Author
           </span>
         </div>
@@ -155,7 +155,7 @@ export const CreatorSignatureTemplate: React.FC<CardRenderProps> = ({
               fontSize: 22,
               lineHeight: 1.4,
               color: palette.text,
-              opacity: 0.75,
+              opacity: 0.9,
               margin: 0,
             }}
           >

@@ -129,7 +129,7 @@ export const ReleaseSpotlightTemplate: React.FC<CardRenderProps> = ({
               style={{
                 fontSize: 18,
                 color: palette.text,
-                opacity: 0.65,
+                opacity: 0.88,
                 fontFamily: 'JetBrains Mono',
               }}
             >
@@ -161,7 +161,7 @@ export const ReleaseSpotlightTemplate: React.FC<CardRenderProps> = ({
             fontSize: 24,
             lineHeight: 1.4,
             color: palette.text,
-            opacity: 0.75,
+            opacity: 0.9,
             margin: 0,
             maxWidth: 960,
           }}

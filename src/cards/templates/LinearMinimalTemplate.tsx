@@ -67,7 +67,7 @@ export const LinearMinimalTemplate: React.FC<CardRenderProps> = ({
                 fontSize: 20,
                 fontWeight: 600,
                 color: palette.text,
-                opacity: 0.85,
+                opacity: 0.95,
               }}
             >
               {repo.owner.login}
@@ -133,7 +133,7 @@ export const LinearMinimalTemplate: React.FC<CardRenderProps> = ({
             lineHeight: 1.4,
             fontWeight: 400,
             color: palette.text,
-            opacity: 0.72,
+            opacity: 0.9,
             margin: 0,
             display: '-webkit-box',
             WebkitLineClamp: 2,

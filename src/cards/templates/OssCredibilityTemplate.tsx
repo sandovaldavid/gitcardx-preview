@@ -116,7 +116,7 @@ export const OssCredibilityTemplate: React.FC<CardRenderProps> = ({
               fontSize: 22,
               lineHeight: 1.4,
               color: palette.text,
-              opacity: 0.75,
+              opacity: 0.9,
               margin: 0,
               maxWidth: 720,
             }}
@@ -153,7 +153,7 @@ export const OssCredibilityTemplate: React.FC<CardRenderProps> = ({
               <span style={{ fontSize: 36, fontWeight: 800, color: palette.accent }}>
                 {repo.stars.toLocaleString()}
               </span>
-              <span style={{ fontSize: 14, fontWeight: 500, color: palette.text, opacity: 0.7 }}>
+              <span style={{ fontSize: 14, fontWeight: 500, color: palette.text, opacity: 0.88 }}>
                 GitHub Stars
               </span>
             </div>
@@ -178,7 +178,7 @@ export const OssCredibilityTemplate: React.FC<CardRenderProps> = ({
               <span style={{ fontSize: 36, fontWeight: 800, color: palette.text }}>
                 {repo.forks.toLocaleString()}
               </span>
-              <span style={{ fontSize: 14, fontWeight: 500, color: palette.text, opacity: 0.7 }}>
+              <span style={{ fontSize: 14, fontWeight: 500, color: palette.text, opacity: 0.88 }}>
                 Forks
               </span>
             </div>
@@ -210,14 +210,14 @@ export const OssCredibilityTemplate: React.FC<CardRenderProps> = ({
                 maxAvatars={6}
                 size={38}
               />
-              <span style={{ fontSize: 14, color: palette.text, opacity: 0.7 }}>
+              <span style={{ fontSize: 14, color: palette.text, opacity: 0.88 }}>
                 active maintainers
               </span>
             </div>
           )}
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontSize: 14, color: palette.text, opacity: 0.7 }}>
+            <span style={{ fontSize: 14, color: palette.text, opacity: 0.88 }}>
               verified open source repository
             </span>
           </div>
