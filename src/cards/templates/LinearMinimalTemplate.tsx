@@ -20,6 +20,7 @@ export const LinearMinimalTemplate: React.FC<CardRenderProps> = ({
       style={{
         width: 1280,
         height: 640,
+        boxSizing: 'border-box',
         position: 'relative',
         display: 'flex',
         flexDirection: 'column',

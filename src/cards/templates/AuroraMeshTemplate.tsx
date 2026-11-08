@@ -19,6 +19,7 @@ export const AuroraMeshTemplate: React.FC<CardRenderProps> = ({
       style={{
         width: 1280,
         height: 640,
+        boxSizing: 'border-box',
         position: 'relative',
         display: 'flex',
         alignItems: 'center',
@@ -36,6 +37,7 @@ export const AuroraMeshTemplate: React.FC<CardRenderProps> = ({
         style={{
           width: 1184,
           height: 544,
+          boxSizing: 'border-box',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',

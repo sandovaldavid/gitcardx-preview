@@ -223,4 +223,48 @@ describe('Cards Engine & Satori Renderer', () => {
     expect(svgNoRelease).toContain('width="1280"');
     expect(svgNoRelease).toContain('height="640"');
   });
+
+  it('renders all 8 templates within exact 1280x640 bounds without cropping or box-sizing overflow', async () => {
+    const templates = [
+      'linear-minimal',
+      'cli-terminal',
+      'oss-credibility',
+      'sdk-package',
+      'aurora-mesh',
+      'blueprint-grid',
+      'release-spotlight',
+      'creator-signature',
+    ] as const;
+
+    for (const templateId of templates) {
+      const config: CardConfig = {
+        ...baseConfig,
+        templateId,
+      };
+
+      const svg = await renderCardToSvg(mockRepo, config);
+
+      // SVG must have exact root viewBox and root rect 1280x640
+      expect(svg).toContain('viewBox="0 0 1280 640"');
+      expect(svg).toContain('<rect x="0" y="0" width="1280" height="640"');
+
+      // Crucial: Must NEVER contain oversized content-box overflow from padding (1392, 1400, 1376, 752, 760)
+      expect(svg).not.toContain('width="1392"');
+      expect(svg).not.toContain('width="1400"');
+      expect(svg).not.toContain('width="1376"');
+      expect(svg).not.toContain('height="752"');
+      expect(svg).not.toContain('height="760"');
+      expect(svg).not.toContain('height="736"');
+
+      // Coordinates must stay within viewport bounds
+      const xMatches = [...svg.matchAll(/x="([0-9.]+)"/g)].map((m) => parseFloat(m[1]));
+      const yMatches = [...svg.matchAll(/y="([0-9.]+)"/g)].map((m) => parseFloat(m[1]));
+
+      const maxX = Math.max(...xMatches);
+      const maxY = Math.max(...yMatches);
+
+      expect(maxX).toBeLessThanOrEqual(1280);
+      expect(maxY).toBeLessThanOrEqual(640);
+    }
+  });
 });
