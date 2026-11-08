@@ -130,6 +130,63 @@ describe('GitHubService', () => {
         'GitHub API rate limit exceeded. Please try again shortly.'
       );
     });
+
+    it('fetches via REST API v3 when no auth token is provided', async () => {
+      const unauthService = new GitHubService('');
+      const mockFetch = vi.fn().mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({
+          name: 'portfolio',
+          owner: {
+            login: 'sandovaldavid',
+            avatar_url: 'https://avatars.githubusercontent.com/u/102970701',
+            type: 'User',
+          },
+          description: "Portfolio's David",
+          homepage: 'https://sandovaldavid.com',
+          stargazers_count: 8,
+          forks_count: 2,
+          language: 'TypeScript',
+          topics: ['portfolio', 'nextjs'],
+          license: { spdx_id: 'MIT' },
+        }),
+      });
+      vi.stubGlobal('fetch', mockFetch);
+
+      const repo = await unauthService.getRepository('sandovaldavid', 'portfolio');
+
+      expect(mockFetch).toHaveBeenCalledWith(
+        'https://api.github.com/repos/sandovaldavid/portfolio',
+        expect.objectContaining({
+          headers: expect.objectContaining({
+            Accept: 'application/vnd.github.v3+json',
+          }),
+        })
+      );
+      expect(repo.name).toBe('portfolio');
+      expect(repo.stars).toBe(8);
+      expect(repo.primaryLanguage?.name).toBe('TypeScript');
+      expect(repo.primaryLanguage?.color).toBe('#3178C6');
+      expect(repo.topics).toEqual(['portfolio', 'nextjs']);
+
+      vi.unstubAllGlobals();
+    });
+
+    it('handles REST API 404 in unauthenticated mode', async () => {
+      const unauthService = new GitHubService('');
+      const mockFetch = vi.fn().mockResolvedValueOnce({
+        ok: false,
+        status: 404,
+      });
+      vi.stubGlobal('fetch', mockFetch);
+
+      await expect(unauthService.getRepository('nobody', 'missing')).rejects.toThrow(
+        "Repository 'nobody/missing' was not found or is private."
+      );
+
+      vi.unstubAllGlobals();
+    });
   });
 
   describe('getUserRepositories', () => {
@@ -162,6 +219,32 @@ describe('GitHubService', () => {
 
       const repos = await service.getUserRepositories('unknown-user');
       expect(repos).toEqual([]);
+    });
+
+    it('fetches autocomplete list via REST API when unauthenticated', async () => {
+      const unauthService = new GitHubService('');
+      const mockFetch = vi.fn().mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => [
+          {
+            name: 'rest-repo',
+            description: 'From REST API',
+            stargazers_count: 15,
+            language: 'Python',
+            updated_at: '2026-11-07T12:00:00Z',
+          },
+        ],
+      });
+      vi.stubGlobal('fetch', mockFetch);
+
+      const repos = await unauthService.getUserRepositories('sandovaldavid');
+      expect(repos.length).toBe(1);
+      expect(repos[0].name).toBe('rest-repo');
+      expect(repos[0].stars).toBe(15);
+      expect(repos[0].primaryLanguage?.name).toBe('Python');
+
+      vi.unstubAllGlobals();
     });
   });
 });

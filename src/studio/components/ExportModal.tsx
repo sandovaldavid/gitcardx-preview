@@ -28,18 +28,55 @@ export const ExportModal: React.FC = () => {
   const owner = repo.owner.login;
   const repoName = repo.name;
 
-  const handleCopy = (text: string, type: string) => {
-    navigator.clipboard.writeText(text);
-    setCopiedType(type);
-    setTimeout(() => setCopiedType(null), 2000);
+  const handleCopy = async (text: string, type: string) => {
+    let success = false;
+    if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
+      try {
+        await navigator.clipboard.writeText(text);
+        success = true;
+      } catch (err) {
+        console.warn('navigator.clipboard.writeText failed, using fallback', err);
+      }
+    }
+
+    if (!success && typeof document !== 'undefined') {
+      try {
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-9999px';
+        textArea.style.top = '0';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        success = document.execCommand('copy');
+        document.body.removeChild(textArea);
+      } catch (err) {
+        console.error('ExecCommand copy failed:', err);
+      }
+    }
+
+    if (success) {
+      setCopiedType(type);
+      setTimeout(() => setCopiedType(null), 2000);
+    }
   };
 
   const handleCopyImageToClipboard = async () => {
     try {
       setIsExporting(true);
-      const url = `/api/card/${owner}/${repoName}?format=png`;
-      const res = await fetch(url);
-      if (!res.ok) throw new Error('Failed to fetch image');
+      const res = await fetch('/api/card/render', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          repo,
+          config,
+          format: 'png',
+          scale: 1,
+        }),
+      });
+
+      if (!res.ok) throw new Error('Failed to render card image');
       const blob = await res.blob();
 
       if (typeof ClipboardItem !== 'undefined' && navigator.clipboard?.write) {
@@ -51,11 +88,21 @@ export const ExportModal: React.FC = () => {
         setCopiedType('image');
         setTimeout(() => setCopiedType(null), 2000);
       } else {
-        alert('Clipboard image copy is not supported in this browser environment.');
+        // Fallback: If browser restricts direct image clipboard write, trigger immediate download
+        const blobUrl = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = `${repoName}-social-preview.png`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(blobUrl);
+        setCopiedType('image');
+        setTimeout(() => setCopiedType(null), 2000);
       }
     } catch (err) {
       console.error('Failed to copy image to clipboard:', err);
-      alert('Could not copy image to clipboard.');
+      handleDownload('png');
     } finally {
       setIsExporting(false);
     }
@@ -68,14 +115,17 @@ export const ExportModal: React.FC = () => {
       const is2x = format === 'png2x';
       const filename = `${repoName}-social-preview${is2x ? '@2x' : ''}.${isSvg ? 'svg' : 'png'}`;
 
-      const params = new URLSearchParams();
-      params.set('format', isSvg ? 'svg' : 'png');
-      if (is2x) params.set('scale', '2');
-      if (config.templateId) params.set('template', config.templateId);
-      if (config.backgroundPattern.id) params.set('bg', config.backgroundPattern.id);
+      const res = await fetch('/api/card/render', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          repo,
+          config,
+          format: isSvg ? 'svg' : 'png',
+          scale: is2x ? 2 : 1,
+        }),
+      });
 
-      const url = `/api/card/${owner}/${repoName}?${params.toString()}`;
-      const res = await fetch(url);
       if (!res.ok) throw new Error('Failed to render export file');
 
       const blob = await res.blob();
@@ -83,7 +133,9 @@ export const ExportModal: React.FC = () => {
       const a = document.createElement('a');
       a.href = blobUrl;
       a.download = filename;
+      document.body.appendChild(a);
       a.click();
+      document.body.removeChild(a);
       URL.revokeObjectURL(blobUrl);
     } catch (err) {
       console.error('Export download error:', err);
