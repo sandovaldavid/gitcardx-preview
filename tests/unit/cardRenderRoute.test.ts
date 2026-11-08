@@ -66,6 +66,36 @@ describe('On-Demand Card Render Route (/api/card/render)', () => {
     expect(buffer.length).toBeGreaterThan(2000);
   });
 
+  it('renders card with contentAlign: "center" and custom visibility flags', async () => {
+    const req = new NextRequest('https://gitcardx.dev/api/card/render', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        repo: DEFAULT_REPO,
+        config: {
+          ...DEFAULT_CONFIG,
+          contentAlign: 'center',
+          visibility: {
+            ...DEFAULT_CONFIG.visibility,
+            author: false,
+            tagline: false,
+            installCommand: false,
+          },
+        },
+        format: 'svg',
+      }),
+    });
+
+    const res = await POST(req);
+    expect(res.status).toBe(200);
+    expect(res.headers.get('Content-Type')).toContain('image/svg+xml');
+
+    const svg = await res.text();
+    expect(svg).toContain('<svg');
+    expect(svg).not.toContain(DEFAULT_REPO.owner.login);
+    expect(svg).not.toContain(DEFAULT_CONFIG.tagline);
+  });
+
   it('rejects invalid or malformed payload with 400 Bad Request', async () => {
     const req = new NextRequest('https://gitcardx.dev/api/card/render', {
       method: 'POST',
