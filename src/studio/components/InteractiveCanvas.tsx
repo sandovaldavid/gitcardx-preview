@@ -10,7 +10,6 @@ import {
   X,
   CreditCard,
   Share2,
-  Edit3,
 } from 'lucide-react';
 import { useCardStore } from '../state/useCardStore';
 import { CardRenderer } from '@/cards/templates/CardTemplateRegistry';
@@ -20,7 +19,6 @@ export const InteractiveCanvas: React.FC = () => {
   const {
     repo,
     config,
-    updateConfig,
     zoom,
     setZoom,
     showSafeZoneGuides,
@@ -33,19 +31,6 @@ export const InteractiveCanvas: React.FC = () => {
 
   const containerRef = useRef<HTMLDivElement>(null);
   const [autoScale, setAutoScale] = useState(0.7);
-  const [isQuickEditing, setIsQuickEditing] = useState(false);
-
-  // Close Quick Edit on Escape key press anywhere
-  useEffect(() => {
-    if (!isQuickEditing) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        setIsQuickEditing(false);
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isQuickEditing]);
 
   // Dynamically calculate the ideal scale to fit the card inside the container
   useEffect(() => {
@@ -136,114 +121,13 @@ export const InteractiveCanvas: React.FC = () => {
       {/* VIEW 1: CARD STUDIO CANVAS */}
       {viewMode === 'canvas' ? (
         <>
-          {/* In-Situ Quick Edit Floating Panel with Backdrop */}
-          {isQuickEditing && (
-            <div
-              className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-100"
-              onClick={() => setIsQuickEditing(false)}
-            >
-              <div
-                className="relative w-full max-w-lg p-5 rounded-2xl bg-zinc-950 border border-zinc-700/80 shadow-2xl backdrop-blur-xl animate-in zoom-in-95 duration-150"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
-                  <div className="flex items-center gap-2 text-xs font-semibold text-zinc-100">
-                    <Edit3 className="w-4 h-4 text-blue-400" />
-                    <span>In-Situ Card Text Editor</span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setIsQuickEditing(false)}
-                    className="text-zinc-500 hover:text-zinc-200 p-1 rounded-md transition-colors"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-                <div className="mt-4 flex flex-col gap-4">
-                  <div>
-                    <div className="flex items-center justify-between text-[11px] text-zinc-400 mb-1.5">
-                      <span className="font-medium text-zinc-300">Card Title</span>
-                      <span className="text-blue-400 font-mono text-[10px]">
-                        Tip: Use *word* or **word** for accent color
-                      </span>
-                    </div>
-                    <input
-                      type="text"
-                      value={config.title}
-                      onChange={(e) => updateConfig({ title: e.target.value })}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Escape') {
-                          e.stopPropagation();
-                          setIsQuickEditing(false);
-                        } else if (e.key === 'Enter') {
-                          setIsQuickEditing(false);
-                        }
-                      }}
-                      placeholder="Project Title"
-                      className="w-full h-9 px-3 rounded-lg bg-zinc-900 border border-zinc-700/80 text-sm text-zinc-100 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
-                      autoFocus
-                    />
-                  </div>
-                  <div>
-                    <div className="flex items-center justify-between text-[11px] text-zinc-400 mb-1.5">
-                      <span className="font-medium text-zinc-300">Tagline / Description</span>
-                    </div>
-                    <textarea
-                      value={config.tagline}
-                      rows={2}
-                      onChange={(e) => updateConfig({ tagline: e.target.value })}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Escape') {
-                          e.stopPropagation();
-                          setIsQuickEditing(false);
-                        } else if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
-                          setIsQuickEditing(false);
-                        }
-                      }}
-                      placeholder="Short impactful tagline..."
-                      className="w-full p-3 rounded-lg bg-zinc-900 border border-zinc-700/80 text-sm text-zinc-100 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none resize-none transition-all"
-                    />
-                  </div>
-                  <div className="flex items-center justify-between pt-2 border-t border-zinc-800/80">
-                    <span className="text-[11px] text-zinc-500">
-                      Press{' '}
-                      <kbd className="px-1.5 py-0.5 rounded bg-zinc-900 border border-zinc-800 font-mono text-[10px] text-zinc-400">
-                        Esc
-                      </kbd>{' '}
-                      to close
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => setIsQuickEditing(false)}
-                      className="px-4 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shadow-md transition-all"
-                    >
-                      Done
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
           <div
-            className="relative shadow-2xl rounded-2xl transition-transform duration-100 ease-out group"
+            className="relative shadow-2xl rounded-2xl transition-transform duration-100 ease-out"
             style={{
               width: 1280 * effectiveScale,
               height: 640 * effectiveScale,
             }}
-            onDoubleClick={() => setIsQuickEditing(true)}
           >
-            {/* Quick Edit Overlay Trigger */}
-            <button
-              type="button"
-              onClick={() => setIsQuickEditing(true)}
-              className="absolute top-3 right-3 z-20 flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-700/60 text-xs font-medium text-zinc-300 hover:text-white shadow-lg backdrop-blur-md transition-all opacity-0 group-hover:opacity-100"
-              title="Quick edit title & tagline directly"
-            >
-              <Edit3 className="w-3.5 h-3.5 text-blue-400" />
-              <span>Quick Edit</span>
-            </button>
-
             <div
               style={{
                 width: 1280,
