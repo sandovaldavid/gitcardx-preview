@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Sun,
   Moon,
@@ -18,25 +18,82 @@ import {
 } from 'lucide-react';
 import { useCardStore } from '../state/useCardStore';
 import { CardRenderer } from '@/cards/templates/CardTemplateRegistry';
+import type { RepoMetadata, CardConfig } from '@/core/domain/schemas';
 
 export type SimulatorPlatform = 'twitter' | 'linkedin' | 'discord' | 'slack' | 'github';
+
+interface SimulatorCardPreviewProps {
+  repo: RepoMetadata;
+  config: CardConfig;
+  className?: string;
+  maxWidth?: number;
+}
+
+/**
+ * Responsive card embed container that dynamically measures its client width
+ * and scales the 1280x640 Satori card to fit 100% with exact 2:1 aspect ratio.
+ * Completely eliminates horizontal overflow across all social feeds.
+ */
+const SimulatorCardPreview: React.FC<SimulatorCardPreviewProps> = ({
+  repo,
+  config,
+  className = '',
+  maxWidth,
+}) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(0.38);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    const updateScale = () => {
+      const w = el.clientWidth;
+      if (w > 0) {
+        setScale(w / 1280);
+      }
+    };
+
+    updateScale();
+    const observer = new ResizeObserver(updateScale);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div
+      ref={containerRef}
+      className={`w-full relative overflow-hidden aspect-[2/1] ${className}`}
+      style={{
+        maxWidth: maxWidth ? `${maxWidth}px` : undefined,
+      }}
+    >
+      <div
+        style={{
+          width: 1280,
+          height: 640,
+          transform: `scale(${scale})`,
+          transformOrigin: 'top left',
+          pointerEvents: 'none',
+        }}
+      >
+        <CardRenderer repo={repo} config={config} />
+      </div>
+    </div>
+  );
+};
 
 export const SocialSimulator: React.FC = () => {
   const { repo, config } = useCardStore();
   const [platform, setPlatform] = useState<SimulatorPlatform>('twitter');
   const [isDark, setIsDark] = useState(true);
 
-  // Scaled down factor for mockups (so 1280x640 fits nicely into a ~540-600px feed container)
-  const previewScale = 0.44; // ~563px width
-  const previewWidth = 1280 * previewScale;
-  const previewHeight = 640 * previewScale;
-
   return (
-    <div className="w-full flex flex-col items-center gap-6 p-6 overflow-y-auto">
+    <div className="w-full flex flex-col items-center gap-6 p-4 sm:p-6 overflow-y-auto">
       {/* Platform & Theme Controls Bar */}
       <div className="flex flex-wrap items-center justify-between gap-4 w-full max-w-2xl px-4 py-2.5 rounded-2xl bg-zinc-900/90 border border-zinc-800 shadow-xl backdrop-blur-md">
         {/* Platform Selector */}
-        <div className="flex items-center gap-1">
+        <div className="flex flex-wrap items-center gap-1">
           {(
             [
               { id: 'twitter', label: 'X (Twitter)' },
@@ -91,7 +148,7 @@ export const SocialSimulator: React.FC = () => {
         {/* PLATFORM 1: X (TWITTER) */}
         {platform === 'twitter' && (
           <div
-            className={`w-full max-w-xl rounded-2xl border p-4 font-sans shadow-2xl transition-colors ${
+            className={`w-full max-w-xl rounded-2xl border p-4 sm:p-5 font-sans shadow-2xl transition-colors ${
               isDark
                 ? 'bg-black border-zinc-800 text-zinc-100'
                 : 'bg-white border-zinc-200 text-zinc-900'
@@ -129,27 +186,13 @@ export const SocialSimulator: React.FC = () => {
                       : 'border-zinc-200 bg-zinc-50 hover:bg-zinc-100/80'
                   }`}
                 >
-                  {/* Scaled Card Preview */}
-                  <div
-                    style={{ width: previewWidth, height: previewHeight }}
-                    className="overflow-hidden relative"
-                  >
-                    <div
-                      style={{
-                        width: 1280,
-                        height: 640,
-                        transform: `scale(${previewScale})`,
-                        transformOrigin: 'top left',
-                      }}
-                    >
-                      <CardRenderer repo={repo} config={config} />
-                    </div>
-                  </div>
+                  {/* Responsive Card Embed */}
+                  <SimulatorCardPreview repo={repo} config={config} />
 
                   {/* Card Bottom Meta */}
                   <div className="p-3 flex flex-col gap-0.5">
                     <span
-                      className={`text-xs uppercase font-mono ${
+                      className={`text-[11px] uppercase font-mono ${
                         isDark ? 'text-zinc-500' : 'text-zinc-400'
                       }`}
                     >
@@ -201,7 +244,7 @@ export const SocialSimulator: React.FC = () => {
         {/* PLATFORM 2: LINKEDIN */}
         {platform === 'linkedin' && (
           <div
-            className={`w-full max-w-xl rounded-xl border p-4 font-sans shadow-2xl transition-colors ${
+            className={`w-full max-w-xl rounded-xl border p-4 sm:p-5 font-sans shadow-2xl transition-colors ${
               isDark
                 ? 'bg-zinc-900 border-zinc-800 text-zinc-100'
                 : 'bg-white border-zinc-200 text-zinc-900'
@@ -217,9 +260,11 @@ export const SocialSimulator: React.FC = () => {
                 height={44}
                 className="w-11 h-11 rounded-full object-cover shrink-0"
               />
-              <div className="flex flex-col">
-                <span className="font-semibold text-sm leading-tight">{repo.owner.login}</span>
-                <span className={`text-xs ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>
+              <div className="flex flex-col min-w-0">
+                <span className="font-semibold text-sm leading-tight truncate">
+                  {repo.owner.login}
+                </span>
+                <span className={`text-xs truncate ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>
                   Full Stack Engineer & Open Source Builder · 1h · 🌐
                 </span>
               </div>
@@ -236,21 +281,8 @@ export const SocialSimulator: React.FC = () => {
                 isDark ? 'border-zinc-800 bg-zinc-950' : 'border-zinc-200 bg-zinc-50'
               }`}
             >
-              <div
-                style={{ width: previewWidth, height: previewHeight }}
-                className="overflow-hidden relative"
-              >
-                <div
-                  style={{
-                    width: 1280,
-                    height: 640,
-                    transform: `scale(${previewScale})`,
-                    transformOrigin: 'top left',
-                  }}
-                >
-                  <CardRenderer repo={repo} config={config} />
-                </div>
-              </div>
+              {/* Responsive Card Embed */}
+              <SimulatorCardPreview repo={repo} config={config} />
 
               <div className="p-3">
                 <span className="text-xs font-semibold text-blue-500 uppercase tracking-wider">
@@ -292,7 +324,7 @@ export const SocialSimulator: React.FC = () => {
         {/* PLATFORM 3: DISCORD */}
         {platform === 'discord' && (
           <div
-            className={`w-full max-w-xl rounded-xl border p-4 font-sans shadow-2xl transition-colors ${
+            className={`w-full max-w-xl rounded-xl border p-4 sm:p-5 font-sans shadow-2xl transition-colors ${
               isDark
                 ? 'bg-[#313338] border-zinc-800 text-zinc-100'
                 : 'bg-white border-zinc-200 text-zinc-900'
@@ -321,7 +353,7 @@ export const SocialSimulator: React.FC = () => {
 
                 {/* Discord Embed Box */}
                 <div
-                  className={`mt-2.5 rounded-lg p-3.5 border-l-4 flex flex-col gap-2 max-w-lg ${
+                  className={`mt-2.5 rounded-lg p-3.5 border-l-4 flex flex-col gap-2 max-w-[440px] w-full ${
                     isDark ? 'bg-[#2b2d31]' : 'bg-[#f2f3f5]'
                   }`}
                   style={{ borderLeftColor: config.palette.accent }}
@@ -331,32 +363,20 @@ export const SocialSimulator: React.FC = () => {
                     href={`https://github.com/${repo.owner.login}/${repo.name}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="font-bold text-sm text-blue-400 hover:underline flex items-center gap-1"
+                    className="font-bold text-sm text-blue-400 hover:underline flex items-center gap-1 truncate"
                   >
-                    <span>
+                    <span className="truncate">
                       {repo.owner.login}/{repo.name}
                     </span>
-                    <ExternalLink className="w-3.5 h-3.5" />
+                    <ExternalLink className="w-3.5 h-3.5 shrink-0" />
                   </a>
                   <p className="text-xs text-zinc-300 line-clamp-2">
                     {config.tagline || repo.description}
                   </p>
 
                   {/* Embed Image */}
-                  <div
-                    style={{ width: previewWidth * 0.9, height: previewHeight * 0.9 }}
-                    className="rounded-lg overflow-hidden relative mt-1"
-                  >
-                    <div
-                      style={{
-                        width: 1280,
-                        height: 640,
-                        transform: `scale(${previewScale * 0.9})`,
-                        transformOrigin: 'top left',
-                      }}
-                    >
-                      <CardRenderer repo={repo} config={config} />
-                    </div>
+                  <div className="rounded-lg overflow-hidden border border-black/20 mt-1">
+                    <SimulatorCardPreview repo={repo} config={config} />
                   </div>
                 </div>
               </div>
@@ -367,7 +387,7 @@ export const SocialSimulator: React.FC = () => {
         {/* PLATFORM 4: SLACK */}
         {platform === 'slack' && (
           <div
-            className={`w-full max-w-xl rounded-xl border p-4 font-sans shadow-2xl transition-colors ${
+            className={`w-full max-w-xl rounded-xl border p-4 sm:p-5 font-sans shadow-2xl transition-colors ${
               isDark
                 ? 'bg-[#1a1d21] border-zinc-800 text-zinc-100'
                 : 'bg-white border-zinc-200 text-zinc-900'
@@ -400,30 +420,18 @@ export const SocialSimulator: React.FC = () => {
 
                 {/* Slack Attachment */}
                 <div
-                  className="mt-2 pl-3 border-l-3 flex flex-col gap-1.5"
+                  className="mt-2 pl-3 border-l-4 flex flex-col gap-1.5 max-w-[420px] w-full"
                   style={{ borderLeftColor: config.palette.accent }}
                 >
-                  <span className="font-bold text-sm text-blue-400 hover:underline cursor-pointer">
+                  <span className="font-bold text-sm text-blue-400 hover:underline cursor-pointer truncate">
                     {config.title || repo.name}
                   </span>
-                  <p className="text-xs text-zinc-400 line-clamp-1">
+                  <p className="text-xs text-zinc-400 line-clamp-2">
                     {config.tagline || repo.description}
                   </p>
 
-                  <div
-                    style={{ width: previewWidth * 0.85, height: previewHeight * 0.85 }}
-                    className="rounded-lg overflow-hidden relative mt-1 border border-zinc-800/80"
-                  >
-                    <div
-                      style={{
-                        width: 1280,
-                        height: 640,
-                        transform: `scale(${previewScale * 0.85})`,
-                        transformOrigin: 'top left',
-                      }}
-                    >
-                      <CardRenderer repo={repo} config={config} />
-                    </div>
+                  <div className="rounded-lg overflow-hidden border border-zinc-800/80 mt-1">
+                    <SimulatorCardPreview repo={repo} config={config} />
                   </div>
                 </div>
               </div>
@@ -434,7 +442,7 @@ export const SocialSimulator: React.FC = () => {
         {/* PLATFORM 5: GITHUB FEED */}
         {platform === 'github' && (
           <div
-            className={`w-full max-w-xl rounded-xl border p-4 font-sans shadow-2xl transition-colors ${
+            className={`w-full max-w-xl rounded-xl border p-4 sm:p-5 font-sans shadow-2xl transition-colors ${
               isDark
                 ? 'bg-[#0d1117] border-[#30363d] text-[#c9d1d9]'
                 : 'bg-white border-zinc-200 text-zinc-900'
@@ -446,17 +454,17 @@ export const SocialSimulator: React.FC = () => {
             </div>
 
             <div
-              className={`rounded-xl border p-4 flex flex-col gap-3 ${
+              className={`rounded-xl border p-4 flex flex-col gap-3 w-full ${
                 isDark ? 'bg-[#161b22] border-[#30363d]' : 'bg-zinc-50 border-zinc-200'
               }`}
             >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-semibold text-blue-400 hover:underline cursor-pointer">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="text-sm font-semibold text-blue-400 hover:underline cursor-pointer truncate">
                     {repo.owner.login} / {repo.name}
                   </span>
                 </div>
-                <div className="flex items-center gap-1.5 text-xs text-zinc-400">
+                <div className="flex items-center gap-1.5 text-xs text-zinc-400 shrink-0">
                   <Star className="w-3.5 h-3.5" />
                   <span>{repo.stars}</span>
                 </div>
@@ -467,20 +475,8 @@ export const SocialSimulator: React.FC = () => {
               </p>
 
               {/* Card Banner Preview */}
-              <div
-                style={{ width: previewWidth, height: previewHeight }}
-                className="rounded-lg overflow-hidden relative border border-zinc-800"
-              >
-                <div
-                  style={{
-                    width: 1280,
-                    height: 640,
-                    transform: `scale(${previewScale})`,
-                    transformOrigin: 'top left',
-                  }}
-                >
-                  <CardRenderer repo={repo} config={config} />
-                </div>
+              <div className="rounded-lg overflow-hidden border border-zinc-800/80">
+                <SimulatorCardPreview repo={repo} config={config} />
               </div>
             </div>
           </div>

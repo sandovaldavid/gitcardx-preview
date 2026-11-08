@@ -76,4 +76,31 @@ test.describe('GitCardX Landing Page & Studio E2E', () => {
     await expect(page.getByRole('button', { name: /GitHub Social Preview/i })).toBeVisible();
     await expect(page.getByRole('button', { name: /Dynamic README Hero/i })).toBeVisible();
   });
+
+  test('social simulator switches between all 5 platforms cleanly', async ({ page }) => {
+    await page.goto('/studio');
+
+    // Switch to Social Simulator
+    await page.getByRole('button', { name: /Social Simulator/i }).click();
+
+    // 1. Twitter
+    await page.getByRole('button', { name: 'X (Twitter)' }).click();
+    await expect(page.getByText(/Just dropped a major update to/i)).toBeVisible();
+
+    // 2. LinkedIn
+    await page.getByRole('button', { name: 'LinkedIn' }).click();
+    await expect(page.getByText(/Excited to announce the new visual identity for/i)).toBeVisible();
+
+    // 3. Discord
+    await page.getByRole('button', { name: 'Discord' }).click();
+    await expect(page.getByText(/GitHub Bot/i)).toBeVisible();
+
+    // 4. Slack
+    await page.getByRole('button', { name: 'Slack' }).click();
+    await expect(page.getByText(/Repo preview for/i)).toBeVisible();
+
+    // 5. GitHub Feed
+    await page.getByRole('button', { name: 'GitHub Feed' }).click();
+    await expect(page.getByText(/Starred repository by community/i)).toBeVisible();
+  });
 });
