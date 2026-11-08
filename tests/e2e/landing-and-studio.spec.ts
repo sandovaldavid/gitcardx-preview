@@ -75,6 +75,15 @@ test.describe('GitCardX Landing Page & Studio E2E', () => {
     await expect(page.getByRole('heading', { name: /Export & Integrate Card/i })).toBeVisible();
     await expect(page.getByRole('button', { name: /GitHub Social Preview/i })).toBeVisible();
     await expect(page.getByRole('button', { name: /Dynamic README Hero/i })).toBeVisible();
+
+    // Close export modal
+    const closeBtn = page.locator('button:has(svg.lucide-x)');
+    await closeBtn.click();
+
+    // Toggle Safe Zone Guides overlay
+    const safeZoneBtn = page.getByRole('button', { name: /Safe Zone/i });
+    await safeZoneBtn.click();
+    await expect(page.getByText(/40px SAFE ZONE/i)).toBeVisible();
   });
 
   test('social simulator switches between all 5 platforms cleanly', async ({ page }) => {
