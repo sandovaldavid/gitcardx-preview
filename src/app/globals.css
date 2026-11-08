@@ -2,19 +2,19 @@
 @import 'tailwindcss';
 
 :root {
-  /* Superficies neutras (evitan contaminar el color del canvas) */
+  /* Neutral surfaces (prevent color spill onto the canvas) */
   --bg-canvas: #09090b;
   --bg-surface: #121215;
   --bg-elevated: #18181b;
   --border-subtle: #27272a;
   --border-focus: #3f3f46;
 
-  /* Tipografía */
+  /* Typography tokens */
   --text-primary: #fafafa;
   --text-secondary: #a1a1aa;
   --text-muted: #71717a;
 
-  /* Acento Índigo Blueprint & Cobalto */
+  /* Indigo Blueprint & Cobalt brand accents */
   --brand-indigo: #5e6ad2;
   --brand-indigo-hover: #6e7ae2;
   --brand-cobalt: #3b82f6;

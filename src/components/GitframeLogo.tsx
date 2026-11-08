@@ -9,7 +9,7 @@ export function GitframeLogo({ className = 'w-6 h-6' }: { className?: string }) 
       className={className}
       aria-label="Gitframe Logo"
     >
-      {/* Escuadras de encuadre (Frame) en Índigo Blueprint y Cobalto */}
+      {/* Technical framing brackets in Indigo Blueprint & Cobalt */}
       <path
         d="M3 8V5C3 3.89543 3.89543 3 5 3H8"
         stroke="#5E6AD2"
@@ -35,7 +35,7 @@ export function GitframeLogo({ className = 'w-6 h-6' }: { className?: string }) 
         strokeLinecap="round"
       />
 
-      {/* Grafo Git central en Blanco Técnico */}
+      {/* Central Git commit graph in technical white */}
       <path
         d="M9 8.5V15.5M9 12H13C14.1046 12 15 11.1046 15 10V8.5"
         stroke="#FAFAFA"
