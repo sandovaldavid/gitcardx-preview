@@ -3,6 +3,7 @@ import type { CardRenderProps } from '../types';
 import { BackgroundRenderer } from '../backgrounds/BackgroundRenderer';
 import { MetricPill } from '../primitives/MetricPill';
 import { StackBadgeRow } from '../primitives/StackBadgeRow';
+import { FormattedText } from '../primitives/FormattedText';
 import { detectTechStack } from '@/core/domain/stackMapper';
 import { SafeZoneGuides } from '../primitives/SafeZoneGuides';
 
@@ -169,7 +170,11 @@ export const ReleaseSpotlightTemplate: React.FC<CardRenderProps> = ({
             margin: 0,
           }}
         >
-          {config.title || repo.name}
+          <FormattedText
+            text={config.title || repo.name}
+            accentColor={palette.accent}
+            textColor={palette.text}
+          />
         </h1>
 
         {visibility.tagline && (
@@ -183,9 +188,15 @@ export const ReleaseSpotlightTemplate: React.FC<CardRenderProps> = ({
               maxWidth: 960,
             }}
           >
-            {config.tagline ||
-              repo.description ||
-              'Major performance improvements, new features, and bug fixes.'}
+            <FormattedText
+              text={
+                config.tagline ||
+                repo.description ||
+                'Major performance improvements, new features, and bug fixes.'
+              }
+              accentColor={palette.accent}
+              textColor={palette.text}
+            />
           </p>
         )}
       </div>

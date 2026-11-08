@@ -4,6 +4,7 @@ import { BackgroundRenderer } from '../backgrounds/BackgroundRenderer';
 import { MetricPill } from '../primitives/MetricPill';
 import { StackBadgeRow } from '../primitives/StackBadgeRow';
 import { TechIcon } from '../primitives/TechIcon';
+import { FormattedText } from '../primitives/FormattedText';
 import { detectTechStack } from '@/core/domain/stackMapper';
 import { SafeZoneGuides } from '../primitives/SafeZoneGuides';
 
@@ -133,7 +134,11 @@ export const LinearMinimalTemplate: React.FC<CardRenderProps> = ({
             margin: 0,
           }}
         >
-          {config.title || repo.name}
+          <FormattedText
+            text={config.title || repo.name}
+            accentColor={palette.accent}
+            textColor={palette.text}
+          />
         </h1>
 
         {visibility.tagline && (
@@ -151,9 +156,15 @@ export const LinearMinimalTemplate: React.FC<CardRenderProps> = ({
               overflow: 'hidden',
             }}
           >
-            {config.tagline ||
-              repo.description ||
-              'Give your GitHub repository a modern visual identity.'}
+            <FormattedText
+              text={
+                config.tagline ||
+                repo.description ||
+                'Give your GitHub repository a modern visual identity.'
+              }
+              accentColor={palette.accent}
+              textColor={palette.text}
+            />
           </p>
         )}
       </div>

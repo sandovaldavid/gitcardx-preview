@@ -2,6 +2,7 @@ import React from 'react';
 import type { CardRenderProps } from '../types';
 import { BackgroundRenderer } from '../backgrounds/BackgroundRenderer';
 import { MetricPill } from '../primitives/MetricPill';
+import { FormattedText } from '../primitives/FormattedText';
 import { StackBadgeRow } from '../primitives/StackBadgeRow';
 import { TechIcon } from '../primitives/TechIcon';
 import { detectTechStack } from '@/core/domain/stackMapper';
@@ -166,7 +167,11 @@ export const CreatorSignatureTemplate: React.FC<CardRenderProps> = ({
               margin: 0,
             }}
           >
-            {config.title || repo.name}
+            <FormattedText
+              text={config.title || repo.name}
+              accentColor={palette.accent}
+              textColor={palette.text}
+            />
           </h1>
 
           {visibility.tagline && (
@@ -179,7 +184,13 @@ export const CreatorSignatureTemplate: React.FC<CardRenderProps> = ({
                 margin: 0,
               }}
             >
-              {config.tagline || repo.description || 'Crafted with precision by indie developer.'}
+              <FormattedText
+                text={
+                  config.tagline || repo.description || 'Crafted with precision by indie developer.'
+                }
+                accentColor={palette.accent}
+                textColor={palette.text}
+              />
             </p>
           )}
         </div>

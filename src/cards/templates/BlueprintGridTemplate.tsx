@@ -3,6 +3,7 @@ import type { CardRenderProps } from '../types';
 import { BackgroundRenderer } from '../backgrounds/BackgroundRenderer';
 import { MetricPill } from '../primitives/MetricPill';
 import { StackBadgeRow } from '../primitives/StackBadgeRow';
+import { FormattedText } from '../primitives/FormattedText';
 import { detectTechStack } from '@/core/domain/stackMapper';
 import { SafeZoneGuides } from '../primitives/SafeZoneGuides';
 
@@ -137,7 +138,11 @@ export const BlueprintGridTemplate: React.FC<CardRenderProps> = ({
             margin: 0,
           }}
         >
-          {config.title || repo.name}
+          <FormattedText
+            text={config.title || repo.name}
+            accentColor={palette.accent}
+            textColor={palette.text}
+          />
         </h1>
         {visibility.tagline && (
           <p
@@ -150,9 +155,15 @@ export const BlueprintGridTemplate: React.FC<CardRenderProps> = ({
               maxWidth: 880,
             }}
           >
-            {config.tagline ||
-              repo.description ||
-              'System architecture and developer infrastructure module.'}
+            <FormattedText
+              text={
+                config.tagline ||
+                repo.description ||
+                'System architecture and developer infrastructure module.'
+              }
+              accentColor={palette.accent}
+              textColor={palette.text}
+            />
           </p>
         )}
       </div>

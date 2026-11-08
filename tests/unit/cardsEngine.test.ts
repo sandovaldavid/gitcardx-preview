@@ -380,4 +380,21 @@ describe('Cards Engine & Satori Renderer', () => {
     // TerminalWindow's traffic light dot (#ef4444) is rendered when installCommand is true
     expect(svg).toContain('#ef4444');
   });
+
+  it('renders title accent formatting with *keyword* across templates', async () => {
+    const configAccent: CardConfig = {
+      ...baseConfig,
+      templateId: 'linear-minimal',
+      title: 'GitCardX *Instant* Cards',
+      palette: {
+        ...baseConfig.palette,
+        accent: '#f43f5e',
+      },
+    };
+
+    const svg = await renderCardToSvg(mockRepo, configAccent);
+    // Satori compiles the accented word into an SVG path filled with the accent color
+    expect(svg).toContain('fill="#f43f5e"');
+    expect(svg).toContain('viewBox="0 0 1280 640"');
+  });
 });

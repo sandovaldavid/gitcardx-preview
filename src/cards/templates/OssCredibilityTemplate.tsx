@@ -2,6 +2,7 @@ import React from 'react';
 import type { CardRenderProps } from '../types';
 import { BackgroundRenderer } from '../backgrounds/BackgroundRenderer';
 import { AvatarGroup } from '../primitives/AvatarGroup';
+import { FormattedText } from '../primitives/FormattedText';
 import { LanguageBar } from '../primitives/LanguageBar';
 import { MetricPill } from '../primitives/MetricPill';
 import { SafeZoneGuides } from '../primitives/SafeZoneGuides';
@@ -126,7 +127,11 @@ export const OssCredibilityTemplate: React.FC<CardRenderProps> = ({
               margin: 0,
             }}
           >
-            {config.title || repo.name}
+            <FormattedText
+              text={config.title || repo.name}
+              accentColor={palette.accent}
+              textColor={palette.text}
+            />
           </h1>
           {visibility.tagline && (
             <p
@@ -139,9 +144,15 @@ export const OssCredibilityTemplate: React.FC<CardRenderProps> = ({
                 maxWidth: 720,
               }}
             >
-              {config.tagline ||
-                repo.description ||
-                'Open source software built for developers worldwide.'}
+              <FormattedText
+                text={
+                  config.tagline ||
+                  repo.description ||
+                  'Open source software built for developers worldwide.'
+                }
+                accentColor={palette.accent}
+                textColor={palette.text}
+              />
             </p>
           )}
         </div>

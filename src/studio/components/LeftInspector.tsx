@@ -98,6 +98,10 @@ export const LeftInspector: React.FC = () => {
             placeholder="e.g. Next.js"
             className="w-full h-9 px-3 rounded-lg bg-zinc-900 border border-zinc-800 text-sm text-zinc-100 placeholder-zinc-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
           />
+          <span className="text-[10px] text-zinc-500 flex items-center gap-1">
+            <span className="text-blue-400 font-mono">*keyword*</span>
+            <span>wraps with accent color</span>
+          </span>
         </div>
 
         {/* Tagline Textarea */}

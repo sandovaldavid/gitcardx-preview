@@ -3,6 +3,7 @@ import type { CardRenderProps } from '../types';
 import { BackgroundRenderer } from '../backgrounds/BackgroundRenderer';
 import { StackBadgeRow } from '../primitives/StackBadgeRow';
 import { TerminalWindow } from '../primitives/TerminalWindow';
+import { FormattedText } from '../primitives/FormattedText';
 import { MetricPill } from '../primitives/MetricPill';
 import { detectTechStack, suggestInstallCommand } from '@/core/domain/stackMapper';
 import { SafeZoneGuides } from '../primitives/SafeZoneGuides';
@@ -116,7 +117,11 @@ export const SdkPackageTemplate: React.FC<CardRenderProps> = ({
               margin: 0,
             }}
           >
-            {config.title || repo.name}
+            <FormattedText
+              text={config.title || repo.name}
+              accentColor={palette.accent}
+              textColor={palette.text}
+            />
           </h1>
           {visibility.tagline && (
             <p
@@ -128,9 +133,15 @@ export const SdkPackageTemplate: React.FC<CardRenderProps> = ({
                 margin: 0,
               }}
             >
-              {config.tagline ||
-                repo.description ||
-                'Lightweight, modern library built for production.'}
+              <FormattedText
+                text={
+                  config.tagline ||
+                  repo.description ||
+                  'Lightweight, modern library built for production.'
+                }
+                accentColor={palette.accent}
+                textColor={palette.text}
+              />
             </p>
           )}
         </div>
