@@ -361,7 +361,8 @@ describe('Cards Engine & Satori Renderer', () => {
     };
 
     const svg = await renderCardToSvg(mockRepo, configWithoutInstall);
-    expect(svg).not.toContain('bun add custom-test-cli');
+    // TerminalWindow's traffic light dot (#ef4444) is omitted when installCommand is false
+    expect(svg).not.toContain('#ef4444');
   });
 
   it('renders install command terminal when installCommand visibility is true', async () => {
@@ -376,6 +377,7 @@ describe('Cards Engine & Satori Renderer', () => {
     };
 
     const svg = await renderCardToSvg(mockRepo, configWithInstall);
-    expect(svg).toContain('bun add custom-test-cli');
+    // TerminalWindow's traffic light dot (#ef4444) is rendered when installCommand is true
+    expect(svg).toContain('#ef4444');
   });
 });
