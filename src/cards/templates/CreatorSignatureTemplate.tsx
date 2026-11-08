@@ -15,6 +15,7 @@ export const CreatorSignatureTemplate: React.FC<CardRenderProps> = ({
 }) => {
   const { palette, visibility, backgroundPattern } = config;
   const isCenter = config.contentAlign === 'center';
+  const fontHeading = config.typography?.fontHeading || 'Inter';
   const techStack = detectTechStack(repo.languages, repo.topics, 4);
 
   return (
@@ -30,7 +31,7 @@ export const CreatorSignatureTemplate: React.FC<CardRenderProps> = ({
         padding: 56,
         backgroundColor: palette.background,
         overflow: 'hidden',
-        fontFamily: 'Inter',
+        fontFamily: fontHeading,
       }}
     >
       <BackgroundRenderer

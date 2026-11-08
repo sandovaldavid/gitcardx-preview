@@ -13,6 +13,7 @@ export const AuroraMeshTemplate: React.FC<CardRenderProps> = ({
 }) => {
   const { palette, visibility, backgroundPattern } = config;
   const isCenter = config.contentAlign === 'center';
+  const fontHeading = config.typography?.fontHeading || 'Inter';
   const techStack = detectTechStack(repo.languages, repo.topics, 5);
 
   return (
@@ -28,7 +29,7 @@ export const AuroraMeshTemplate: React.FC<CardRenderProps> = ({
         padding: 48,
         backgroundColor: palette.background,
         overflow: 'hidden',
-        fontFamily: 'Inter',
+        fontFamily: fontHeading,
       }}
     >
       <BackgroundRenderer

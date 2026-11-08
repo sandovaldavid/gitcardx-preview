@@ -14,6 +14,8 @@ export const CliTerminalTemplate: React.FC<CardRenderProps> = ({
 }) => {
   const { palette, visibility, backgroundPattern } = config;
   const isCenter = config.contentAlign === 'center';
+  const fontHeading = config.typography?.fontHeading || 'Inter';
+  const fontMono = config.typography?.fontMono || 'JetBrains Mono';
   const defaultCmd = suggestInstallCommand(
     repo.languages,
     repo.topics,
@@ -35,7 +37,7 @@ export const CliTerminalTemplate: React.FC<CardRenderProps> = ({
         padding: 56,
         backgroundColor: palette.background,
         overflow: 'hidden',
-        fontFamily: 'Inter',
+        fontFamily: fontHeading,
       }}
     >
       <BackgroundRenderer
@@ -58,7 +60,7 @@ export const CliTerminalTemplate: React.FC<CardRenderProps> = ({
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <span
               style={{
-                fontFamily: 'JetBrains Mono',
+                fontFamily: fontMono,
                 fontSize: 16,
                 color: palette.accent,
                 fontWeight: 600,
@@ -68,7 +70,7 @@ export const CliTerminalTemplate: React.FC<CardRenderProps> = ({
             </span>
             <span
               style={{
-                fontFamily: 'JetBrains Mono',
+                fontFamily: fontMono,
                 fontSize: 18,
                 color: palette.text,
                 opacity: 0.9,
@@ -153,6 +155,7 @@ export const CliTerminalTemplate: React.FC<CardRenderProps> = ({
             borderColor={palette.border}
             accentColor={palette.accent}
             title={`${repo.name} — zsh`}
+            fontMono={fontMono}
           />
         )}
       </div>
@@ -178,7 +181,7 @@ export const CliTerminalTemplate: React.FC<CardRenderProps> = ({
           />
           <span
             style={{
-              fontFamily: 'JetBrains Mono',
+              fontFamily: fontMono,
               fontSize: 14,
               color: palette.text,
               opacity: 0.88,

@@ -70,13 +70,34 @@ const baseConfig: CardConfig = {
 };
 
 describe('Cards Engine & Satori Renderer', () => {
-  it('loads valid font buffers for Inter and JetBrains Mono', async () => {
+  it('loads valid font buffers for all supported font pairings', async () => {
     const fonts = await getCardFonts();
-    expect(fonts.length).toBe(4);
+    expect(fonts.length).toBe(12);
+    const expectedFamilies = [
+      'Inter',
+      'Geist',
+      'Space Grotesk',
+      'Plus Jakarta Sans',
+      'JetBrains Mono',
+      'Fira Code',
+    ];
     for (const font of fonts) {
       expect(font.data.byteLength).toBeGreaterThan(10000);
-      expect(['Inter', 'JetBrains Mono']).toContain(font.name);
+      expect(expectedFamilies).toContain(font.name);
     }
+  });
+
+  it('renders SVG with custom typography fonts (Space Grotesk & Fira Code)', async () => {
+    const customFontConfig: CardConfig = {
+      ...baseConfig,
+      typography: {
+        fontHeading: 'Space Grotesk',
+        fontMono: 'Fira Code',
+      },
+    };
+    const svg = await renderCardToSvg(mockRepo, customFontConfig);
+    expect(svg).toBeDefined();
+    expect(svg.startsWith('<svg')).toBe(true);
   });
 
   describe('8 Card Templates rendering in Satori', () => {

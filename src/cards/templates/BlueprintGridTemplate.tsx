@@ -14,6 +14,8 @@ export const BlueprintGridTemplate: React.FC<CardRenderProps> = ({
 }) => {
   const { palette, visibility, backgroundPattern } = config;
   const isCenter = config.contentAlign === 'center';
+  const fontHeading = config.typography?.fontHeading || 'Inter';
+  const fontMono = config.typography?.fontMono || 'JetBrains Mono';
   const techStack = detectTechStack(repo.languages, repo.topics, 5);
 
   return (
@@ -29,7 +31,7 @@ export const BlueprintGridTemplate: React.FC<CardRenderProps> = ({
         padding: 56,
         backgroundColor: palette.background,
         overflow: 'hidden',
-        fontFamily: 'Inter',
+        fontFamily: fontHeading,
       }}
     >
       <BackgroundRenderer
@@ -59,7 +61,7 @@ export const BlueprintGridTemplate: React.FC<CardRenderProps> = ({
                 borderRadius: 4,
                 backgroundColor: palette.accent,
                 color: '#000000',
-                fontFamily: 'JetBrains Mono',
+                fontFamily: fontMono,
                 fontSize: 12,
                 fontWeight: 800,
               }}
@@ -68,7 +70,7 @@ export const BlueprintGridTemplate: React.FC<CardRenderProps> = ({
             </div>
             <span
               style={{
-                fontFamily: 'JetBrains Mono',
+                fontFamily: fontMono,
                 fontSize: 16,
                 color: palette.text,
                 opacity: 0.95,
@@ -84,7 +86,7 @@ export const BlueprintGridTemplate: React.FC<CardRenderProps> = ({
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
           <span
             style={{
-              fontFamily: 'JetBrains Mono',
+              fontFamily: fontMono,
               fontSize: 13,
               color: palette.text,
               opacity: 0.85,
@@ -119,7 +121,7 @@ export const BlueprintGridTemplate: React.FC<CardRenderProps> = ({
       >
         <span
           style={{
-            fontFamily: 'JetBrains Mono',
+            fontFamily: fontMono,
             fontSize: 14,
             color: palette.accent,
             fontWeight: 600,

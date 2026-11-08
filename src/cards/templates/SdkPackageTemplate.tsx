@@ -15,6 +15,8 @@ export const SdkPackageTemplate: React.FC<CardRenderProps> = ({
 }) => {
   const { palette, visibility, backgroundPattern } = config;
   const isCenter = config.contentAlign === 'center';
+  const fontHeading = config.typography?.fontHeading || 'Inter';
+  const fontMono = config.typography?.fontMono || 'JetBrains Mono';
   const techStack = detectTechStack(repo.languages, repo.topics, 4);
   const defaultCmd = suggestInstallCommand(
     repo.languages,
@@ -37,7 +39,7 @@ export const SdkPackageTemplate: React.FC<CardRenderProps> = ({
         padding: 56,
         backgroundColor: palette.background,
         overflow: 'hidden',
-        fontFamily: 'Inter',
+        fontFamily: fontHeading,
       }}
     >
       <BackgroundRenderer
@@ -81,7 +83,7 @@ export const SdkPackageTemplate: React.FC<CardRenderProps> = ({
             <span
               style={{
                 fontSize: 12,
-                fontFamily: 'JetBrains Mono',
+                fontFamily: fontMono,
                 paddingLeft: 8,
                 paddingRight: 8,
                 paddingTop: 3,
@@ -197,6 +199,7 @@ export const SdkPackageTemplate: React.FC<CardRenderProps> = ({
             borderColor={palette.border}
             accentColor={palette.accent}
             title="terminal"
+            fontMono={fontMono}
           />
         ) : (
           <div />

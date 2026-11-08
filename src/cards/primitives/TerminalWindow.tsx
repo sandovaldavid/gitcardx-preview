@@ -6,6 +6,7 @@ interface TerminalWindowProps {
   borderColor: string;
   accentColor: string;
   title?: string;
+  fontMono?: string;
 }
 
 export const TerminalWindow: React.FC<TerminalWindowProps> = ({
@@ -14,6 +15,7 @@ export const TerminalWindow: React.FC<TerminalWindowProps> = ({
   borderColor,
   accentColor,
   title = 'bash',
+  fontMono = 'JetBrains Mono',
 }) => {
   return (
     <div
@@ -25,6 +27,7 @@ export const TerminalWindow: React.FC<TerminalWindowProps> = ({
         backgroundColor: 'rgba(0, 0, 0, 0.45)',
         overflow: 'hidden',
         width: '100%',
+        fontFamily: fontMono,
       }}
     >
       {/* Terminal Title Bar */}
@@ -49,7 +52,7 @@ export const TerminalWindow: React.FC<TerminalWindowProps> = ({
         <span
           style={{
             fontSize: 12,
-            fontFamily: 'JetBrains Mono',
+            fontFamily: fontMono,
             color: textColor,
             opacity: 0.6,
           }}
@@ -69,7 +72,7 @@ export const TerminalWindow: React.FC<TerminalWindowProps> = ({
           paddingRight: 16,
           paddingTop: 12,
           paddingBottom: 12,
-          fontFamily: 'JetBrains Mono',
+          fontFamily: fontMono,
           fontSize: 15,
         }}
       >

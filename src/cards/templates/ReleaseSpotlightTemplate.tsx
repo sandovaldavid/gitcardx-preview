@@ -14,6 +14,8 @@ export const ReleaseSpotlightTemplate: React.FC<CardRenderProps> = ({
 }) => {
   const { palette, visibility, backgroundPattern } = config;
   const isCenter = config.contentAlign === 'center';
+  const fontHeading = config.typography?.fontHeading || 'Inter';
+  const fontMono = config.typography?.fontMono || 'JetBrains Mono';
   const techStack = detectTechStack(repo.languages, repo.topics, 5);
   const hasRealRelease = Boolean(repo.latestRelease?.tag);
   const releaseTag = repo.latestRelease?.tag || 'main';
@@ -31,7 +33,7 @@ export const ReleaseSpotlightTemplate: React.FC<CardRenderProps> = ({
         padding: 56,
         backgroundColor: palette.background,
         overflow: 'hidden',
-        fontFamily: 'Inter',
+        fontFamily: fontHeading,
       }}
     >
       <BackgroundRenderer
@@ -133,7 +135,7 @@ export const ReleaseSpotlightTemplate: React.FC<CardRenderProps> = ({
                 borderRadius: 12,
                 backgroundColor: palette.accent,
                 color: '#000000',
-                fontFamily: 'JetBrains Mono',
+                fontFamily: fontMono,
                 fontSize: 28,
                 fontWeight: 800,
               }}
@@ -146,7 +148,7 @@ export const ReleaseSpotlightTemplate: React.FC<CardRenderProps> = ({
                   fontSize: 18,
                   color: palette.text,
                   opacity: 0.88,
-                  fontFamily: 'JetBrains Mono',
+                  fontFamily: fontMono,
                 }}
               >
                 released{' '}

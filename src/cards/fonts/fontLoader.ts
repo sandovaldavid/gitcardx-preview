@@ -32,28 +32,84 @@ export async function getCardFonts(): Promise<FontDefinition[]> {
       readFile(join(fontsDir, 'JetBrainsMono-Bold.otf')),
     ]);
 
+    const interRegAB = bufferToArrayBuffer(interRegular);
+    const interBoldAB = bufferToArrayBuffer(interBold);
+    const jbRegAB = bufferToArrayBuffer(jbMonoRegular);
+    const jbBoldAB = bufferToArrayBuffer(jbMonoBold);
+
     fontsCache = [
+      // Primary Sans / Heading fonts
       {
         name: 'Inter',
-        data: bufferToArrayBuffer(interRegular),
+        data: interRegAB,
         weight: 400,
         style: 'normal',
       },
       {
         name: 'Inter',
-        data: bufferToArrayBuffer(interBold),
+        data: interBoldAB,
         weight: 700,
         style: 'normal',
       },
       {
+        name: 'Geist',
+        data: interRegAB,
+        weight: 400,
+        style: 'normal',
+      },
+      {
+        name: 'Geist',
+        data: interBoldAB,
+        weight: 700,
+        style: 'normal',
+      },
+      {
+        name: 'Space Grotesk',
+        data: interRegAB,
+        weight: 400,
+        style: 'normal',
+      },
+      {
+        name: 'Space Grotesk',
+        data: interBoldAB,
+        weight: 700,
+        style: 'normal',
+      },
+      {
+        name: 'Plus Jakarta Sans',
+        data: interRegAB,
+        weight: 400,
+        style: 'normal',
+      },
+      {
+        name: 'Plus Jakarta Sans',
+        data: interBoldAB,
+        weight: 700,
+        style: 'normal',
+      },
+
+      // Monospace fonts
+      {
         name: 'JetBrains Mono',
-        data: bufferToArrayBuffer(jbMonoRegular),
+        data: jbRegAB,
         weight: 400,
         style: 'normal',
       },
       {
         name: 'JetBrains Mono',
-        data: bufferToArrayBuffer(jbMonoBold),
+        data: jbBoldAB,
+        weight: 700,
+        style: 'normal',
+      },
+      {
+        name: 'Fira Code',
+        data: jbRegAB,
+        weight: 400,
+        style: 'normal',
+      },
+      {
+        name: 'Fira Code',
+        data: jbBoldAB,
         weight: 700,
         style: 'normal',
       },
