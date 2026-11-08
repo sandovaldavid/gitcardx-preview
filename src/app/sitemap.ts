@@ -1,13 +1,13 @@
 import type { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://gitcardx.dev';
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://gitframe.dev';
   const currentDate = new Date();
 
   const routes = ['', '/studio'];
 
   const showcaseRepos = [
-    'sandovaldavid/gitcardx-preview',
+    'sandovaldavid/gitframe',
     'shadcn/ui',
     'facebook/react',
     'vercel/next.js',

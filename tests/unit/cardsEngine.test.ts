@@ -11,9 +11,9 @@ const mockRepo: RepoMetadata = {
     avatarUrl: 'https://avatars.githubusercontent.com/u/12345',
     isOrg: false,
   },
-  name: 'gitcardx-preview',
+  name: 'gitframe',
   description: 'Instant 5-second GitHub Social Preview card generator for developers.',
-  homepageUrl: 'https://gitcardx.dev',
+  homepageUrl: 'https://gitframe.dev',
   stars: 1250,
   forks: 180,
   primaryLanguage: {
@@ -38,9 +38,9 @@ const mockRepo: RepoMetadata = {
 
 const baseConfig: CardConfig = {
   templateId: 'linear-minimal',
-  title: 'GitCardX Preview',
+  title: 'Gitframe',
   tagline: 'Give your GitHub repository a memorable visual identity.',
-  installCommand: 'bun add gitcardx-preview',
+  installCommand: 'bun add gitframe',
   contentAlign: 'left',
   palette: {
     background: '#0a0a0a',

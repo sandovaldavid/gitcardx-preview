@@ -27,7 +27,7 @@ Executable source and configuration override prose when they disagree.
 
 ## Repository identity
 
-- Repository: `sandovaldavid/gitcardx-preview`
+- Repository: `sandovaldavid/gitframe` (formerly `sandovaldavid/gitcardx-preview`)
 - Purpose: Instant, high-impact GitHub Social Preview cards (1280×640px) & dynamic README banners powered by Next.js 16 (App Router + Turbopack), Tailwind CSS v4, Satori, and Resvg.
 - Upstream / predecessor: `sandovaldavid/GitCardX` (legacy client-side HTML generator).
 

@@ -5,7 +5,7 @@ import { DEFAULT_REPO, DEFAULT_CONFIG } from '@/studio/state/useCardStore';
 
 describe('On-Demand Card Render Route (/api/card/render)', () => {
   it('renders a valid PNG buffer directly from client studio payload', async () => {
-    const req = new NextRequest('https://gitcardx.dev/api/card/render', {
+    const req = new NextRequest('https://gitframe.dev/api/card/render', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -28,7 +28,7 @@ describe('On-Demand Card Render Route (/api/card/render)', () => {
   });
 
   it('renders a valid SVG directly from client studio payload', async () => {
-    const req = new NextRequest('https://gitcardx.dev/api/card/render', {
+    const req = new NextRequest('https://gitframe.dev/api/card/render', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -47,7 +47,7 @@ describe('On-Demand Card Render Route (/api/card/render)', () => {
   });
 
   it('renders @2x scale PNG cleanly', async () => {
-    const req = new NextRequest('https://gitcardx.dev/api/card/render', {
+    const req = new NextRequest('https://gitframe.dev/api/card/render', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -67,7 +67,7 @@ describe('On-Demand Card Render Route (/api/card/render)', () => {
   });
 
   it('renders card with contentAlign: "center" and custom visibility flags', async () => {
-    const req = new NextRequest('https://gitcardx.dev/api/card/render', {
+    const req = new NextRequest('https://gitframe.dev/api/card/render', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -97,7 +97,7 @@ describe('On-Demand Card Render Route (/api/card/render)', () => {
   });
 
   it('rejects invalid or malformed payload with 400 Bad Request', async () => {
-    const req = new NextRequest('https://gitcardx.dev/api/card/render', {
+    const req = new NextRequest('https://gitframe.dev/api/card/render', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

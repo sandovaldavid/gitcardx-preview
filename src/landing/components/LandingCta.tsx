@@ -35,7 +35,7 @@ export const LandingCta: React.FC = () => {
           </Link>
 
           <a
-            href="https://github.com/sandovaldavid/gitcardx-preview"
+            href="https://github.com/sandovaldavid/gitframe"
             target="_blank"
             rel="noopener noreferrer"
             className="w-full sm:w-auto flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white border border-zinc-700 text-sm font-semibold transition-colors"

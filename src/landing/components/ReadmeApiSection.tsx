@@ -8,17 +8,17 @@ export const ReadmeApiSection: React.FC = () => {
   const [copied, setCopied] = useState(false);
 
   const snippets = {
-    markdown: `[![GitCardX Preview](https://gitcardx.dev/api/card/sandovaldavid/gitcardx-preview.png)](https://gitcardx.dev/sandovaldavid/gitcardx-preview)`,
+    markdown: `[![Gitframe](https://gitframe.dev/api/card/sandovaldavid/gitframe.png)](https://gitframe.dev/sandovaldavid/gitframe)`,
     picture: `<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://gitcardx.dev/api/card/sandovaldavid/gitcardx-preview.png?theme=dark">
-  <source media="(prefers-color-scheme: light)" srcset="https://gitcardx.dev/api/card/sandovaldavid/gitcardx-preview.png?theme=light">
-  <img alt="Social Card Preview" src="https://gitcardx.dev/api/card/sandovaldavid/gitcardx-preview.png">
+  <source media="(prefers-color-scheme: dark)" srcset="https://gitframe.dev/api/card/sandovaldavid/gitframe.png?theme=dark">
+  <source media="(prefers-color-scheme: light)" srcset="https://gitframe.dev/api/card/sandovaldavid/gitframe.png?theme=light">
+  <img alt="Social Card Preview" src="https://gitframe.dev/api/card/sandovaldavid/gitframe.png">
 </picture>`,
-    opengraph: `<meta property="og:title" content="gitcardx-preview" />
+    opengraph: `<meta property="og:title" content="gitframe" />
 <meta property="og:description" content="Instant GitHub Social Preview generator" />
-<meta property="og:image" content="https://gitcardx.dev/api/card/sandovaldavid/gitcardx-preview.png" />
+<meta property="og:image" content="https://gitframe.dev/api/card/sandovaldavid/gitframe.png" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:image" content="https://gitcardx.dev/api/card/sandovaldavid/gitcardx-preview.png" />`,
+<meta name="twitter:image" content="https://gitframe.dev/api/card/sandovaldavid/gitframe.png" />`,
   };
 
   const handleCopy = () => {

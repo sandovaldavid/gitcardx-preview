@@ -18,7 +18,7 @@ vi.mock('@/core/services/GitHubService', () => {
           },
           name: repo,
           description: 'A mock repository for testing the dynamic card route.',
-          homepageUrl: 'https://gitcardx.dev',
+          homepageUrl: 'https://gitframe.dev',
           stars: 450,
           forks: 30,
           primaryLanguage: { name: 'TypeScript', color: '#3178C6' },
@@ -37,9 +37,9 @@ vi.mock('@/core/services/GitHubService', () => {
 
 describe('Dynamic Card Route (/api/card/[owner]/[repo])', () => {
   it('returns a valid PNG card with Cache-Control headers', async () => {
-    const req = new NextRequest('https://gitcardx.dev/api/card/sandovaldavid/gitcardx-preview');
+    const req = new NextRequest('https://gitframe.dev/api/card/sandovaldavid/gitframe');
     const res = await GET(req, {
-      params: Promise.resolve({ owner: 'sandovaldavid', repo: 'gitcardx-preview' }),
+      params: Promise.resolve({ owner: 'sandovaldavid', repo: 'gitframe' }),
     });
 
     expect(res.status).toBe(200);
@@ -54,9 +54,9 @@ describe('Dynamic Card Route (/api/card/[owner]/[repo])', () => {
   });
 
   it('supports .svg extension in repo name to render SVG', async () => {
-    const req = new NextRequest('https://gitcardx.dev/api/card/sandovaldavid/gitcardx-preview.svg');
+    const req = new NextRequest('https://gitframe.dev/api/card/sandovaldavid/gitframe.svg');
     const res = await GET(req, {
-      params: Promise.resolve({ owner: 'sandovaldavid', repo: 'gitcardx-preview.svg' }),
+      params: Promise.resolve({ owner: 'sandovaldavid', repo: 'gitframe.svg' }),
     });
 
     expect(res.status).toBe(200);
@@ -69,10 +69,10 @@ describe('Dynamic Card Route (/api/card/[owner]/[repo])', () => {
 
   it('supports query parameters like format=svg, template, theme=light and accent', async () => {
     const req = new NextRequest(
-      'https://gitcardx.dev/api/card/sandovaldavid/gitcardx-preview?format=svg&template=cli-terminal&theme=light&accent=ff5500'
+      'https://gitframe.dev/api/card/sandovaldavid/gitframe?format=svg&template=cli-terminal&theme=light&accent=ff5500'
     );
     const res = await GET(req, {
-      params: Promise.resolve({ owner: 'sandovaldavid', repo: 'gitcardx-preview' }),
+      params: Promise.resolve({ owner: 'sandovaldavid', repo: 'gitframe' }),
     });
 
     expect(res.status).toBe(200);
@@ -82,7 +82,7 @@ describe('Dynamic Card Route (/api/card/[owner]/[repo])', () => {
   });
 
   it('renders a fallback card gracefully when repository is not found or fails', async () => {
-    const req = new NextRequest('https://gitcardx.dev/api/card/nonexistent/missing-repo.svg');
+    const req = new NextRequest('https://gitframe.dev/api/card/nonexistent/missing-repo.svg');
     const res = await GET(req, {
       params: Promise.resolve({ owner: 'nonexistent', repo: 'missing-repo.svg' }),
     });

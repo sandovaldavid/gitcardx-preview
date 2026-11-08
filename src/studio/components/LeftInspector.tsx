@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import {
   Sliders,
   Eye,
+  EyeOff,
   Terminal,
   Image as ImageIcon,
   ChevronDown,
@@ -12,6 +13,14 @@ import {
   AlignLeft,
   AlignCenter,
   Layout,
+  User,
+  Star,
+  GitFork,
+  Tag,
+  Scale,
+  Users,
+  Layers,
+  Code2,
 } from 'lucide-react';
 import { useCardStore } from '../state/useCardStore';
 import type { CardVisibility } from '@/core/domain/schemas';
@@ -20,17 +29,21 @@ export const LeftInspector: React.FC = () => {
   const { config, updateConfig, setContentAlign, toggleVisibility, repo, setRepo } = useCardStore();
   const [isManualModeOpen, setIsManualModeOpen] = useState(false);
 
-  const visibilityKeys: Array<{ key: keyof CardVisibility; label: string }> = [
-    { key: 'author', label: 'Owner / Avatar' },
-    { key: 'tagline', label: 'Tagline' },
-    { key: 'stars', label: 'GitHub Stars' },
-    { key: 'forks', label: 'Forks' },
-    { key: 'release', label: 'Latest Release' },
-    { key: 'license', label: 'License' },
-    { key: 'techStack', label: 'Tech Stack Badges' },
-    { key: 'languageLogos', label: 'Official Logos' },
-    { key: 'installCommand', label: 'Install Command' },
-    { key: 'contributors', label: 'Contributors' },
+  const elementLayers: Array<{
+    key: keyof CardVisibility;
+    label: string;
+    icon: React.ComponentType<{ className?: string }>;
+  }> = [
+    { key: 'author', label: 'Owner / Avatar', icon: User },
+    { key: 'tagline', label: 'Tagline Description', icon: AlignLeft },
+    { key: 'stars', label: 'GitHub Stars', icon: Star },
+    { key: 'forks', label: 'Forks Count', icon: GitFork },
+    { key: 'release', label: 'Latest Release', icon: Tag },
+    { key: 'license', label: 'License Badge', icon: Scale },
+    { key: 'techStack', label: 'Tech Stack Badges', icon: Layers },
+    { key: 'languageLogos', label: 'Official Logos', icon: Code2 },
+    { key: 'installCommand', label: 'Install Command', icon: Terminal },
+    { key: 'contributors', label: 'Contributors Row', icon: Users },
   ];
 
   return (
@@ -107,8 +120,24 @@ export const LeftInspector: React.FC = () => {
         {/* Tagline Textarea */}
         <div className="flex flex-col gap-1.5">
           <label className="text-xs font-medium text-zinc-400 flex items-center justify-between">
-            <span>Tagline / Description</span>
-            <span className="text-[10px] font-mono text-zinc-600">{config.tagline.length}/300</span>
+            <span className="flex items-center gap-1.5">
+              <span>Tagline / Description</span>
+              <span className="text-[10px] font-mono text-zinc-600">
+                {config.tagline.length}/300
+              </span>
+            </span>
+            <button
+              type="button"
+              onClick={() => toggleVisibility('tagline')}
+              title={config.visibility.tagline ? 'Hide tagline on card' : 'Show tagline on card'}
+              className="p-1 rounded hover:bg-zinc-800/80 transition-colors"
+            >
+              {config.visibility.tagline ? (
+                <Eye className="w-3.5 h-3.5 text-blue-400" />
+              ) : (
+                <EyeOff className="w-3.5 h-3.5 text-zinc-600" />
+              )}
+            </button>
           </label>
           <textarea
             value={config.tagline}
@@ -116,22 +145,44 @@ export const LeftInspector: React.FC = () => {
             rows={3}
             onChange={(e) => updateConfig({ tagline: e.target.value })}
             placeholder="Short, impactful description of your project..."
-            className="w-full p-3 rounded-lg bg-zinc-900 border border-zinc-800 text-sm text-zinc-100 placeholder-zinc-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all resize-none"
+            className={`w-full p-3 rounded-lg bg-zinc-900 border border-zinc-800 text-sm text-zinc-100 placeholder-zinc-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all resize-none ${
+              !config.visibility.tagline ? 'opacity-40' : ''
+            }`}
           />
         </div>
 
         {/* Install Command Input */}
         <div className="flex flex-col gap-1.5">
-          <label className="text-xs font-medium text-zinc-400 flex items-center gap-1.5">
-            <Terminal className="w-3.5 h-3.5 text-blue-400" />
-            <span>Install Command / Snippet</span>
+          <label className="text-xs font-medium text-zinc-400 flex items-center justify-between">
+            <span className="flex items-center gap-1.5">
+              <Terminal className="w-3.5 h-3.5 text-blue-400" />
+              <span>Install Command / Snippet</span>
+            </span>
+            <button
+              type="button"
+              onClick={() => toggleVisibility('installCommand')}
+              title={
+                config.visibility.installCommand
+                  ? 'Hide install command on card'
+                  : 'Show install command on card'
+              }
+              className="p-1 rounded hover:bg-zinc-800/80 transition-colors"
+            >
+              {config.visibility.installCommand ? (
+                <Eye className="w-3.5 h-3.5 text-blue-400" />
+              ) : (
+                <EyeOff className="w-3.5 h-3.5 text-zinc-600" />
+              )}
+            </button>
           </label>
           <input
             type="text"
             value={config.installCommand || ''}
             onChange={(e) => updateConfig({ installCommand: e.target.value })}
             placeholder="e.g. bun add my-package"
-            className="w-full h-9 px-3 rounded-lg bg-zinc-900 border border-zinc-800 text-xs font-mono text-zinc-100 placeholder-zinc-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
+            className={`w-full h-9 px-3 rounded-lg bg-zinc-900 border border-zinc-800 text-xs font-mono text-zinc-100 placeholder-zinc-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all ${
+              !config.visibility.installCommand ? 'opacity-40' : ''
+            }`}
           />
         </div>
 
@@ -150,33 +201,62 @@ export const LeftInspector: React.FC = () => {
           />
         </div>
 
-        {/* Metrics Visibility Toggles */}
+        {/* Card Elements & Layers Visibility */}
         <div className="flex flex-col gap-2 pt-2 border-t border-zinc-800/80">
-          <label className="text-xs font-medium text-zinc-400 flex items-center gap-1.5">
-            <Eye className="w-3.5 h-3.5 text-zinc-400" />
-            <span>Visible Elements</span>
-          </label>
-          <div className="grid grid-cols-2 gap-2">
-            {visibilityKeys.map(({ key, label }) => {
+          <div className="flex items-center justify-between">
+            <label className="text-xs font-medium text-zinc-400 flex items-center gap-1.5">
+              <Eye className="w-3.5 h-3.5 text-blue-400" />
+              <span>Visible Elements & Layers</span>
+            </label>
+            <span className="text-[10px] font-mono text-zinc-500 bg-zinc-900 border border-zinc-800 px-1.5 py-0.5 rounded">
+              {Object.values(config.visibility).filter(Boolean).length}/10 active
+            </span>
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            {elementLayers.map(({ key, label, icon: Icon }) => {
               const active = config.visibility[key];
               return (
-                <button
+                <div
                   key={key}
-                  type="button"
                   onClick={() => toggleVisibility(key)}
-                  className={`px-3 py-2 rounded-lg border text-xs font-medium transition-all text-left flex items-center justify-between ${
+                  className={`w-full flex items-center justify-between px-3 py-2 rounded-lg border text-xs cursor-pointer select-none transition-all ${
                     active
-                      ? 'bg-blue-600/10 border-blue-500/40 text-blue-300'
-                      : 'bg-zinc-900 border-zinc-800/80 text-zinc-500 hover:text-zinc-400'
+                      ? 'bg-zinc-900/70 border-zinc-800/90 text-zinc-200 hover:border-zinc-700 hover:bg-zinc-900'
+                      : 'bg-zinc-950/40 border-zinc-900/80 text-zinc-500 hover:text-zinc-400 hover:border-zinc-800/50'
                   }`}
                 >
-                  <span className="truncate">{label}</span>
-                  <div
-                    className={`w-2 h-2 rounded-full shrink-0 ml-1.5 ${
-                      active ? 'bg-blue-400' : 'bg-zinc-700'
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <Icon
+                      className={`w-3.5 h-3.5 shrink-0 transition-colors ${
+                        active ? 'text-blue-400' : 'text-zinc-600'
+                      }`}
+                    />
+                    <span
+                      className={`truncate font-medium transition-colors ${
+                        active ? 'text-zinc-200' : 'line-through text-zinc-600'
+                      }`}
+                    >
+                      {label}
+                    </span>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleVisibility(key);
+                    }}
+                    title={active ? `Hide ${label} on card` : `Show ${label} on card`}
+                    className={`p-1 rounded-md transition-colors ${
+                      active
+                        ? 'text-blue-400 hover:text-blue-300 hover:bg-blue-500/10'
+                        : 'text-zinc-600 hover:text-zinc-400 hover:bg-zinc-800/60'
                     }`}
-                  />
-                </button>
+                  >
+                    {active ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
+                  </button>
+                </div>
               );
             })}
           </div>

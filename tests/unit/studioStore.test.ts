@@ -19,7 +19,7 @@ describe('useCardStore (Zustand state & history)', () => {
 
   it('initializes with default repo and configuration', () => {
     const state = useCardStore.getState();
-    expect(state.repo.name).toBe('gitcardx-preview');
+    expect(state.repo.name).toBe('gitframe');
     expect(state.config.templateId).toBe('linear-minimal');
     expect(state.zoom).toBe(1);
     expect(state.canUndo()).toBe(false);

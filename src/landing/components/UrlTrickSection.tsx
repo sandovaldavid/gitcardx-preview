@@ -6,7 +6,7 @@ import { Copy, Check, Terminal, ExternalLink, Zap } from 'lucide-react';
 
 export const UrlTrickSection: React.FC = () => {
   const [copied, setCopied] = useState(false);
-  const sampleUrl = 'gitcardx.dev/shadcn/ui';
+  const sampleUrl = 'gitframe.dev/shadcn/ui';
 
   const handleCopy = () => {
     navigator.clipboard.writeText(`https://${sampleUrl}`);
@@ -28,21 +28,23 @@ export const UrlTrickSection: React.FC = () => {
             </div>
 
             <h2 className="text-3xl sm:text-5xl font-bold tracking-tight text-white leading-tight">
-              The <code className="text-blue-400 font-mono">gitcardx.dev</code> URL shortcut.
+              The <code className="text-blue-400 font-mono">gitframe.dev</code> URL shortcut.
             </h2>
 
             <p className="mt-4 text-base text-zinc-300 leading-relaxed">
               Whenever you are browsing any repository on GitHub, replace{' '}
               <span className="font-mono text-zinc-400">github.com</span> with{' '}
-              <span className="font-mono text-blue-400 font-semibold">gitcardx.dev</span> in your
-              address bar to immediately launch the studio with all metadata preloaded.
+              <span className="font-mono text-blue-400 font-semibold">gitframe.dev</span> (swap{' '}
+              <span className="text-zinc-200 font-semibold font-mono">hub</span> with{' '}
+              <span className="text-blue-400 font-semibold font-mono">frame</span>) in your address
+              bar to immediately launch the studio with all metadata preloaded.
             </p>
 
             {/* Simulated Browser Address Bar */}
             <div className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
               <div className="flex-1 flex items-center bg-zinc-950 border border-zinc-700/80 rounded-xl px-4 py-3 font-mono text-sm shadow-inner group">
                 <Terminal className="w-4 h-4 text-zinc-500 mr-3 shrink-0" />
-                <span className="text-blue-400 font-semibold">gitcardx.dev/</span>
+                <span className="text-blue-400 font-semibold">gitframe.dev/</span>
                 <span className="text-zinc-200">shadcn/ui</span>
               </div>
 

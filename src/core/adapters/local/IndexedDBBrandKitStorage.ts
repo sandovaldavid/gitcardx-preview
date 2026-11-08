@@ -2,7 +2,8 @@ import { get, set, del, keys } from 'idb-keyval';
 import type { BrandKitStoragePort } from '../../ports/BrandKitStoragePort';
 import type { BrandKit } from '../../domain/types';
 
-const BRAND_KIT_KEY_PREFIX = 'gitcardx_brandkit_';
+const BRAND_KIT_KEY_PREFIX = 'gitframe_brandkit_';
+const LEGACY_KEY_PREFIX = 'gitcardx_brandkit_';
 
 export class IndexedDBBrandKitStorage implements BrandKitStoragePort {
   async listBrandKits(): Promise<BrandKit[]> {
@@ -10,7 +11,9 @@ export class IndexedDBBrandKitStorage implements BrandKitStoragePort {
     try {
       const allKeys = await keys();
       const kitKeys = allKeys.filter(
-        (key): key is string => typeof key === 'string' && key.startsWith(BRAND_KIT_KEY_PREFIX)
+        (key): key is string =>
+          typeof key === 'string' &&
+          (key.startsWith(BRAND_KIT_KEY_PREFIX) || key.startsWith(LEGACY_KEY_PREFIX))
       );
       const kits: BrandKit[] = [];
       for (const k of kitKeys) {

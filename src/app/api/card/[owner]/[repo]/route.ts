@@ -87,7 +87,7 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
         isOrg: false,
       },
       name: repo,
-      description: 'GitHub Social Preview card generated with GitCardX',
+      description: 'GitHub Social Preview card generated with Gitframe',
       homepageUrl: null,
       stars: 0,
       forks: 0,

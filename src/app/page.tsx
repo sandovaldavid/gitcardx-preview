@@ -10,7 +10,7 @@ import { LandingCta } from '@/landing/components/LandingCta';
 import { LandingFooter } from '@/landing/components/LandingFooter';
 
 export const metadata: Metadata = {
-  title: 'GitCardX — Instant GitHub Social Preview & Open Graph Card Studio',
+  title: 'Gitframe — Instant GitHub Social Preview & Open Graph Card Studio',
   description:
     'Generate pixel-perfect GitHub social preview cards (1280×640) in 5 seconds. 8 Satori-safe templates, generative SVG backgrounds, social simulator, zero mandatory sign-up.',
 };

@@ -212,7 +212,7 @@ export const SocialSimulator: React.FC = () => {
                         isDark ? 'text-zinc-400' : 'text-zinc-500'
                       }`}
                     >
-                      gitcardx.dev
+                      gitframe.dev
                     </span>
                     <span
                       className={`text-sm font-semibold truncate leading-tight ${
@@ -321,7 +321,7 @@ export const SocialSimulator: React.FC = () => {
                     isDark ? 'text-blue-400' : 'text-blue-600'
                   }`}
                 >
-                  gitcardx.dev
+                  gitframe.dev
                 </span>
                 <h4
                   className={`font-bold text-sm truncate mt-0.5 ${
