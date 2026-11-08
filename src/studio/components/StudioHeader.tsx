@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Undo2, Redo2, Scan, Download, RotateCcw, Sparkles } from 'lucide-react';
 import { Omnibar } from './Omnibar';
 import { useCardStore } from '../state/useCardStore';
+import { APP_VERSION_TAG } from '@/lib/version';
 
 export const StudioHeader: React.FC = () => {
   const {
@@ -61,7 +62,7 @@ export const StudioHeader: React.FC = () => {
               GitCard<span className="text-blue-500">X</span>
             </span>
             <span className="text-[10px] uppercase font-mono font-semibold px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20 tracking-wider">
-              Preview
+              {APP_VERSION_TAG}
             </span>
           </div>
         </Link>

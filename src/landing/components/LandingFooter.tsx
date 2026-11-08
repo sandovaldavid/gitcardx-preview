@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Sparkles, Heart } from 'lucide-react';
+import { APP_VERSION_TAG } from '@/lib/version';
 
 const GithubIcon: React.FC<{ className?: string }> = ({ className = 'w-3.5 h-3.5' }) => (
   <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
@@ -23,6 +24,9 @@ export const LandingFooter: React.FC = () => {
           <Link href="/" className="flex items-center gap-2 text-zinc-300 font-semibold text-sm">
             <Sparkles className="w-4 h-4 text-blue-400" />
             <span>GitCardX Preview</span>
+            <span className="text-[10px] font-mono text-zinc-400 bg-zinc-900 border border-zinc-800 px-1.5 py-0.5 rounded font-normal">
+              {APP_VERSION_TAG}
+            </span>
           </Link>
           <span className="hidden sm:inline text-zinc-700">·</span>
           <span>Crafted with</span>
