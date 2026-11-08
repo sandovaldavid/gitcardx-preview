@@ -16,6 +16,8 @@ describe('GitHubService', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.unstubAllGlobals();
+    GitHubService.clearCache();
     service = new GitHubService('mock-token');
   });
 
@@ -123,12 +125,65 @@ describe('GitHubService', () => {
       );
     });
 
-    it('throws friendly error when rate limit is exceeded', async () => {
+    it('throws friendly error when rate limit is exceeded on both GraphQL and REST', async () => {
       mockGraphql.mockRejectedValueOnce(new Error('API rate limit exceeded for user ID 12345.'));
+      const mockFetch = vi.fn().mockResolvedValue({ ok: false, status: 403 });
+      vi.stubGlobal('fetch', mockFetch);
 
-      await expect(service.getRepository('some', 'repo')).rejects.toThrow(
+      await expect(service.getRepository('unknown-random', 'random-repo')).rejects.toThrow(
         'GitHub API rate limit exceeded. Please try again shortly.'
       );
+    });
+
+    it('falls back to REST API seamlessly when GraphQL quota is exhausted and caches response', async () => {
+      mockGraphql.mockRejectedValueOnce(
+        new Error('Request quota exhausted for request POST /graphql')
+      );
+      const mockFetch = vi.fn().mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({
+          name: 'my-project',
+          owner: {
+            login: 'dev-user',
+            avatar_url: 'https://avatars.githubusercontent.com/u/999',
+            type: 'User',
+          },
+          description: 'A resilient project',
+          homepage: null,
+          stargazers_count: 55,
+          forks_count: 5,
+          language: 'Go',
+          topics: ['tools'],
+          license: { spdx_id: 'MIT' },
+        }),
+      });
+      vi.stubGlobal('fetch', mockFetch);
+
+      const repo = await service.getRepository('dev-user', 'my-project');
+      expect(repo.name).toBe('my-project');
+      expect(repo.stars).toBe(55);
+      expect(repo.primaryLanguage?.name).toBe('Go');
+
+      // Subsequent call should hit cache without calling GraphQL or fetch again
+      mockGraphql.mockClear();
+      mockFetch.mockClear();
+
+      const cachedRepo = await service.getRepository('dev-user', 'my-project');
+      expect(cachedRepo.name).toBe('my-project');
+      expect(mockGraphql).not.toHaveBeenCalled();
+      expect(mockFetch).not.toHaveBeenCalled();
+    });
+
+    it('returns known emergency fallback for showcase repo when completely rate limited', async () => {
+      mockGraphql.mockRejectedValueOnce(new Error('API rate limit exceeded'));
+      const mockFetch = vi.fn().mockResolvedValue({ ok: false, status: 403 });
+      vi.stubGlobal('fetch', mockFetch);
+
+      const repo = await service.getRepository('sandovaldavid', 'portfolio');
+      expect(repo.name).toBe('portfolio');
+      expect(repo.stars).toBe(8);
+      expect(repo.primaryLanguage?.name).toBe('TypeScript');
     });
 
     it('fetches via REST API v3 when no auth token is provided', async () => {

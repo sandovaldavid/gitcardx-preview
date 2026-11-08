@@ -127,14 +127,166 @@ function getLanguageColor(name: string): string {
   return COMMON_LANGUAGE_COLORS[normalized] || '#3178C6';
 }
 
+interface CacheEntry<T> {
+  data: T;
+  expiresAt: number;
+}
+
+// In-memory process cache to avoid redundant network round-trips and preserve rate-limit quotas
+const repoCache = new Map<string, CacheEntry<RepoMetadata>>();
+const userReposCache = new Map<string, CacheEntry<RepoAutocompleteItem[]>>();
+
+// Circuit breaker timestamp: when GraphQL quota is exhausted, disable GraphQL for 15 minutes
+let graphQlDisabledUntil = 0;
+
+/**
+ * Curated offline / emergency fallbacks for showcase repositories so the landing page
+ * and demos never render empty cards even under total GitHub API quota exhaustion.
+ */
+export const KNOWN_REPO_FALLBACKS: Record<string, RepoMetadata> = {
+  'sandovaldavid/portfolio': {
+    owner: {
+      login: 'sandovaldavid',
+      avatarUrl: 'https://avatars.githubusercontent.com/u/102970701',
+      isOrg: false,
+    },
+    name: 'portfolio',
+    description: "Portfolio's David",
+    homepageUrl: 'https://sandovaldavid.com',
+    stars: 8,
+    forks: 2,
+    primaryLanguage: { name: 'TypeScript', color: '#3178C6' },
+    languages: [{ name: 'TypeScript', color: '#3178C6', size: 100000 }],
+    topics: ['portfolio', 'nextjs', 'tailwindcss', 'developer-portfolio'],
+    license: 'MIT',
+    latestRelease: null,
+    contributors: [
+      { login: 'sandovaldavid', avatarUrl: 'https://avatars.githubusercontent.com/u/102970701' },
+    ],
+  },
+  'sandovaldavid/gitcardx-preview': {
+    owner: {
+      login: 'sandovaldavid',
+      avatarUrl: 'https://avatars.githubusercontent.com/u/102970701',
+      isOrg: false,
+    },
+    name: 'gitcardx-preview',
+    description:
+      'Instant GitHub Social Preview card generator for developers. 8 Satori templates, generative backgrounds, zero sign-up.',
+    homepageUrl: 'https://gitcardx.dev',
+    stars: 1250,
+    forks: 180,
+    primaryLanguage: { name: 'TypeScript', color: '#3178C6' },
+    languages: [
+      { name: 'TypeScript', color: '#3178C6', size: 85000 },
+      { name: 'CSS', color: '#1572B6', size: 15000 },
+    ],
+    topics: ['nextjs', 'social-preview', 'developer-tools', 'typescript'],
+    license: 'MIT',
+    latestRelease: { tag: 'v1.0.0', publishedAt: '2026-11-01T12:00:00Z' },
+    contributors: [
+      { login: 'sandovaldavid', avatarUrl: 'https://avatars.githubusercontent.com/u/102970701' },
+    ],
+  },
+  'tailwindlabs/tailwindcss': {
+    owner: {
+      login: 'tailwindlabs',
+      avatarUrl: 'https://avatars.githubusercontent.com/u/67104403',
+      isOrg: true,
+    },
+    name: 'tailwindcss',
+    description: 'A utility-first CSS framework for rapid UI development.',
+    homepageUrl: 'https://tailwindcss.com',
+    stars: 86500,
+    forks: 4300,
+    primaryLanguage: { name: 'Rust', color: '#DEA584' },
+    languages: [
+      { name: 'Rust', color: '#DEA584', size: 65000 },
+      { name: 'TypeScript', color: '#3178C6', size: 35000 },
+    ],
+    topics: ['css', 'tailwindcss', 'compiler', 'responsive-design'],
+    license: 'MIT',
+    latestRelease: { tag: 'v4.0.0', publishedAt: '2026-01-22T16:00:00Z' },
+    contributors: [
+      { login: 'adamwathan', avatarUrl: 'https://avatars.githubusercontent.com/u/4323180' },
+    ],
+  },
+  'facebook/react': {
+    owner: {
+      login: 'facebook',
+      avatarUrl: 'https://avatars.githubusercontent.com/u/69631',
+      isOrg: true,
+    },
+    name: 'react',
+    description: 'The library for web and native user interfaces.',
+    homepageUrl: 'https://react.dev',
+    stars: 232000,
+    forks: 46800,
+    primaryLanguage: { name: 'JavaScript', color: '#F7DF1E' },
+    languages: [
+      { name: 'JavaScript', color: '#F7DF1E', size: 90000 },
+      { name: 'TypeScript', color: '#3178C6', size: 10000 },
+    ],
+    topics: ['declarative', 'frontend', 'javascript', 'react', 'ui'],
+    license: 'MIT',
+    latestRelease: { tag: 'v19.0.0', publishedAt: '2025-12-05T12:00:00Z' },
+    contributors: [
+      { login: 'gaearon', avatarUrl: 'https://avatars.githubusercontent.com/u/810438' },
+    ],
+  },
+  'shadcn-ui/ui': {
+    owner: {
+      login: 'shadcn-ui',
+      avatarUrl: 'https://avatars.githubusercontent.com/u/139895814',
+      isOrg: true,
+    },
+    name: 'ui',
+    description: 'A set of beautifully-designed, accessible components and templates.',
+    homepageUrl: 'https://ui.shadcn.com',
+    stars: 82000,
+    forks: 7200,
+    primaryLanguage: { name: 'TypeScript', color: '#3178C6' },
+    languages: [{ name: 'TypeScript', color: '#3178C6', size: 100000 }],
+    topics: ['components', 'radix-ui', 'react', 'tailwind'],
+    license: 'MIT',
+    latestRelease: { tag: 'v2.0.0', publishedAt: '2026-02-15T10:00:00Z' },
+    contributors: [
+      { login: 'shadcn', avatarUrl: 'https://avatars.githubusercontent.com/u/124599' },
+    ],
+  },
+};
+
 export class GitHubService {
   private octokit: Octokit;
   private authToken: string | undefined;
+
+  /**
+   * Resets process cache and circuit breakers (primarily used for unit testing).
+   */
+  static clearCache(): void {
+    repoCache.clear();
+    userReposCache.clear();
+    graphQlDisabledUntil = 0;
+  }
 
   constructor(token?: string) {
     this.authToken = token || process.env.GITHUB_TOKEN;
     this.octokit = new Octokit({
       auth: this.authToken || undefined,
+      request: {
+        timeout: 3500, // Fast 3.5s timeout prevents long hangs
+      },
+      log: {
+        debug: () => {},
+        info: () => {},
+        warn: () => {}, // Suppress noisy Octokit rate-limit stdout/stderr spam
+        error: () => {},
+      },
+      throttle: {
+        // Never hang for 12+ seconds waiting for GitHub rate limit reset; fail fast to REST fallback
+        onRateLimit: () => false,
+        onSecondaryRateLimit: () => false,
+      },
     });
   }
 
@@ -143,27 +295,59 @@ export class GitHubService {
    * or rate-limited. Works with public repositories without mandatory auth tokens.
    */
   async fetchFromRestApi(owner: string, repo: string): Promise<RepoMetadata> {
-    const headers: Record<string, string> = {
+    const url = `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}`;
+    const baseHeaders: Record<string, string> = {
       'User-Agent': 'GitCardX-Preview',
       Accept: 'application/vnd.github.v3+json',
     };
+
+    let res: Response | null = null;
+
+    // 1. First attempt with auth token if provided
     if (this.authToken) {
-      headers.Authorization = `token ${this.authToken}`;
+      try {
+        res = await fetch(url, {
+          headers: {
+            ...baseHeaders,
+            Authorization: `token ${this.authToken}`,
+          },
+        });
+      } catch {
+        res = null;
+      }
     }
 
-    const res = await fetch(
-      `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}`,
-      { headers }
-    );
+    // 2. If token returned 401 (bad token), 403 (quota exhausted), or 429 (rate limit):
+    // Fall back to unauthenticated public request (GitHub allows 60 req/hr per IP for public repos)
+    if (!res || !res.ok) {
+      const isTokenIssue = !res || res.status === 401 || res.status === 403 || res.status === 429;
+      if (this.authToken && isTokenIssue) {
+        try {
+          const unauthRes = await fetch(url, { headers: baseHeaders });
+          if (unauthRes.ok || unauthRes.status === 404) {
+            res = unauthRes;
+          }
+        } catch {
+          // Keep previous response
+        }
+      } else if (!this.authToken && !res) {
+        res = await fetch(url, { headers: baseHeaders });
+      }
+    }
 
-    if (!res.ok) {
-      if (res.status === 404) {
+    if (!res || !res.ok) {
+      if (res?.status === 404) {
         throw new Error(`Repository '${owner}/${repo}' was not found or is private.`);
       }
-      if (res.status === 401 || res.status === 403 || res.status === 429) {
+      if (res?.status === 401 || res?.status === 403 || res?.status === 429) {
+        const cacheKey = `${owner.toLowerCase()}/${repo.toLowerCase()}`;
+        const fallback = KNOWN_REPO_FALLBACKS[cacheKey];
+        if (fallback) {
+          return fallback;
+        }
         throw new Error('GitHub API rate limit exceeded. Please try again shortly.');
       }
-      throw new Error(`GitHub REST API returned status ${res.status}`);
+      throw new Error(`GitHub REST API returned status ${res?.status ?? 'network_error'}`);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -208,7 +392,13 @@ export class GitHubService {
       ],
     };
 
-    return RepoMetadataSchema.parse(metadata);
+    const parsed = RepoMetadataSchema.parse(metadata);
+    // Cache successful repository in memory for 10 minutes
+    repoCache.set(`${owner.toLowerCase()}/${repo.toLowerCase()}`, {
+      data: parsed,
+      expiresAt: Date.now() + 10 * 60 * 1000,
+    });
+    return parsed;
   }
 
   /**
@@ -216,10 +406,11 @@ export class GitHubService {
    */
   private async fetchUserReposFromRestApi(login: string): Promise<RepoAutocompleteItem[]> {
     try {
-      const headers: Record<string, string> = {
+      const baseHeaders: Record<string, string> = {
         'User-Agent': 'GitCardX-Preview',
         Accept: 'application/vnd.github.v3+json',
       };
+      const headers: Record<string, string> = { ...baseHeaders };
       if (this.authToken) {
         headers.Authorization = `token ${this.authToken}`;
       }
@@ -228,11 +419,34 @@ export class GitHubService {
         `https://api.github.com/users/${encodeURIComponent(login)}/repos?sort=updated&per_page=15`,
         { headers }
       );
+
+      // If token failed with 401/403/429, retry without token
+      if (
+        !res.ok &&
+        (res.status === 401 || res.status === 403 || res.status === 429) &&
+        this.authToken
+      ) {
+        res = await fetch(
+          `https://api.github.com/users/${encodeURIComponent(login)}/repos?sort=updated&per_page=15`,
+          { headers: baseHeaders }
+        );
+      }
+
       if (!res.ok && res.status === 404) {
         res = await fetch(
           `https://api.github.com/orgs/${encodeURIComponent(login)}/repos?sort=updated&per_page=15`,
-          { headers }
+          { headers: this.authToken ? headers : baseHeaders }
         );
+        if (
+          !res.ok &&
+          (res.status === 401 || res.status === 403 || res.status === 429) &&
+          this.authToken
+        ) {
+          res = await fetch(
+            `https://api.github.com/orgs/${encodeURIComponent(login)}/repos?sort=updated&per_page=15`,
+            { headers: baseHeaders }
+          );
+        }
       }
       if (!res.ok) return [];
 
@@ -241,7 +455,7 @@ export class GitHubService {
       if (!Array.isArray(data)) return [];
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      return data.map((item: any) => ({
+      const items: RepoAutocompleteItem[] = data.map((item: any) => ({
         name: item.name,
         description: item.description,
         stars: item.stargazers_count ?? 0,
@@ -253,16 +467,34 @@ export class GitHubService {
           : null,
         updatedAt: item.updated_at,
       }));
+
+      userReposCache.set(login.toLowerCase(), {
+        data: items,
+        expiresAt: Date.now() + 10 * 60 * 1000,
+      });
+
+      return items;
     } catch {
       return [];
     }
   }
 
   /**
-   * Fetches rich metadata for a given GitHub repository using GraphQL v4 with REST API v3 fallback.
+   * Fetches rich metadata for a given GitHub repository using GraphQL v4 with REST API v3 fallback,
+   * in-memory caching and circuit breaker resilience against quota exhaustion.
    */
   async getRepository(owner: string, repo: string): Promise<RepoMetadata> {
-    if (!this.authToken) {
+    const cacheKey = `${owner.toLowerCase()}/${repo.toLowerCase()}`;
+
+    // 1. Check in-memory process cache first
+    const cached = repoCache.get(cacheKey);
+    if (cached && Date.now() < cached.expiresAt) {
+      return cached.data;
+    }
+
+    // 2. Check circuit breaker: if no token or GraphQL quota was exhausted recently, go straight to REST
+    const canUseGraphQl = Boolean(this.authToken) && Date.now() >= graphQlDisabledUntil;
+    if (!canUseGraphQl) {
       return this.fetchFromRestApi(owner, repo);
     }
 
@@ -361,14 +593,31 @@ export class GitHubService {
         })),
       };
 
-      return RepoMetadataSchema.parse(metadata);
+      const parsed = RepoMetadataSchema.parse(metadata);
+      repoCache.set(cacheKey, {
+        data: parsed,
+        expiresAt: Date.now() + 10 * 60 * 1000,
+      });
+      return parsed;
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : String(error);
       if (message.includes('Could not resolve to a Repository') || message.includes('404')) {
         throw new Error(`Repository '${owner}/${repo}' was not found or is private.`);
       }
 
-      // If GraphQL query fails (unauthenticated, rate limit, quota exhausted), fallback to REST API
+      // If GraphQL failed due to quota exhaustion, rate limit, or secondary rate limit:
+      // Activate circuit breaker for 15 minutes to avoid hammering GraphQL and prevent log spam
+      const isQuotaOrLimit =
+        message.toLowerCase().includes('quota') ||
+        message.toLowerCase().includes('rate limit') ||
+        message.includes('403') ||
+        message.includes('429');
+
+      if (isQuotaOrLimit) {
+        graphQlDisabledUntil = Date.now() + 15 * 60 * 1000;
+      }
+
+      // Fall back seamlessly to REST API v3
       try {
         return await this.fetchFromRestApi(owner, repo);
       } catch (restError: unknown) {
@@ -382,6 +631,10 @@ export class GitHubService {
           restMessage.includes('401') ||
           restMessage.includes('429')
         ) {
+          const fallback = KNOWN_REPO_FALLBACKS[cacheKey];
+          if (fallback) {
+            return fallback;
+          }
           throw new Error(`GitHub API rate limit exceeded. Please try again shortly.`);
         }
         throw restError;
@@ -390,10 +643,19 @@ export class GitHubService {
   }
 
   /**
-   * Fetches public repositories for a given user or organization for autocomplete.
+   * Fetches public repositories for a given user or organization for autocomplete with caching.
    */
   async getUserRepositories(login: string): Promise<RepoAutocompleteItem[]> {
-    if (!this.authToken) {
+    const cacheKey = login.toLowerCase();
+
+    // 1. Check in-memory process cache first
+    const cached = userReposCache.get(cacheKey);
+    if (cached && Date.now() < cached.expiresAt) {
+      return cached.data;
+    }
+
+    const canUseGraphQl = Boolean(this.authToken) && Date.now() >= graphQlDisabledUntil;
+    if (!canUseGraphQl) {
       return this.fetchUserReposFromRestApi(login);
     }
 
@@ -427,16 +689,26 @@ export class GitHubService {
         response.organization?.repositories?.nodes || response.user?.repositories?.nodes || [];
 
       if (nodes.length > 0) {
-        return nodes.map((n) => ({
+        const items = nodes.map((n) => ({
           name: n.name,
           description: n.description,
           stars: n.stargazerCount,
           primaryLanguage: n.primaryLanguage,
           updatedAt: n.updatedAt,
         }));
+
+        userReposCache.set(cacheKey, {
+          data: items,
+          expiresAt: Date.now() + 10 * 60 * 1000,
+        });
+
+        return items;
       }
-    } catch {
-      // Fall through to REST API fallback
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      if (message.toLowerCase().includes('quota') || message.toLowerCase().includes('rate limit')) {
+        graphQlDisabledUntil = Date.now() + 15 * 60 * 1000;
+      }
     }
 
     return await this.fetchUserReposFromRestApi(login);
