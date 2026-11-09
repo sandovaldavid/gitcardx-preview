@@ -58,6 +58,8 @@ export const CardVisibilitySchema = z.object({
   author: z.boolean().default(true),
   tagline: z.boolean().default(true),
   installCommand: z.boolean().default(true),
+  issues: z.boolean().default(false),
+  discussions: z.boolean().default(false),
 });
 
 export const CardConfigSchema = z.object({
@@ -112,6 +114,9 @@ export const RepoMetadataSchema = z.object({
     })
     .nullable(),
   contributors: z.array(RepoContributorSchema),
+  contributorsCount: z.number().int().nonnegative().optional(),
+  openIssuesCount: z.number().int().nonnegative().optional(),
+  discussionsCount: z.number().int().nonnegative().optional(),
 });
 
 export const BrandKitSchema = z.object({

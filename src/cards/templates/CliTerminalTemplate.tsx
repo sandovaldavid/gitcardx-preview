@@ -115,7 +115,7 @@ export const CliTerminalTemplate: React.FC<CardRenderProps> = ({
         >
           <h1
             style={{
-              fontSize: 54,
+              fontSize: 62,
               fontWeight: 800,
               letterSpacing: '-0.02em',
               lineHeight: 1.1,
@@ -132,8 +132,8 @@ export const CliTerminalTemplate: React.FC<CardRenderProps> = ({
           {visibility.tagline && (
             <p
               style={{
-                fontSize: 22,
-                lineHeight: 1.4,
+                fontSize: 26,
+                lineHeight: 1.38,
                 color: palette.text,
                 opacity: 0.9,
                 margin: 0,
@@ -208,6 +208,26 @@ export const CliTerminalTemplate: React.FC<CardRenderProps> = ({
               textColor={palette.text}
               borderColor={palette.border}
               accentColor={palette.accent}
+            />
+          )}
+          {visibility.issues && typeof repo.openIssuesCount === 'number' && (
+            <MetricPill
+              type="issues"
+              value={repo.openIssuesCount}
+              textColor={palette.text}
+              borderColor={palette.border}
+              accentColor={palette.accent}
+              label="issues"
+            />
+          )}
+          {visibility.discussions && typeof repo.discussionsCount === 'number' && (
+            <MetricPill
+              type="discussions"
+              value={repo.discussionsCount}
+              textColor={palette.text}
+              borderColor={palette.border}
+              accentColor={palette.accent}
+              label="discussions"
             />
           )}
           {visibility.license && repo.license && (

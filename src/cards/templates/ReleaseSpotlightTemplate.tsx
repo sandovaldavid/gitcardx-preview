@@ -165,7 +165,7 @@ export const ReleaseSpotlightTemplate: React.FC<CardRenderProps> = ({
 
         <h1
           style={{
-            fontSize: 56,
+            fontSize: 64,
             fontWeight: 800,
             letterSpacing: '-0.025em',
             lineHeight: 1.1,
@@ -183,8 +183,8 @@ export const ReleaseSpotlightTemplate: React.FC<CardRenderProps> = ({
         {visibility.tagline && (
           <p
             style={{
-              fontSize: 24,
-              lineHeight: 1.4,
+              fontSize: 28,
+              lineHeight: 1.38,
               color: palette.text,
               opacity: 0.9,
               margin: 0,
@@ -242,6 +242,26 @@ export const ReleaseSpotlightTemplate: React.FC<CardRenderProps> = ({
               textColor={palette.text}
               borderColor={palette.border}
               accentColor={palette.accent}
+            />
+          )}
+          {visibility.issues && typeof repo.openIssuesCount === 'number' && (
+            <MetricPill
+              type="issues"
+              value={repo.openIssuesCount}
+              textColor={palette.text}
+              borderColor={palette.border}
+              accentColor={palette.accent}
+              label="issues"
+            />
+          )}
+          {visibility.discussions && typeof repo.discussionsCount === 'number' && (
+            <MetricPill
+              type="discussions"
+              value={repo.discussionsCount}
+              textColor={palette.text}
+              borderColor={palette.border}
+              accentColor={palette.accent}
+              label="discussions"
             />
           )}
           {visibility.license && repo.license && (

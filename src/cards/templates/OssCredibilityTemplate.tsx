@@ -7,6 +7,7 @@ import { LanguageBar } from '../primitives/LanguageBar';
 import { MetricPill } from '../primitives/MetricPill';
 import { StackBadgeRow } from '../primitives/StackBadgeRow';
 import { StarMetricIcon, ForkMetricIcon } from '../icons/metricIcons';
+import { formatCompactMetric } from '../primitives/formatters';
 import { detectTechStack } from '@/core/domain/stackMapper';
 import { SafeZoneGuides } from '../primitives/SafeZoneGuides';
 
@@ -83,6 +84,26 @@ export const OssCredibilityTemplate: React.FC<CardRenderProps> = ({
         )}
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          {visibility.issues && typeof repo.openIssuesCount === 'number' && (
+            <MetricPill
+              type="issues"
+              value={formatCompactMetric(repo.openIssuesCount)}
+              textColor={palette.text}
+              borderColor={palette.border}
+              accentColor={palette.accent}
+              label="issues"
+            />
+          )}
+          {visibility.discussions && typeof repo.discussionsCount === 'number' && (
+            <MetricPill
+              type="discussions"
+              value={formatCompactMetric(repo.discussionsCount)}
+              textColor={palette.text}
+              borderColor={palette.border}
+              accentColor={palette.accent}
+              label="discussions"
+            />
+          )}
           {visibility.license && repo.license && (
             <MetricPill
               type="license"
@@ -127,7 +148,7 @@ export const OssCredibilityTemplate: React.FC<CardRenderProps> = ({
         >
           <h1
             style={{
-              fontSize: 58,
+              fontSize: 64,
               fontWeight: 800,
               letterSpacing: '-0.03em',
               lineHeight: 1.08,
@@ -144,8 +165,8 @@ export const OssCredibilityTemplate: React.FC<CardRenderProps> = ({
           {visibility.tagline && (
             <p
               style={{
-                fontSize: 22,
-                lineHeight: 1.4,
+                fontSize: 28,
+                lineHeight: 1.38,
                 color: palette.text,
                 opacity: 0.9,
                 margin: 0,
@@ -211,12 +232,12 @@ export const OssCredibilityTemplate: React.FC<CardRenderProps> = ({
                     color: palette.accent,
                   }}
                 >
-                  {repo.stars.toLocaleString()}
+                  {formatCompactMetric(repo.stars)}
                 </span>
               </div>
               <span
                 style={{
-                  fontSize: 15,
+                  fontSize: 16,
                   fontWeight: 700,
                   color: palette.text,
                   opacity: 0.9,
@@ -257,12 +278,12 @@ export const OssCredibilityTemplate: React.FC<CardRenderProps> = ({
                     color: palette.text,
                   }}
                 >
-                  {repo.forks.toLocaleString()}
+                  {formatCompactMetric(repo.forks)}
                 </span>
               </div>
               <span
                 style={{
-                  fontSize: 15,
+                  fontSize: 16,
                   fontWeight: 700,
                   color: palette.text,
                   opacity: 0.9,
@@ -303,7 +324,9 @@ export const OssCredibilityTemplate: React.FC<CardRenderProps> = ({
                 size={44}
               />
               <span style={{ fontSize: 16, fontWeight: 600, color: palette.text, opacity: 0.95 }}>
-                Active maintainers
+                {repo.contributorsCount && repo.contributorsCount > 1
+                  ? `${formatCompactMetric(repo.contributorsCount)} maintainers`
+                  : 'Active maintainers'}
               </span>
             </div>
           )}

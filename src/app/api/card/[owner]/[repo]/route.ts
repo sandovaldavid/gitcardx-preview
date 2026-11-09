@@ -183,6 +183,8 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
       tagline: searchParams.get('tagline') !== 'false',
       installCommand:
         searchParams.get('install') !== 'false' && searchParams.get('installCommand') !== 'false',
+      issues: searchParams.get('issues') === 'true',
+      discussions: searchParams.get('discussions') === 'true',
     },
   };
 
