@@ -10,6 +10,7 @@ import { StarMetricIcon, ForkMetricIcon } from '../icons/metricIcons';
 import { formatCompactMetric } from '../primitives/formatters';
 import { detectTechStack } from '@/core/domain/stackMapper';
 import { SafeZoneGuides } from '../primitives/SafeZoneGuides';
+import { ThemeEngine } from '@/core/theme/ThemeEngine';
 
 export const OssCredibilityTemplate: React.FC<CardRenderProps> = ({
   repo,
@@ -20,6 +21,10 @@ export const OssCredibilityTemplate: React.FC<CardRenderProps> = ({
   const isCenter = config.contentAlign === 'center';
   const fontHeading = config.typography?.fontHeading || 'Inter';
   const techStack = detectTechStack(repo.languages, repo.topics, 4);
+  const isLight = ThemeEngine.isLightColor(palette.background);
+  const statBoxBg = isLight ? 'rgba(0, 0, 0, 0.03)' : 'rgba(255, 255, 255, 0.04)';
+  const verifiedColor = ThemeEngine.ensureReadableText(palette.background, palette.accent, false);
+  const starAccentColor = ThemeEngine.ensureReadableText(palette.background, palette.accent, true);
 
   return (
     <div
@@ -49,7 +54,7 @@ export const OssCredibilityTemplate: React.FC<CardRenderProps> = ({
         style={{
           display: 'flex',
           alignItems: 'center',
-          justifyContent: isCenter && !visibility.author ? 'center' : 'space-between',
+          justifyContent: 'space-between',
           zIndex: 1,
         }}
       >
@@ -66,18 +71,12 @@ export const OssCredibilityTemplate: React.FC<CardRenderProps> = ({
                 height: 56,
                 borderRadius: 14,
                 border: `2px solid ${palette.border}`,
-                backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                backgroundColor: isLight ? 'rgba(0, 0, 0, 0.04)' : 'rgba(255, 255, 255, 0.05)',
               }}
             />
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <span style={{ fontSize: 24, fontWeight: 700, color: palette.text }}>
-                {repo.owner.login}
-              </span>
-              <span style={{ fontSize: 22, color: palette.border, opacity: 0.8 }}>/</span>
-              <span style={{ fontSize: 24, fontWeight: 800, color: palette.accent }}>
-                {repo.name}
-              </span>
-            </div>
+            <span style={{ fontSize: 24, fontWeight: 700, color: palette.text }}>
+              {repo.owner.login}
+            </span>
           </div>
         ) : (
           <div />
@@ -129,10 +128,10 @@ export const OssCredibilityTemplate: React.FC<CardRenderProps> = ({
       <div
         style={{
           display: 'flex',
-          flexDirection: isCenter ? 'column' : 'row',
-          justifyContent: isCenter ? 'center' : 'space-between',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
           alignItems: 'center',
-          gap: isCenter ? 24 : 40,
+          gap: 40,
           zIndex: 1,
         }}
       >
@@ -143,7 +142,8 @@ export const OssCredibilityTemplate: React.FC<CardRenderProps> = ({
             alignItems: isCenter ? 'center' : 'flex-start',
             textAlign: isCenter ? 'center' : 'left',
             gap: 16,
-            flex: isCenter ? undefined : 1,
+            flex: 1,
+            minWidth: 0,
           }}
         >
           <h1
@@ -198,104 +198,107 @@ export const OssCredibilityTemplate: React.FC<CardRenderProps> = ({
         </div>
 
         {/* Hero Stat Box */}
-        <div
-          style={{
-            display: 'flex',
-            gap: 18,
-          }}
-        >
-          {visibility.stars && (
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                paddingTop: 20,
-                paddingBottom: 20,
-                paddingLeft: 30,
-                paddingRight: 30,
-                borderRadius: 20,
-                border: `1.5px solid ${palette.border}`,
-                backgroundColor: 'rgba(255, 255, 255, 0.04)',
-                gap: 8,
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                <StarMetricIcon color={palette.accent} size={32} />
-                <span
-                  style={{
-                    fontSize: 46,
-                    fontWeight: 800,
-                    letterSpacing: '-0.02em',
-                    lineHeight: 1,
-                    color: palette.accent,
-                  }}
-                >
-                  {formatCompactMetric(repo.stars)}
-                </span>
-              </div>
-              <span
+        {(visibility.stars || visibility.forks) && (
+          <div
+            style={{
+              display: 'flex',
+              gap: 18,
+              flexShrink: 0,
+            }}
+          >
+            {visibility.stars && (
+              <div
                 style={{
-                  fontSize: 16,
-                  fontWeight: 700,
-                  color: palette.text,
-                  opacity: 0.9,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.06em',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  paddingTop: 20,
+                  paddingBottom: 20,
+                  paddingLeft: 30,
+                  paddingRight: 30,
+                  borderRadius: 20,
+                  border: `1.5px solid ${palette.border}`,
+                  backgroundColor: statBoxBg,
+                  gap: 8,
                 }}
               >
-                GitHub Stars
-              </span>
-            </div>
-          )}
-
-          {visibility.forks && (
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                paddingTop: 20,
-                paddingBottom: 20,
-                paddingLeft: 30,
-                paddingRight: 30,
-                borderRadius: 20,
-                border: `1.5px solid ${palette.border}`,
-                backgroundColor: 'rgba(255, 255, 255, 0.04)',
-                gap: 8,
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                <ForkMetricIcon color={palette.text} size={32} />
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <StarMetricIcon color={starAccentColor} size={32} />
+                  <span
+                    style={{
+                      fontSize: 46,
+                      fontWeight: 800,
+                      letterSpacing: '-0.02em',
+                      lineHeight: 1,
+                      color: starAccentColor,
+                    }}
+                  >
+                    {formatCompactMetric(repo.stars)}
+                  </span>
+                </div>
                 <span
                   style={{
-                    fontSize: 46,
-                    fontWeight: 800,
-                    letterSpacing: '-0.02em',
-                    lineHeight: 1,
+                    fontSize: 16,
+                    fontWeight: 700,
                     color: palette.text,
+                    opacity: 0.9,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.06em',
                   }}
                 >
-                  {formatCompactMetric(repo.forks)}
+                  GitHub Stars
                 </span>
               </div>
-              <span
+            )}
+
+            {visibility.forks && (
+              <div
                 style={{
-                  fontSize: 16,
-                  fontWeight: 700,
-                  color: palette.text,
-                  opacity: 0.9,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.06em',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  paddingTop: 20,
+                  paddingBottom: 20,
+                  paddingLeft: 30,
+                  paddingRight: 30,
+                  borderRadius: 20,
+                  border: `1.5px solid ${palette.border}`,
+                  backgroundColor: statBoxBg,
+                  gap: 8,
                 }}
               >
-                Forks
-              </span>
-            </div>
-          )}
-        </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <ForkMetricIcon color={palette.text} size={32} />
+                  <span
+                    style={{
+                      fontSize: 46,
+                      fontWeight: 800,
+                      letterSpacing: '-0.02em',
+                      lineHeight: 1,
+                      color: palette.text,
+                    }}
+                  >
+                    {formatCompactMetric(repo.forks)}
+                  </span>
+                </div>
+                <span
+                  style={{
+                    fontSize: 16,
+                    fontWeight: 700,
+                    color: palette.text,
+                    opacity: 0.9,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.06em',
+                  }}
+                >
+                  Forks
+                </span>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Bottom Footer: Contributors & Languages */}
@@ -311,11 +314,10 @@ export const OssCredibilityTemplate: React.FC<CardRenderProps> = ({
           style={{
             display: 'flex',
             alignItems: 'center',
-            justifyContent: isCenter ? 'center' : 'space-between',
-            gap: isCenter ? 24 : 0,
+            justifyContent: 'space-between',
           }}
         >
-          {visibility.contributors && repo.contributors.length > 0 && (
+          {visibility.contributors && repo.contributors.length > 0 ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
               <AvatarGroup
                 contributors={repo.contributors}
@@ -331,10 +333,12 @@ export const OssCredibilityTemplate: React.FC<CardRenderProps> = ({
                     : 'Active contributors'}
               </span>
             </div>
+          ) : (
+            <div />
           )}
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontSize: 15, fontWeight: 600, color: palette.accent }}>
+            <span style={{ fontSize: 15, fontWeight: 600, color: verifiedColor }}>
               Verified open source repository
             </span>
           </div>

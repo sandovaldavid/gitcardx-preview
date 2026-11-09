@@ -6,6 +6,7 @@ import { FormattedText } from '../primitives/FormattedText';
 import { MetricPill } from '../primitives/MetricPill';
 import { suggestInstallCommand } from '@/core/domain/stackMapper';
 import { SafeZoneGuides } from '../primitives/SafeZoneGuides';
+import { ThemeEngine } from '@/core/theme/ThemeEngine';
 
 export const CliTerminalTemplate: React.FC<CardRenderProps> = ({
   repo,
@@ -16,6 +17,8 @@ export const CliTerminalTemplate: React.FC<CardRenderProps> = ({
   const isCenter = config.contentAlign === 'center';
   const fontHeading = config.typography?.fontHeading || 'Inter';
   const fontMono = config.typography?.fontMono || 'JetBrains Mono';
+  const isLight = ThemeEngine.isLightColor(palette.background);
+  const statusTextColor = isLight ? '#15803d' : '#4ade80';
   const defaultCmd = suggestInstallCommand(
     repo.languages,
     repo.topics,
@@ -52,7 +55,7 @@ export const CliTerminalTemplate: React.FC<CardRenderProps> = ({
         style={{
           display: 'flex',
           alignItems: 'center',
-          justifyContent: isCenter && !visibility.author ? 'center' : 'space-between',
+          justifyContent: 'space-between',
           zIndex: 1,
         }}
       >
@@ -77,7 +80,7 @@ export const CliTerminalTemplate: React.FC<CardRenderProps> = ({
                 fontWeight: 600,
               }}
             >
-              {repo.owner.login}/{repo.name}
+              {repo.owner.login}
             </span>
           </div>
         ) : (
@@ -165,8 +168,7 @@ export const CliTerminalTemplate: React.FC<CardRenderProps> = ({
         style={{
           display: 'flex',
           alignItems: 'center',
-          justifyContent: isCenter ? 'center' : 'space-between',
-          gap: isCenter ? 24 : 0,
+          justifyContent: 'space-between',
           zIndex: 1,
         }}
       >
@@ -183,8 +185,8 @@ export const CliTerminalTemplate: React.FC<CardRenderProps> = ({
             style={{
               fontFamily: fontMono,
               fontSize: 14,
-              color: palette.text,
-              opacity: 0.88,
+              color: statusTextColor,
+              fontWeight: 600,
             }}
           >
             ready for production

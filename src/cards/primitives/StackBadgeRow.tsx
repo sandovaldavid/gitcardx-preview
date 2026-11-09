@@ -1,4 +1,5 @@
 import React from 'react';
+import { colord } from 'colord';
 import type { TechStackItem } from '@/core/domain/stackMapper';
 import { TechIcon } from './TechIcon';
 
@@ -16,6 +17,9 @@ export const StackBadgeRow: React.FC<StackBadgeRowProps> = ({
   showOfficialLogos = true,
 }) => {
   if (!items || items.length === 0) return null;
+
+  const isLightMode = colord(textColor).isDark();
+  const badgeBg = isLightMode ? 'rgba(0, 0, 0, 0.04)' : 'rgba(255, 255, 255, 0.05)';
 
   return (
     <div
@@ -39,7 +43,7 @@ export const StackBadgeRow: React.FC<StackBadgeRowProps> = ({
             paddingBottom: 7,
             borderRadius: 10,
             border: `1px solid ${borderColor}`,
-            backgroundColor: 'rgba(255, 255, 255, 0.05)',
+            backgroundColor: badgeBg,
             fontSize: 16,
             fontWeight: 600,
             color: textColor,

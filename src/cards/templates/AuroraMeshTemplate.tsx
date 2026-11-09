@@ -5,6 +5,7 @@ import { MetricPill } from '../primitives/MetricPill';
 import { StackBadgeRow } from '../primitives/StackBadgeRow';
 import { detectTechStack } from '@/core/domain/stackMapper';
 import { SafeZoneGuides } from '../primitives/SafeZoneGuides';
+import { ThemeEngine } from '@/core/theme/ThemeEngine';
 
 export const AuroraMeshTemplate: React.FC<CardRenderProps> = ({
   repo,
@@ -15,6 +16,7 @@ export const AuroraMeshTemplate: React.FC<CardRenderProps> = ({
   const isCenter = config.contentAlign === 'center';
   const fontHeading = config.typography?.fontHeading || 'Inter';
   const techStack = detectTechStack(repo.languages, repo.topics, 5);
+  const isLight = ThemeEngine.isLightColor(palette.background);
 
   return (
     <div
@@ -51,7 +53,7 @@ export const AuroraMeshTemplate: React.FC<CardRenderProps> = ({
           padding: 48,
           borderRadius: 24,
           border: `1px solid ${palette.border}`,
-          backgroundColor: 'rgba(255, 255, 255, 0.03)',
+          backgroundColor: isLight ? 'rgba(255, 255, 255, 0.7)' : 'rgba(255, 255, 255, 0.03)',
           zIndex: 1,
         }}
       >
@@ -60,10 +62,7 @@ export const AuroraMeshTemplate: React.FC<CardRenderProps> = ({
           style={{
             display: 'flex',
             alignItems: 'center',
-            justifyContent:
-              isCenter && (!visibility.author || !visibility.release || !repo.latestRelease)
-                ? 'center'
-                : 'space-between',
+            justifyContent: 'space-between',
           }}
         >
           {visibility.author ? (
@@ -79,7 +78,7 @@ export const AuroraMeshTemplate: React.FC<CardRenderProps> = ({
                   height: 54,
                   borderRadius: 14,
                   border: `2px solid ${palette.border}`,
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                  backgroundColor: isLight ? 'rgba(0, 0, 0, 0.04)' : 'rgba(255, 255, 255, 0.05)',
                 }}
               />
               <span style={{ fontSize: 24, fontWeight: 700, color: palette.text }}>
@@ -146,8 +145,7 @@ export const AuroraMeshTemplate: React.FC<CardRenderProps> = ({
           style={{
             display: 'flex',
             alignItems: 'center',
-            justifyContent: isCenter ? 'center' : 'space-between',
-            gap: isCenter ? 24 : 0,
+            justifyContent: 'space-between',
           }}
         >
           {visibility.techStack && techStack.length > 0 ? (

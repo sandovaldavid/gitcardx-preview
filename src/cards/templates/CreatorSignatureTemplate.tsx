@@ -7,6 +7,7 @@ import { StackBadgeRow } from '../primitives/StackBadgeRow';
 import { TechIcon } from '../primitives/TechIcon';
 import { detectTechStack } from '@/core/domain/stackMapper';
 import { SafeZoneGuides } from '../primitives/SafeZoneGuides';
+import { ThemeEngine } from '@/core/theme/ThemeEngine';
 
 export const CreatorSignatureTemplate: React.FC<CardRenderProps> = ({
   repo,
@@ -17,6 +18,7 @@ export const CreatorSignatureTemplate: React.FC<CardRenderProps> = ({
   const isCenter = config.contentAlign === 'center';
   const fontHeading = config.typography?.fontHeading || 'Inter';
   const techStack = detectTechStack(repo.languages, repo.topics, 4);
+  const isLight = ThemeEngine.isLightColor(palette.background);
 
   return (
     <div
@@ -54,7 +56,7 @@ export const CreatorSignatureTemplate: React.FC<CardRenderProps> = ({
             height: '100%',
             borderRadius: 20,
             border: `1px solid ${palette.border}`,
-            backgroundColor: 'rgba(255, 255, 255, 0.02)',
+            backgroundColor: isLight ? 'rgba(0, 0, 0, 0.02)' : 'rgba(255, 255, 255, 0.02)',
             zIndex: 1,
           }}
         >
@@ -124,7 +126,7 @@ export const CreatorSignatureTemplate: React.FC<CardRenderProps> = ({
         <div
           style={{
             display: 'flex',
-            justifyContent: isCenter ? 'center' : 'flex-end',
+            justifyContent: 'flex-end',
             width: '100%',
             gap: 10,
           }}
@@ -200,8 +202,7 @@ export const CreatorSignatureTemplate: React.FC<CardRenderProps> = ({
           style={{
             display: 'flex',
             alignItems: 'center',
-            justifyContent: isCenter ? 'center' : 'space-between',
-            gap: isCenter ? 24 : 0,
+            justifyContent: 'space-between',
             width: '100%',
           }}
         >

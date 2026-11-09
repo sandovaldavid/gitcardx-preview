@@ -7,6 +7,7 @@ import { TechIcon } from '../primitives/TechIcon';
 import { FormattedText } from '../primitives/FormattedText';
 import { detectTechStack } from '@/core/domain/stackMapper';
 import { SafeZoneGuides } from '../primitives/SafeZoneGuides';
+import { ThemeEngine } from '@/core/theme/ThemeEngine';
 
 export const LinearMinimalTemplate: React.FC<CardRenderProps> = ({
   repo,
@@ -17,6 +18,7 @@ export const LinearMinimalTemplate: React.FC<CardRenderProps> = ({
   const isCenter = config.contentAlign === 'center';
   const fontHeading = config.typography?.fontHeading || 'Inter';
   const techStack = detectTechStack(repo.languages, repo.topics, 5);
+  const isLight = ThemeEngine.isLightColor(palette.background);
 
   return (
     <div
@@ -46,8 +48,7 @@ export const LinearMinimalTemplate: React.FC<CardRenderProps> = ({
         style={{
           display: 'flex',
           alignItems: 'center',
-          justifyContent:
-            isCenter && (!visibility.author || !repo.primaryLanguage) ? 'center' : 'space-between',
+          justifyContent: 'space-between',
           zIndex: 1,
         }}
       >
@@ -64,7 +65,7 @@ export const LinearMinimalTemplate: React.FC<CardRenderProps> = ({
                 height: 56,
                 borderRadius: 14,
                 border: `2px solid ${palette.border}`,
-                backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                backgroundColor: isLight ? 'rgba(0, 0, 0, 0.04)' : 'rgba(255, 255, 255, 0.05)',
               }}
             />
             <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -176,8 +177,7 @@ export const LinearMinimalTemplate: React.FC<CardRenderProps> = ({
         style={{
           display: 'flex',
           alignItems: 'center',
-          justifyContent: isCenter ? 'center' : 'space-between',
-          gap: isCenter ? 24 : 0,
+          justifyContent: 'space-between',
           zIndex: 1,
         }}
       >

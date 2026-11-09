@@ -1,4 +1,5 @@
 import React from 'react';
+import { colord } from 'colord';
 import { MetricIcon, MetricType } from '../icons/metricIcons';
 import { formatCompactMetric } from './formatters';
 
@@ -26,6 +27,8 @@ export const MetricPill: React.FC<MetricPillProps> = ({
   }
 
   const displayValue = typeof value === 'number' ? formatCompactMetric(value) : value;
+  const isLightMode = colord(textColor).isDark();
+  const pillBg = isLightMode ? 'rgba(0, 0, 0, 0.04)' : 'rgba(255, 255, 255, 0.05)';
 
   return (
     <div
@@ -39,7 +42,7 @@ export const MetricPill: React.FC<MetricPillProps> = ({
         paddingBottom: 8,
         borderRadius: 9999,
         border: `1px solid ${borderColor}`,
-        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+        backgroundColor: pillBg,
         fontSize: 19,
         fontWeight: 700,
         color: textColor,

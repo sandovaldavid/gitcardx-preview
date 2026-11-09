@@ -1,4 +1,5 @@
 import React from 'react';
+import { colord } from 'colord';
 import type { RepoLanguageSchema } from '@/core/domain/schemas';
 import { z } from 'zod';
 import { resolveDistinctLanguageColors } from '@/core/domain/languageColors';
@@ -21,6 +22,9 @@ export const LanguageBar: React.FC<LanguageBarProps> = ({
 
   if (totalSize === 0) return null;
 
+  const isLightMode = colord(textColor).isDark();
+  const barBg = isLightMode ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.1)';
+
   return (
     <div
       style={{
@@ -38,7 +42,7 @@ export const LanguageBar: React.FC<LanguageBarProps> = ({
           width: '100%',
           borderRadius: 5,
           overflow: 'hidden',
-          backgroundColor: 'rgba(255, 255, 255, 0.1)',
+          backgroundColor: barBg,
         }}
       >
         {visible.map((lang) => {
