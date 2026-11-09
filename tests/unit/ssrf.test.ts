@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { isAllowedFontUrl, sanitizeImageUrl } from '@/core/security/ssrf';
+import { isAllowedEmojiUrl, isAllowedFontUrl, sanitizeImageUrl } from '@/core/security/ssrf';
 
 describe('sanitizeImageUrl (Anti-SSRF defense)', () => {
   const fallback = 'https://avatars.githubusercontent.com/u/0';
@@ -77,5 +77,43 @@ describe('isAllowedFontUrl (Fontsource API & CDN SSRF allowlist)', () => {
     ).toBe(false);
     expect(isAllowedFontUrl('https://user:pass@api.fontsource.org/v1/fonts')).toBe(false);
     expect(isAllowedFontUrl('https://api.fontsource.org:8443/v1/fonts')).toBe(false);
+  });
+});
+
+describe('isAllowedEmojiUrl (Twemoji CDN SSRF allowlist)', () => {
+  it('allows canonical HTTPS Twemoji hex codepoint SVG URLs', () => {
+    expect(
+      isAllowedEmojiUrl('https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f680.svg')
+    ).toBe(true);
+    expect(
+      isAllowedEmojiUrl(
+        'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/2764-fe0f-200d-1f525.svg'
+      )
+    ).toBe(true);
+  });
+
+  it('rejects non-HTTPS, custom ports, query strings, path traversal, and non-hex filenames', () => {
+    expect(
+      isAllowedEmojiUrl('http://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f680.svg')
+    ).toBe(false);
+    expect(
+      isAllowedEmojiUrl(
+        'https://cdn.jsdelivr.net:8443/gh/jdecked/twemoji@15.1.0/assets/svg/1f680.svg'
+      )
+    ).toBe(false);
+    expect(
+      isAllowedEmojiUrl(
+        'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f680.svg?token=1'
+      )
+    ).toBe(false);
+    expect(
+      isAllowedEmojiUrl(
+        'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/../secret.svg'
+      )
+    ).toBe(false);
+    expect(
+      isAllowedEmojiUrl('https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/UPPER.svg')
+    ).toBe(false);
+    expect(isAllowedEmojiUrl('https://evil.example.com/1f680.svg')).toBe(false);
   });
 });

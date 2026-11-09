@@ -4,6 +4,7 @@ import { Resvg } from '@resvg/resvg-js';
 import { CardRenderer } from '../templates/CardTemplateRegistry';
 import { getCardFonts } from '../fonts/fontLoader';
 import { DEFAULT_HEADING_FONT, DEFAULT_MONO_FONT, sanitizeFontFamily } from '../fonts/fontCatalog';
+import { loadSatoriAdditionalAsset } from '../emojis/emojiLoader';
 import type { RepoMetadata, CardConfig } from '@/core/domain/schemas';
 
 export async function renderCardToSvg(repo: RepoMetadata, config: CardConfig): Promise<string> {
@@ -29,6 +30,7 @@ export async function renderCardToSvg(repo: RepoMetadata, config: CardConfig): P
       weight: f.weight,
       style: f.style,
     })),
+    loadAdditionalAsset: loadSatoriAdditionalAsset,
   });
 
   return svg;

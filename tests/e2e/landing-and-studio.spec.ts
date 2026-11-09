@@ -215,6 +215,24 @@ test.describe('Gitframe Landing Page & Studio E2E', () => {
     await expect(page.locator('pre').first()).toContainText('font_heading=Outfit');
     await expect(page.locator('pre').first()).toContainText('font_mono=Space+Mono');
 
+    // Close modal, enter emojis in Tagline / Description, and verify downloaded SVG embeds emoji images
+    await page.locator('button:has(svg.lucide-x)').click();
+    const taglineBox = page.getByPlaceholder(/Short, impactful description/i);
+    await taglineBox.fill('🚀 Fast & ✨ accessible toolkit ❤️');
+    await expect(page.getByTestId('studio-card-stage')).toContainText('🚀 Fast & ✨ accessible');
+
+    await page.getByRole('button', { name: /export/i }).click();
+    await page.getByRole('button', { name: /GitHub Social Preview/i }).click();
+    const [renderResponse] = await Promise.all([
+      page.waitForResponse(
+        (res) => res.url().includes('/api/card/render') && res.request().method() === 'POST'
+      ),
+      page.getByRole('button', { name: 'Download SVG' }).click(),
+    ]);
+    expect(renderResponse.status()).toBe(200);
+    const exportedSvg = await renderResponse.text();
+    expect(exportedSvg).toContain('data:image/svg+xml;base64,');
+
     // Ensure zero Next.js runtime/dev overlay errors
     await expect(page.getByRole('button', { name: /Open issues overlay/i })).toHaveCount(0);
   });

@@ -109,3 +109,41 @@ export function isAllowedFontUrl(rawUrl?: string | null): boolean {
     return false;
   }
 }
+
+/**
+ * Validates server-side Twemoji SVG asset URLs against SSRF.
+ * Restricts outbound requests strictly to HTTPS jsDelivr Twemoji SVG codepoint paths.
+ */
+export function isAllowedEmojiUrl(rawUrl?: string | null): boolean {
+  if (!rawUrl) return false;
+
+  try {
+    const parsed = new URL(rawUrl.trim());
+    if (
+      parsed.protocol !== 'https:' ||
+      parsed.username ||
+      parsed.password ||
+      (parsed.port && parsed.port !== '443') ||
+      parsed.search ||
+      parsed.hash
+    ) {
+      return false;
+    }
+
+    const hostname = parsed.hostname.toLowerCase();
+    if (isPrivateOrLocalHostname(hostname) || hostname !== 'cdn.jsdelivr.net') {
+      return false;
+    }
+
+    const pathname = parsed.pathname;
+    if (pathname.includes('..') || pathname.includes('//')) {
+      return false;
+    }
+
+    return /^\/gh\/jdecked\/twemoji@15\.1\.0\/assets\/svg\/[0-9a-f]+(?:-[0-9a-f]+)*\.svg$/.test(
+      pathname
+    );
+  } catch {
+    return false;
+  }
+}

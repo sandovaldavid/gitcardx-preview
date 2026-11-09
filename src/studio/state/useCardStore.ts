@@ -88,6 +88,26 @@ export interface HydrateRepoOptions {
   templateId?: TemplateId;
 }
 
+function clampGraphemeLength(value: string, maxCodeUnits: number): string {
+  if (value.length <= maxCodeUnits) {
+    return value;
+  }
+
+  if (typeof Intl !== 'undefined' && 'Segmenter' in Intl) {
+    const segmenter = new Intl.Segmenter('en', { granularity: 'grapheme' });
+    let result = '';
+    for (const { segment } of segmenter.segment(value)) {
+      if (result.length + segment.length > maxCodeUnits) {
+        break;
+      }
+      result += segment;
+    }
+    return result;
+  }
+
+  return Array.from(value).slice(0, maxCodeUnits).join('').slice(0, maxCodeUnits);
+}
+
 export function deriveConfigForRepo(
   repo: RepoMetadata,
   baseConfig: CardConfig,
@@ -120,7 +140,10 @@ export function deriveConfigForRepo(
       ? { ...baseConfig.backgroundPattern, id: signaturePattern }
       : baseConfig.backgroundPattern,
     title: repo.name,
-    tagline: repo.description || 'Modern developer tool and open source project.',
+    tagline: clampGraphemeLength(
+      repo.description || 'Modern developer tool and open source project.',
+      500
+    ),
     installCommand: suggestedCmd,
     palette: newPalette,
   };

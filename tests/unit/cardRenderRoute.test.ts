@@ -137,4 +137,52 @@ describe('On-Demand Card Render Route (/api/card/render)', () => {
     expect(svg).not.toContain('169.254.169.254');
     expect(svg).toContain(validPng);
   });
+
+  it('embeds description emojis in downloaded SVG and PNG exports via /api/card/render', async () => {
+    const emojiDescription = '🚀 Instant GitHub cards ✨ built for developers ❤️';
+    const svgReq = new NextRequest('https://gitframe.dev/api/card/render', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        repo: {
+          ...DEFAULT_REPO,
+          description: emojiDescription,
+        },
+        config: {
+          ...DEFAULT_CONFIG,
+          tagline: emojiDescription,
+        },
+        format: 'svg',
+      }),
+    });
+
+    const svgRes = await POST(svgReq);
+    expect(svgRes.status).toBe(200);
+    const svg = await svgRes.text();
+    const embeddedEmojiCount = (svg.match(/data:image\/svg\+xml;base64,/g) || []).length;
+    expect(embeddedEmojiCount).toBeGreaterThanOrEqual(3);
+
+    const pngReq = new NextRequest('https://gitframe.dev/api/card/render', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        repo: {
+          ...DEFAULT_REPO,
+          description: emojiDescription,
+        },
+        config: {
+          ...DEFAULT_CONFIG,
+          tagline: emojiDescription,
+        },
+        format: 'png',
+        scale: 1,
+      }),
+    });
+
+    const pngRes = await POST(pngReq);
+    expect(pngRes.status).toBe(200);
+    const pngBuf = Buffer.from(await pngRes.arrayBuffer());
+    expect(pngBuf[0]).toBe(0x89);
+    expect(pngBuf[1]).toBe(0x50);
+  });
 });
