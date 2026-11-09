@@ -12,7 +12,7 @@ import { detectTechStack } from '@/core/domain/stackMapper';
 import { SafeZoneGuides } from '../primitives/SafeZoneGuides';
 import { ThemeEngine } from '@/core/theme/ThemeEngine';
 
-export const OssCredibilityTemplate: React.FC<CardRenderProps> = ({
+export const MetricShowcaseTemplate: React.FC<CardRenderProps> = ({
   repo,
   config,
   showSafeZoneGuides = false,
@@ -353,3 +353,5 @@ export const OssCredibilityTemplate: React.FC<CardRenderProps> = ({
     </div>
   );
 };
+
+export const OssCredibilityTemplate = MetricShowcaseTemplate;

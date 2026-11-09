@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server';
 import { GitHubService } from '@/core/services/GitHubService';
 import { renderCardToSvg, renderCardToPng } from '@/cards/engine/satoriRenderer';
 import {
-  TemplateIdSchema,
+  normalizeTemplateId,
   BackgroundPatternConfigSchema,
   ColorSchema,
   type CardConfig,
@@ -42,8 +42,7 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
 
   // Parse template
   const rawTemplate = searchParams.get('template');
-  const templateResult = TemplateIdSchema.safeParse(rawTemplate);
-  const templateId = templateResult.success ? templateResult.data : 'linear-minimal';
+  const templateId = normalizeTemplateId(rawTemplate);
 
   // Parse background pattern
   const rawBg = searchParams.get('bg');

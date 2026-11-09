@@ -7,7 +7,7 @@ import { detectTechStack } from '@/core/domain/stackMapper';
 import { SafeZoneGuides } from '../primitives/SafeZoneGuides';
 import { ThemeEngine } from '@/core/theme/ThemeEngine';
 
-export const AuroraMeshTemplate: React.FC<CardRenderProps> = ({
+export const AuroraGlassTemplate: React.FC<CardRenderProps> = ({
   repo,
   config,
   showSafeZoneGuides = false,
@@ -215,3 +215,5 @@ export const AuroraMeshTemplate: React.FC<CardRenderProps> = ({
     </div>
   );
 };
+
+export const AuroraMeshTemplate = AuroraGlassTemplate;

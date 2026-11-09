@@ -1,15 +1,32 @@
 import { z } from 'zod';
 
 export const TemplateIdSchema = z.enum([
-  'linear-minimal',
-  'cli-terminal',
-  'oss-credibility',
-  'sdk-package',
-  'aurora-mesh',
+  'modern-minimal',
+  'terminal-prompt',
+  'metric-showcase',
+  'split-console',
+  'aurora-glass',
   'blueprint-grid',
-  'release-spotlight',
-  'creator-signature',
+  'version-hero',
+  'author-spotlight',
 ]);
+
+export const TEMPLATE_LEGACY_MAP: Record<string, TemplateId> = {
+  'linear-minimal': 'modern-minimal',
+  'cli-terminal': 'terminal-prompt',
+  'oss-credibility': 'metric-showcase',
+  'sdk-package': 'split-console',
+  'aurora-mesh': 'aurora-glass',
+  'release-spotlight': 'version-hero',
+  'creator-signature': 'author-spotlight',
+};
+
+export function normalizeTemplateId(id: string | null | undefined): TemplateId {
+  if (!id) return 'modern-minimal';
+  if (TEMPLATE_LEGACY_MAP[id]) return TEMPLATE_LEGACY_MAP[id];
+  const parsed = TemplateIdSchema.safeParse(id);
+  return parsed.success ? parsed.data : 'modern-minimal';
+}
 
 export const ColorSchema = z
   .string()
@@ -63,7 +80,7 @@ export const CardVisibilitySchema = z.object({
 });
 
 export const CardConfigSchema = z.object({
-  templateId: TemplateIdSchema,
+  templateId: z.preprocess((val) => normalizeTemplateId(val as string), TemplateIdSchema),
   title: z.string().min(1).max(100),
   tagline: z.string().max(300),
   installCommand: z.string().max(120).optional(),
@@ -122,7 +139,7 @@ export const RepoMetadataSchema = z.object({
 export const BrandKitSchema = z.object({
   id: z.string().min(1),
   name: z.string().min(1).max(60),
-  templateId: TemplateIdSchema,
+  templateId: z.preprocess((val) => normalizeTemplateId(val as string), TemplateIdSchema),
   palette: PaletteSchema,
   typography: TypographySchema,
   backgroundPattern: BackgroundPatternConfigSchema,

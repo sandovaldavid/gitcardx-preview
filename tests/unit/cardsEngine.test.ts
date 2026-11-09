@@ -37,7 +37,7 @@ const mockRepo: RepoMetadata = {
 };
 
 const baseConfig: CardConfig = {
-  templateId: 'linear-minimal',
+  templateId: 'modern-minimal',
   title: 'Gitframe',
   tagline: 'Give your GitHub repository a memorable visual identity.',
   installCommand: 'bun add gitframe',
@@ -209,10 +209,10 @@ describe('Cards Engine & Satori Renderer', () => {
       expect(svg).toContain('%2300ffcc');
     });
 
-    it('dynamically renders chosen background patterns in aurora-mesh and blueprint-grid templates', async () => {
+    it('dynamically renders chosen background patterns in aurora-glass and blueprint-grid templates', async () => {
       const auroraWithDots: CardConfig = {
         ...baseConfig,
-        templateId: 'aurora-mesh',
+        templateId: 'aurora-glass',
         backgroundPattern: {
           id: 'dot-matrix',
           opacity: 0.8,
@@ -270,7 +270,7 @@ describe('Cards Engine & Satori Renderer', () => {
 
     const edgeConfig: CardConfig = {
       ...baseConfig,
-      templateId: 'cli-terminal',
+      templateId: 'terminal-prompt',
       title:
         'Very Long Title For A Package Repository That Tests Wrapping In Satori Flexbox Layout',
       tagline: '',
@@ -283,7 +283,7 @@ describe('Cards Engine & Satori Renderer', () => {
   it('renders official technology logos when languageLogos flag is true', async () => {
     const configWithLogos: CardConfig = {
       ...baseConfig,
-      templateId: 'linear-minimal',
+      templateId: 'modern-minimal',
       visibility: {
         ...baseConfig.visibility,
         languageLogos: true,
@@ -299,7 +299,7 @@ describe('Cards Engine & Satori Renderer', () => {
   it('omits official technology logos when languageLogos flag is false', async () => {
     const configWithoutLogos: CardConfig = {
       ...baseConfig,
-      templateId: 'linear-minimal',
+      templateId: 'modern-minimal',
       visibility: {
         ...baseConfig.visibility,
         languageLogos: false,
@@ -313,7 +313,7 @@ describe('Cards Engine & Satori Renderer', () => {
     expect(svg).not.toContain(tsLogo!.dataUri);
   });
 
-  it('renders release-spotlight with real release and handles repos without release accurately', async () => {
+  it('renders version-hero with real release and handles repos without release accurately', async () => {
     // 1. Repo with real release v2.0.1
     const repoWithRelease: RepoMetadata = {
       ...mockRepo,
@@ -321,7 +321,7 @@ describe('Cards Engine & Satori Renderer', () => {
     };
     const configSpotlight: CardConfig = {
       ...baseConfig,
-      templateId: 'release-spotlight',
+      templateId: 'version-hero',
     };
     const svgRelease = await renderCardToSvg(repoWithRelease, configSpotlight);
     expect(svgRelease.startsWith('<svg')).toBe(true);
@@ -342,14 +342,14 @@ describe('Cards Engine & Satori Renderer', () => {
 
   it('renders all 8 templates within exact 1280x640 bounds without cropping or box-sizing overflow', async () => {
     const templates = [
-      'linear-minimal',
-      'cli-terminal',
-      'oss-credibility',
-      'sdk-package',
-      'aurora-mesh',
+      'modern-minimal',
+      'terminal-prompt',
+      'metric-showcase',
+      'split-console',
+      'aurora-glass',
       'blueprint-grid',
-      'release-spotlight',
-      'creator-signature',
+      'version-hero',
+      'author-spotlight',
     ] as const;
 
     for (const templateId of templates) {
@@ -386,14 +386,14 @@ describe('Cards Engine & Satori Renderer', () => {
 
   it('renders all 8 templates with contentAlign: "center" without overflow', async () => {
     const templates = [
-      'linear-minimal',
-      'cli-terminal',
-      'oss-credibility',
-      'sdk-package',
-      'aurora-mesh',
+      'modern-minimal',
+      'terminal-prompt',
+      'metric-showcase',
+      'split-console',
+      'aurora-glass',
       'blueprint-grid',
-      'release-spotlight',
-      'creator-signature',
+      'version-hero',
+      'author-spotlight',
     ] as const;
 
     for (const templateId of templates) {
@@ -422,7 +422,7 @@ describe('Cards Engine & Satori Renderer', () => {
   it('hides author and tagline elements when visibility toggles are false', async () => {
     const configHidden: CardConfig = {
       ...baseConfig,
-      templateId: 'linear-minimal',
+      templateId: 'modern-minimal',
       visibility: {
         ...baseConfig.visibility,
         author: false,
@@ -438,7 +438,7 @@ describe('Cards Engine & Satori Renderer', () => {
   it('hides install command terminal when installCommand visibility is false', async () => {
     const configWithoutInstall: CardConfig = {
       ...baseConfig,
-      templateId: 'cli-terminal',
+      templateId: 'terminal-prompt',
       installCommand: 'bun add custom-test-cli',
       visibility: {
         ...baseConfig.visibility,
@@ -454,7 +454,7 @@ describe('Cards Engine & Satori Renderer', () => {
   it('renders install command terminal when installCommand visibility is true', async () => {
     const configWithInstall: CardConfig = {
       ...baseConfig,
-      templateId: 'cli-terminal',
+      templateId: 'terminal-prompt',
       installCommand: 'bun add custom-test-cli',
       visibility: {
         ...baseConfig.visibility,
@@ -470,7 +470,7 @@ describe('Cards Engine & Satori Renderer', () => {
   it('renders title accent formatting with *keyword* across templates', async () => {
     const configAccent: CardConfig = {
       ...baseConfig,
-      templateId: 'linear-minimal',
+      templateId: 'modern-minimal',
       title: 'GitCardX *Instant* Cards',
       palette: {
         ...baseConfig.palette,

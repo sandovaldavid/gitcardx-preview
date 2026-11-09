@@ -23,7 +23,7 @@ describe('Core Ports & Adapters Bootstrap', () => {
     const sampleKit: BrandKit = {
       id: 'kit-1',
       name: 'Default Minimal',
-      templateId: 'linear-minimal',
+      templateId: 'modern-minimal',
       palette: {
         background: '#0a0a0a',
         text: '#ffffff',
@@ -86,7 +86,7 @@ describe('Core Ports & Adapters Bootstrap', () => {
 
     it('CardConfigSchema parses contentAlign and respects custom visibility toggles', () => {
       const parsed = CardConfigSchema.parse({
-        templateId: 'linear-minimal',
+        templateId: 'modern-minimal',
         title: 'Custom Title',
         tagline: 'Custom Tagline',
         contentAlign: 'center',

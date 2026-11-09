@@ -9,7 +9,7 @@ import { detectTechStack } from '@/core/domain/stackMapper';
 import { SafeZoneGuides } from '../primitives/SafeZoneGuides';
 import { ThemeEngine } from '@/core/theme/ThemeEngine';
 
-export const LinearMinimalTemplate: React.FC<CardRenderProps> = ({
+export const ModernMinimalTemplate: React.FC<CardRenderProps> = ({
   repo,
   config,
   showSafeZoneGuides = false,
@@ -247,3 +247,5 @@ export const LinearMinimalTemplate: React.FC<CardRenderProps> = ({
     </div>
   );
 };
+
+export const LinearMinimalTemplate = ModernMinimalTemplate;
