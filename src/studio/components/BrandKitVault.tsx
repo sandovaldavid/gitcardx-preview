@@ -67,6 +67,7 @@ export const BrandKitVault: React.FC = () => {
       typography: config.typography,
       backgroundPattern: config.backgroundPattern,
       customLogoUrl: config.customLogoUrl,
+      customBackgroundUrl: config.customBackgroundUrl,
       signature: newKitSignature.trim() || undefined,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -92,6 +93,7 @@ export const BrandKitVault: React.FC = () => {
     updateConfig({
       typography: kit.typography,
       customLogoUrl: kit.customLogoUrl,
+      customBackgroundUrl: kit.customBackgroundUrl,
     });
     setAppliedId(kit.id);
     setTimeout(() => setAppliedId(null), 2000);

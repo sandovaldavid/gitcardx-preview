@@ -4,6 +4,7 @@ import { renderCardToSvg, renderCardToPng } from '@/cards/engine/satoriRenderer'
 import {
   TemplateIdSchema,
   BackgroundPatternConfigSchema,
+  ColorSchema,
   type CardConfig,
   type RepoMetadata,
 } from '@/core/domain/schemas';
@@ -48,6 +49,37 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
   const rawBg = searchParams.get('bg');
   const bgResult = BackgroundPatternConfigSchema.shape.id.safeParse(rawBg);
   const patternId = bgResult.success ? bgResult.data : 'architectural-grid';
+
+  // Parse background pattern options (opacity, scale, custom background URL)
+  const rawBgOpacity = searchParams.get('bg_opacity');
+  const parsedOpacity = rawBgOpacity !== null ? Number(rawBgOpacity) : undefined;
+  const bgOpacity =
+    parsedOpacity !== undefined && !Number.isNaN(parsedOpacity)
+      ? Math.min(Math.max(parsedOpacity, 0), 1)
+      : 0.45;
+
+  const rawBgScale = searchParams.get('bg_scale');
+  const parsedScale = rawBgScale !== null ? Number(rawBgScale) : undefined;
+  const bgScale =
+    parsedScale !== undefined && !Number.isNaN(parsedScale) && parsedScale > 0
+      ? Math.min(Math.max(parsedScale, 0.25), 4)
+      : undefined;
+
+  const rawBgUrl = searchParams.get('bg_url');
+  const sanitizedBgUrl = rawBgUrl ? sanitizeImageUrl(rawBgUrl) || undefined : undefined;
+
+  const rawBgColor = searchParams.get('bg_color');
+  let customBgColor: string | undefined = undefined;
+  if (rawBgColor) {
+    const formatted = rawBgColor.startsWith('#') ? rawBgColor : `#${rawBgColor}`;
+    const parsedColor = ColorSchema.safeParse(formatted);
+    if (parsedColor.success) {
+      customBgColor = parsedColor.data;
+    }
+  }
+
+  const rawLogoUrl = searchParams.get('logo_url');
+  const sanitizedLogoUrl = rawLogoUrl ? sanitizeImageUrl(rawLogoUrl) || undefined : undefined;
 
   // Parse accent color
   const rawAccent = searchParams.get('accent');
@@ -127,13 +159,17 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
     installCommand: searchParams.get('command') || undefined,
     contentAlign: searchParams.get('align') === 'center' ? 'center' : 'left',
     palette,
+    customLogoUrl: sanitizedLogoUrl,
+    customBackgroundUrl: sanitizedBgUrl,
     typography: {
       fontHeading: 'Inter',
       fontMono: 'JetBrains Mono',
     },
     backgroundPattern: {
       id: patternId,
-      opacity: 0.45,
+      opacity: bgOpacity,
+      ...(bgScale ? { scale: bgScale } : {}),
+      ...(customBgColor ? { color: customBgColor } : {}),
     },
     visibility: {
       stars: searchParams.get('stars') !== 'false',

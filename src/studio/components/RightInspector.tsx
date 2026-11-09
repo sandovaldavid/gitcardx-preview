@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import {
   LayoutTemplate,
   Palette as PaletteIcon,
@@ -11,12 +11,15 @@ import {
   CheckCircle2,
   AlertTriangle,
   Bookmark,
+  Upload,
+  Trash2,
 } from 'lucide-react';
 import { useCardStore } from '../state/useCardStore';
 import { CARD_TEMPLATES } from '@/cards/templates/CardTemplateRegistry';
 import { PRESET_PALETTES, ThemeEngine } from '@/core/theme/ThemeEngine';
 import type { BackgroundPatternConfig } from '@/core/domain/schemas';
 import { BrandKitVault } from './BrandKitVault';
+import { PatternPresetVault } from './PatternPresetVault';
 
 export const RightInspector: React.FC = () => {
   const {
@@ -29,6 +32,32 @@ export const RightInspector: React.FC = () => {
     setActiveRightTab,
     repo,
   } = useCardStore();
+
+  const [imageUploadError, setImageUploadError] = useState<string | null>(null);
+
+  const handleCustomImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 500 * 1024) {
+      setImageUploadError('Backdrop texture exceeds 500 KB limit.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result;
+      if (typeof result === 'string') {
+        setImageUploadError(null);
+        updateConfig({ customBackgroundUrl: result });
+      }
+    };
+    reader.onerror = () => {
+      setImageUploadError('Failed to read image file.');
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  };
 
   const templateList = Object.values(CARD_TEMPLATES);
 
@@ -380,6 +409,54 @@ export const RightInspector: React.FC = () => {
               })}
             </div>
 
+            {/* Custom Image Backdrop Controls */}
+            {config.backgroundPattern.id === 'custom-image' && (
+              <div className="flex flex-col gap-3 pt-3 border-t border-zinc-800/80">
+                <span className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">
+                  Backdrop Texture / Image
+                </span>
+
+                <div className="flex flex-col gap-2">
+                  <label className="flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 hover:border-zinc-700 text-xs text-zinc-200 cursor-pointer transition-colors">
+                    <Upload className="w-3.5 h-3.5 text-blue-400" />
+                    <span>Upload Texture (Max 500 KB)</span>
+                    <input
+                      type="file"
+                      accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                      className="hidden"
+                      onChange={handleCustomImageUpload}
+                    />
+                  </label>
+                  {imageUploadError && (
+                    <span className="text-[11px] text-red-400">{imageUploadError}</span>
+                  )}
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <span className="text-[11px] text-zinc-400">Or Image URL</span>
+                  <div className="flex gap-1.5">
+                    <input
+                      type="url"
+                      value={config.customBackgroundUrl || ''}
+                      onChange={(e) => updateConfig({ customBackgroundUrl: e.target.value })}
+                      placeholder="https://... or data:image/..."
+                      className="flex-1 h-8 px-2.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-100 placeholder-zinc-500 focus:border-blue-500 outline-none"
+                    />
+                    {config.customBackgroundUrl && (
+                      <button
+                        type="button"
+                        onClick={() => updateConfig({ customBackgroundUrl: undefined })}
+                        className="p-1.5 rounded-lg bg-zinc-900 border border-zinc-800 hover:border-red-500/50 text-zinc-400 hover:text-red-400 transition-colors cursor-pointer"
+                        title="Clear backdrop image"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Pattern Opacity Slider */}
             <div className="flex flex-col gap-2 pt-3 border-t border-zinc-800/80">
               <div className="flex items-center justify-between">
@@ -397,6 +474,67 @@ export const RightInspector: React.FC = () => {
                 className="w-full accent-blue-500 cursor-pointer"
               />
             </div>
+
+            {/* Pattern Scale Slider */}
+            <div className="flex flex-col gap-2 pt-2 border-t border-zinc-800/80">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-medium text-zinc-400">Pattern Scale</span>
+                <span className="text-xs font-mono text-zinc-300">
+                  {Math.round((config.backgroundPattern.scale ?? 1) * 100)}%
+                </span>
+              </div>
+              <input
+                type="range"
+                min="25"
+                max="300"
+                step="5"
+                value={Math.round((config.backgroundPattern.scale ?? 1) * 100)}
+                onChange={(e) => setBackgroundPattern({ scale: parseInt(e.target.value) / 100 })}
+                className="w-full accent-blue-500 cursor-pointer"
+              />
+            </div>
+
+            {/* Pattern Tint / Color Override */}
+            <div className="flex flex-col gap-2 pt-2 border-t border-zinc-800/80">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-medium text-zinc-400">Pattern Color Override</span>
+                {config.backgroundPattern.color && (
+                  <button
+                    type="button"
+                    onClick={() => setBackgroundPattern({ color: undefined })}
+                    className="text-[10px] text-zinc-500 hover:text-zinc-300 transition-colors cursor-pointer"
+                  >
+                    Reset to theme
+                  </button>
+                )}
+              </div>
+              <div className="flex items-center gap-2">
+                <input
+                  type="color"
+                  value={config.backgroundPattern.color || config.palette.accent}
+                  onChange={(e) => setBackgroundPattern({ color: e.target.value })}
+                  className="w-7 h-7 rounded border border-zinc-800 bg-transparent cursor-pointer"
+                />
+                <input
+                  type="text"
+                  maxLength={7}
+                  value={config.backgroundPattern.color || ''}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (!val) {
+                      setBackgroundPattern({ color: undefined });
+                    } else if (val.startsWith('#')) {
+                      setBackgroundPattern({ color: val });
+                    }
+                  }}
+                  placeholder={config.palette.accent}
+                  className="flex-1 h-7 px-2 rounded bg-zinc-900 border border-zinc-800 font-mono text-xs text-zinc-200 outline-none focus:border-blue-500"
+                />
+              </div>
+            </div>
+
+            {/* Pattern Presets Vault */}
+            <PatternPresetVault />
           </div>
         )}
 

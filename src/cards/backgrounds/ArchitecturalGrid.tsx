@@ -4,9 +4,18 @@ interface BackgroundProps {
   accentColor: string;
   borderColor: string;
   opacity?: number;
+  scale?: number;
 }
 
-export const ArchitecturalGrid: React.FC<BackgroundProps> = ({ borderColor, opacity = 0.35 }) => {
+export const ArchitecturalGrid: React.FC<BackgroundProps> = ({
+  borderColor,
+  opacity = 0.35,
+  scale = 1,
+}) => {
+  const s = Math.max(0.25, Math.min(scale, 4));
+  const smallSize = Math.max(10, Math.round(40 * s));
+  const largeSize = Math.max(40, Math.round(160 * s));
+
   return (
     <svg
       width="1280"
@@ -24,19 +33,29 @@ export const ArchitecturalGrid: React.FC<BackgroundProps> = ({ borderColor, opac
       xmlns="http://www.w3.org/2000/svg"
     >
       <defs>
-        <pattern id="arch-small-grid" width="40" height="40" patternUnits="userSpaceOnUse">
+        <pattern
+          id="arch-small-grid"
+          width={smallSize}
+          height={smallSize}
+          patternUnits="userSpaceOnUse"
+        >
           <path
-            d="M 40 0 L 0 0 0 40"
+            d={`M ${smallSize} 0 L 0 0 0 ${smallSize}`}
             fill="none"
             stroke={borderColor}
             strokeWidth="0.75"
             strokeOpacity="0.6"
           />
         </pattern>
-        <pattern id="arch-large-grid" width="160" height="160" patternUnits="userSpaceOnUse">
-          <rect width="160" height="160" fill="url(#arch-small-grid)" />
+        <pattern
+          id="arch-large-grid"
+          width={largeSize}
+          height={largeSize}
+          patternUnits="userSpaceOnUse"
+        >
+          <rect width={largeSize} height={largeSize} fill="url(#arch-small-grid)" />
           <path
-            d="M 160 0 L 0 0 0 160"
+            d={`M ${largeSize} 0 L 0 0 0 ${largeSize}`}
             fill="none"
             stroke={borderColor}
             strokeWidth="1.5"

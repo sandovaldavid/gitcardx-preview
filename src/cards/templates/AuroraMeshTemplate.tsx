@@ -36,7 +36,7 @@ export const AuroraMeshTemplate: React.FC<CardRenderProps> = ({
         pattern={backgroundPattern}
         accentColor={palette.accent}
         borderColor={palette.border}
-        customImageUrl={config.customLogoUrl}
+        customImageUrl={config.customBackgroundUrl}
       />
 
       {/* Frosted Container Card */}

@@ -32,6 +32,27 @@ describe('BrandKitVault & Storage', () => {
     expect(result.success).toBe(true);
   });
 
+  it('validates a BrandKit with customBackgroundUrl and pattern scale', () => {
+    const kitWithCustomBg: BrandKit = {
+      ...sampleKit,
+      id: 'bk_custom_bg',
+      backgroundPattern: {
+        id: 'custom-image',
+        opacity: 0.6,
+        scale: 1.25,
+      },
+      customBackgroundUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA',
+    };
+    const result = BrandKitSchema.safeParse(kitWithCustomBg);
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.customBackgroundUrl).toBe(
+        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA'
+      );
+      expect(result.data.backgroundPattern.scale).toBe(1.25);
+    }
+  });
+
   it('rejects invalid BrandKit (e.g. invalid CSS color format or empty name)', () => {
     const invalidKit = {
       ...sampleKit,

@@ -14,9 +14,16 @@ describe('sanitizeImageUrl (Anti-SSRF defense)', () => {
     expect(sanitizeImageUrl(trusted, fallback)).toBe(trusted);
   });
 
-  it('allows safe inline base64 image data URIs', () => {
-    const dataUri = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA';
-    expect(sanitizeImageUrl(dataUri, fallback)).toBe(dataUri);
+  it('allows safe inline base64 image data URIs (PNG, JPEG, WebP, SVG)', () => {
+    const pngUri = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA';
+    const jpegUri = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD';
+    const webpUri = 'data:image/webp;base64,UklGRkAAAABXRUJQVlA4IDQAAADwAQCdASoBAAEAAQ';
+    const svgUri =
+      'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjwvc3ZnPg==';
+    expect(sanitizeImageUrl(pngUri, fallback)).toBe(pngUri);
+    expect(sanitizeImageUrl(jpegUri, fallback)).toBe(jpegUri);
+    expect(sanitizeImageUrl(webpUri, fallback)).toBe(webpUri);
+    expect(sanitizeImageUrl(svgUri, fallback)).toBe(svgUri);
   });
 
   it('rejects external untrusted hostnames and returns fallback', () => {
