@@ -2,6 +2,7 @@ import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { GitHubService } from '@/core/services/GitHubService';
 import { StudioLayout } from '@/studio/components/StudioLayout';
+import { StudioLoadingView } from '@/studio/components/StudioLoadingView';
 import type { RepoMetadata } from '@/core/domain/schemas';
 
 interface PageProps {
@@ -77,9 +78,12 @@ async function RepoHydratedStudio({ params }: PageProps) {
   return <StudioLayout initialRepo={repoMetadata} />;
 }
 
-export default function ViralRepoStudioPage(props: PageProps) {
+export default async function ViralRepoStudioPage(props: PageProps) {
+  const { owner, repo } = await props.params;
+  const repoName = `${owner}/${repo}`;
+
   return (
-    <Suspense fallback={<StudioLayout />}>
+    <Suspense fallback={<StudioLoadingView repoName={repoName} />}>
       <RepoHydratedStudio {...props} />
     </Suspense>
   );

@@ -1,18 +1,10 @@
 'use client';
 
 import React, { useRef, useState, useEffect } from 'react';
-import {
-  ZoomIn,
-  ZoomOut,
-  Maximize2,
-  Loader2,
-  AlertCircle,
-  X,
-  CreditCard,
-  Share2,
-} from 'lucide-react';
+import { ZoomIn, ZoomOut, Maximize2, AlertCircle, X, CreditCard, Share2 } from 'lucide-react';
 import { useCardStore } from '../state/useCardStore';
 import { CardRenderer } from '@/cards/templates/CardTemplateRegistry';
+import { CardLoadingPreview } from './CardLoadingPreview';
 import { SocialSimulator } from './SocialSimulator';
 
 export const InteractiveCanvas: React.FC = () => {
@@ -23,6 +15,7 @@ export const InteractiveCanvas: React.FC = () => {
     setZoom,
     showSafeZoneGuides,
     isFetchingRepo,
+    fetchingRepoName,
     fetchError,
     setFetchError,
     viewMode,
@@ -108,13 +101,10 @@ export const InteractiveCanvas: React.FC = () => {
         </div>
       )}
 
-      {/* Loading Overlay */}
+      {/* Loading Overlay with Card Preview Skeleton & Extraction HUD */}
       {isFetchingRepo && (
-        <div className="absolute inset-0 bg-zinc-950/60 backdrop-blur-sm z-40 flex flex-col items-center justify-center gap-3">
-          <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
-          <span className="text-xs font-medium text-zinc-300">
-            Fetching repository from GitHub GraphQL v4...
-          </span>
+        <div className="absolute inset-0 z-40 flex items-center justify-center bg-zinc-950/75 backdrop-blur-sm p-4">
+          <CardLoadingPreview repoName={fetchingRepoName} scale={effectiveScale} />
         </div>
       )}
 

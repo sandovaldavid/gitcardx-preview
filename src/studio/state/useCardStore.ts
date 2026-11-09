@@ -90,6 +90,7 @@ interface CardStoreState {
   zoom: number;
   showSafeZoneGuides: boolean;
   isFetchingRepo: boolean;
+  fetchingRepoName: string | null;
   fetchError: string | null;
   activeRightTab: 'templates' | 'theme' | 'background' | 'typography' | 'vault';
   isExportModalOpen: boolean;
@@ -108,7 +109,7 @@ interface CardStoreState {
   setActiveRightTab: (tab: 'templates' | 'theme' | 'background' | 'typography' | 'vault') => void;
   setViewMode: (mode: 'canvas' | 'social') => void;
   setIsExportModalOpen: (open: boolean) => void;
-  setIsFetchingRepo: (fetching: boolean) => void;
+  setIsFetchingRepo: (fetching: boolean, repoName?: string | null) => void;
   setFetchError: (error: string | null) => void;
 
   // History Actions
@@ -129,6 +130,7 @@ export const useCardStore = create<CardStoreState>((set, get) => ({
   zoom: 1,
   showSafeZoneGuides: false,
   isFetchingRepo: false,
+  fetchingRepoName: null,
   fetchError: null,
   activeRightTab: 'templates',
   isExportModalOpen: false,
@@ -162,6 +164,7 @@ export const useCardStore = create<CardStoreState>((set, get) => ({
       past: [...state.past.slice(-(MAX_HISTORY - 1)), state.config],
       future: [],
       config: nextConfig,
+      fetchingRepoName: null,
       fetchError: null,
     }));
   },
@@ -242,8 +245,8 @@ export const useCardStore = create<CardStoreState>((set, get) => ({
     set({ isExportModalOpen });
   },
 
-  setIsFetchingRepo: (isFetchingRepo) => {
-    set({ isFetchingRepo });
+  setIsFetchingRepo: (isFetchingRepo, fetchingRepoName = null) => {
+    set({ isFetchingRepo, fetchingRepoName: isFetchingRepo ? fetchingRepoName : null });
   },
 
   setFetchError: (fetchError) => {

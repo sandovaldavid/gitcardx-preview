@@ -82,7 +82,7 @@ export const Omnibar: React.FC = () => {
       return;
     }
 
-    setIsFetchingRepo(true);
+    setIsFetchingRepo(true, `${parsed.owner}/${parsed.repo}`);
     setFetchError(null);
     setIsDropdownOpen(false);
 

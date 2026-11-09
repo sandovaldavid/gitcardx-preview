@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowRight, CornerDownLeft, ShieldCheck, Sparkles, Zap } from 'lucide-react';
+import { ArrowRight, CornerDownLeft, ShieldCheck, Sparkles, Zap, Loader2 } from 'lucide-react';
 import { parseGitHubInput } from '@/core/domain/parser';
 import { CardRenderer } from '@/cards/templates/CardTemplateRegistry';
 import {
@@ -33,6 +33,7 @@ export const HeroGenerator: React.FC = () => {
   const router = useRouter();
   const [inputValue, setInputValue] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
   const [activeTemplate, setActiveTemplate] = useState<TemplateId>('modern-minimal');
 
   const handleGenerate = (target?: string) => {
@@ -53,6 +54,7 @@ export const HeroGenerator: React.FC = () => {
     }
 
     setError(null);
+    setIsGenerating(true);
     router.push(`/${parsed.owner}/${parsed.repo}`);
   };
 
@@ -134,10 +136,21 @@ export const HeroGenerator: React.FC = () => {
             />
             <button
               type="submit"
-              className="ml-2 flex shrink-0 items-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-semibold text-white shadow-md transition-colors duration-200 hover:bg-blue-500 active:bg-blue-700 focus-visible:ring-2 focus-visible:ring-blue-400/60 focus-visible:outline-none sm:px-5"
+              disabled={isGenerating}
+              aria-label="Generate"
+              className="ml-2 flex shrink-0 items-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-semibold text-white shadow-md transition-colors duration-200 hover:bg-blue-500 active:bg-blue-700 focus-visible:ring-2 focus-visible:ring-blue-400/60 focus-visible:outline-none disabled:opacity-75 disabled:cursor-not-allowed sm:px-5"
             >
-              <span>Generate</span>
-              <CornerDownLeft className="h-3.5 w-3.5" />
+              {isGenerating ? (
+                <>
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  <span>Extracting...</span>
+                </>
+              ) : (
+                <>
+                  <span>Generate</span>
+                  <CornerDownLeft className="h-3.5 w-3.5" />
+                </>
+              )}
             </button>
           </form>
 
