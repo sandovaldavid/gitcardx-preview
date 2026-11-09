@@ -1,81 +1,92 @@
 'use client';
 
 import React from 'react';
-import { Database, ShieldCheck, Share2, Palette, Cpu, Download, Sparkles } from 'lucide-react';
+import { Bookmark, Download, Palette, Share2, ShieldCheck } from 'lucide-react';
 
 const FEATURES = [
   {
-    icon: Database,
-    title: 'Zero Database & Zero Sign-Up',
+    icon: ShieldCheck,
+    title: 'Stateless by design',
     description:
-      'Stateless architecture with no mandatory accounts, sessions, or backend databases. Open the studio, craft your card, and export immediately.',
+      'No accounts, no database, and no mandatory cookies. Your card configuration lives in the URL and your browser, so there is nothing to sign up for.',
+    span: 'md:col-span-2',
+    accent: 'from-blue-500/15 via-indigo-500/10 to-transparent',
   },
   {
-    icon: ShieldCheck,
-    title: 'Local Brand Kit Vault (IndexedDB)',
+    icon: Bookmark,
+    title: 'Local brand kits',
     description:
-      'Save and switch between up to 10 custom brand kits entirely on client-side IndexedDB. Export and import JSON configs with zero server telemetry.',
+      'Save up to 10 palettes, typography sets, and backgrounds in IndexedDB. Import and export the whole kit as JSON.',
+    span: '',
+    accent: '',
   },
   {
     icon: Share2,
-    title: 'Multi-Platform Social Simulator',
+    title: 'Social simulator',
     description:
-      'Live photo-realistic preview for X (Twitter), LinkedIn, Discord, Slack, and GitHub Feed in dark and light modes with reactive scaling.',
+      'See the real card inside X, LinkedIn, Discord, Slack, and GitHub feed layouts, in light and dark mode.',
+    span: '',
+    accent: '',
   },
   {
     icon: Palette,
-    title: 'WCAG AAA Contrast Engine',
+    title: 'WCAG contrast engine',
     description:
-      'Colord-powered color algorithm extracts official GitHub language colors and guarantees readable contrast across badges, titles, and backgrounds.',
-  },
-  {
-    icon: Cpu,
-    title: '6 Procedural Generative Backgrounds',
-    description:
-      'Mathematically rendered SVG patterns including Architectural Grid, Dot Matrix, Radial Spotlight, Aurora Mesh, and Topographic Contours.',
+      'Palettes derive from the repository language color and are checked for readable contrast before export.',
+    span: '',
+    accent: '',
   },
   {
     icon: Download,
-    title: 'Retina 2x & Dynamic API Exports',
+    title: 'Export anywhere',
     description:
-      'Download 1280×640 standard, 2560×1280 @2x high-density PNG, vector SVG, or embed the live auto-updating dynamic endpoint in your README.',
+      'Download PNG at 1x or 2x, vector SVG, or embed the live README endpoint that keeps itself in sync.',
+    span: '',
+    accent: '',
   },
 ];
 
 export const FeaturesSection: React.FC = () => {
   return (
-    <section id="features" className="py-20 md:py-28 border-t border-zinc-800/80 relative">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-xs font-semibold text-blue-400 mb-4">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Developer-First Architecture</span>
-          </div>
-          <h2 className="text-3xl sm:text-5xl font-bold tracking-tight text-white">
-            Everything You Need, Nothing You Don&apos;t
+    <section id="features" className="relative border-t border-zinc-800/80 py-20 md:py-28">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="reveal max-w-2xl">
+          <p className="font-mono text-xs font-semibold tracking-[0.2em] text-blue-400 uppercase">
+            Features
+          </p>
+          <h2 className="mt-3 text-3xl font-bold tracking-tight text-white sm:text-5xl">
+            Built for the whole workflow.
           </h2>
-          <p className="mt-4 text-base text-zinc-400">
-            Engineered with modern web standards, strict privacy boundaries, and zero fixed server
-            overhead.
+          <p className="mt-4 text-base leading-relaxed text-zinc-400">
+            Everything around the card is designed to stay out of your way: local state, public
+            metadata, real previews, and exports that work where you already publish.
           </p>
         </div>
 
-        {/* Feature Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="reveal mt-12 grid grid-cols-1 gap-4 md:grid-cols-3">
           {FEATURES.map((feature) => {
             const Icon = feature.icon;
             return (
               <div
                 key={feature.title}
-                className="rounded-2xl bg-zinc-900/40 border border-zinc-800/80 p-8 hover:border-zinc-700 hover:bg-zinc-900/60 transition-all group"
+                className={`relative overflow-hidden rounded-2xl border border-zinc-800/80 bg-zinc-900/40 p-6 transition-[border-color,background-color] duration-300 ease-out hover:border-zinc-700 hover:bg-zinc-900/70 ${feature.span}`}
               >
-                <div className="w-12 h-12 rounded-xl bg-blue-600/10 border border-blue-500/20 flex items-center justify-center text-blue-400 mb-6 group-hover:scale-110 transition-transform">
-                  <Icon className="w-6 h-6" />
+                {feature.accent && (
+                  <div
+                    className={`pointer-events-none absolute inset-0 bg-linear-to-br ${feature.accent}`}
+                  />
+                )}
+                <div className="relative">
+                  <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-xl border border-blue-500/20 bg-blue-500/10 text-blue-400">
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <h3 className="text-base font-semibold tracking-tight text-white">
+                    {feature.title}
+                  </h3>
+                  <p className="mt-2 max-w-md text-xs leading-relaxed text-zinc-400 sm:text-sm">
+                    {feature.description}
+                  </p>
                 </div>
-                <h3 className="text-lg font-semibold text-white tracking-tight">{feature.title}</h3>
-                <p className="mt-3 text-xs sm:text-sm text-zinc-400 leading-relaxed">
-                  {feature.description}
-                </p>
               </div>
             );
           })}
