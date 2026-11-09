@@ -42,6 +42,7 @@ export const BackgroundPatternConfigSchema = z.object({
   ]),
   opacity: z.number().min(0).max(1),
   scale: z.number().positive().optional(),
+  color: ColorSchema.optional(),
 });
 
 export const ContentAlignSchema = z.enum(['left', 'center']).default('left');
@@ -127,6 +128,15 @@ export const BrandKitSchema = z.object({
   updatedAt: z.string().datetime(),
 });
 
+export const PatternPresetSchema = z.object({
+  id: z.string().min(1),
+  name: z.string().min(1).max(60),
+  pattern: BackgroundPatternConfigSchema,
+  customBackgroundUrl: z.string().optional(),
+  createdAt: z.string().datetime(),
+  updatedAt: z.string().datetime(),
+});
+
 export type TemplateId = z.infer<typeof TemplateIdSchema>;
 export type Palette = z.infer<typeof PaletteSchema>;
 export type Typography = z.infer<typeof TypographySchema>;
@@ -136,3 +146,4 @@ export type CardVisibility = z.infer<typeof CardVisibilitySchema>;
 export type CardConfig = z.infer<typeof CardConfigSchema>;
 export type RepoMetadata = z.infer<typeof RepoMetadataSchema>;
 export type BrandKit = z.infer<typeof BrandKitSchema>;
+export type PatternPreset = z.infer<typeof PatternPresetSchema>;

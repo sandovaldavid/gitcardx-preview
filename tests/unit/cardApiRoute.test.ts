@@ -81,9 +81,9 @@ describe('Dynamic Card Route (/api/card/[owner]/[repo])', () => {
     expect(text.startsWith('<svg')).toBe(true);
   });
 
-  it('supports custom background options like bg, bg_opacity, bg_scale and bg_url', async () => {
+  it('supports custom background options like bg, bg_opacity, bg_scale, bg_color and bg_url', async () => {
     const req = new NextRequest(
-      'https://gitframe.dev/api/card/sandovaldavid/gitframe?format=svg&bg=dot-matrix&bg_scale=2&bg_opacity=0.75'
+      'https://gitframe.dev/api/card/sandovaldavid/gitframe?format=svg&bg=dot-matrix&bg_scale=2&bg_opacity=0.75&bg_color=00ffcc'
     );
     const res = await GET(req, {
       params: Promise.resolve({ owner: 'sandovaldavid', repo: 'gitframe' }),
@@ -95,6 +95,7 @@ describe('Dynamic Card Route (/api/card/[owner]/[repo])', () => {
     expect(text.startsWith('<svg')).toBe(true);
     expect(text).toContain('dot-matrix-pattern');
     expect(text).toContain('width=%2264%22');
+    expect(text).toContain('%2300ffcc');
   });
 
   it('renders a fallback card gracefully when repository is not found or fails', async () => {

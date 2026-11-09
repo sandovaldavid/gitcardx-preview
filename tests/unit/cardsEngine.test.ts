@@ -193,6 +193,20 @@ describe('Cards Engine & Satori Renderer', () => {
       expect(svgDots).toContain('width=%2264%22');
     });
 
+    it('renders pattern with custom color override', async () => {
+      const coloredGrid: CardConfig = {
+        ...baseConfig,
+        backgroundPattern: {
+          id: 'architectural-grid',
+          opacity: 0.6,
+          scale: 1,
+          color: '#00ffcc',
+        },
+      };
+      const svg = await renderCardToSvg(mockRepo, coloredGrid);
+      expect(svg).toContain('%2300ffcc');
+    });
+
     it('dynamically renders chosen background patterns in aurora-mesh and blueprint-grid templates', async () => {
       const auroraWithDots: CardConfig = {
         ...baseConfig,

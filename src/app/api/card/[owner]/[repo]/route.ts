@@ -4,6 +4,7 @@ import { renderCardToSvg, renderCardToPng } from '@/cards/engine/satoriRenderer'
 import {
   TemplateIdSchema,
   BackgroundPatternConfigSchema,
+  ColorSchema,
   type CardConfig,
   type RepoMetadata,
 } from '@/core/domain/schemas';
@@ -66,6 +67,16 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
 
   const rawBgUrl = searchParams.get('bg_url');
   const sanitizedBgUrl = rawBgUrl ? sanitizeImageUrl(rawBgUrl) || undefined : undefined;
+
+  const rawBgColor = searchParams.get('bg_color');
+  let customBgColor: string | undefined = undefined;
+  if (rawBgColor) {
+    const formatted = rawBgColor.startsWith('#') ? rawBgColor : `#${rawBgColor}`;
+    const parsedColor = ColorSchema.safeParse(formatted);
+    if (parsedColor.success) {
+      customBgColor = parsedColor.data;
+    }
+  }
 
   const rawLogoUrl = searchParams.get('logo_url');
   const sanitizedLogoUrl = rawLogoUrl ? sanitizeImageUrl(rawLogoUrl) || undefined : undefined;
@@ -158,6 +169,7 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
       id: patternId,
       opacity: bgOpacity,
       ...(bgScale ? { scale: bgScale } : {}),
+      ...(customBgColor ? { color: customBgColor } : {}),
     },
     visibility: {
       stars: searchParams.get('stars') !== 'false',

@@ -15,6 +15,10 @@ export class FreeTierEntitlement implements EntitlementPort {
     return 10;
   }
 
+  maxStoredPatternPresets(): number {
+    return 10;
+  }
+
   hasWatermark(): boolean {
     // Phase 1 viral strategy: 0 watermarks on downloaded cards
     return false;
