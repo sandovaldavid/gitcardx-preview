@@ -242,6 +242,54 @@ describe('GitHubService', () => {
 
       vi.unstubAllGlobals();
     });
+
+    it('filters out anonymous contributors lacking login/avatar_url in REST mode', async () => {
+      const unauthService = new GitHubService('');
+      const mockFetch = vi
+        .fn()
+        .mockResolvedValueOnce({
+          ok: true,
+          status: 200,
+          json: async () => ({
+            name: 'anon-contrib-repo',
+            description: 'Repo with anonymous git contributor',
+            homepage: null,
+            stargazers_count: 100,
+            forks_count: 10,
+            open_issues_count: 2,
+            has_issues: true,
+            has_discussions: false,
+            language: 'JavaScript',
+            topics: ['react'],
+            license: { spdx_id: 'MIT' },
+            owner: {
+              login: 'acme',
+              avatar_url: 'https://avatars.githubusercontent.com/u/1',
+              type: 'Organization',
+            },
+          }),
+        })
+        .mockResolvedValueOnce({ ok: false, status: 404 })
+        .mockResolvedValueOnce({ ok: true, status: 200, json: async () => ({ JavaScript: 12000 }) })
+        .mockResolvedValueOnce({
+          ok: true,
+          status: 200,
+          headers: new Headers(),
+          json: async () => [
+            { login: 'alice', avatar_url: 'https://avatars.githubusercontent.com/u/2' },
+            { type: 'Anonymous', name: 'Legacy Bot', contributions: 42 },
+          ],
+        });
+      vi.stubGlobal('fetch', mockFetch);
+
+      const metadata = await unauthService.getRepository('acme', 'anon-contrib-repo');
+      expect(metadata.contributors).toEqual([
+        { login: 'alice', avatarUrl: 'https://avatars.githubusercontent.com/u/2' },
+      ]);
+      expect(metadata.contributorsCount).toBe(2);
+
+      vi.unstubAllGlobals();
+    });
   });
 
   describe('getUserRepositories', () => {

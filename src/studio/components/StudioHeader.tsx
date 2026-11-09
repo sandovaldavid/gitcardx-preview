@@ -5,7 +5,8 @@ import Link from 'next/link';
 import { Undo2, Redo2, Scan, Download, RotateCcw } from 'lucide-react';
 import { GitframeLogo } from '@/components/GitframeLogo';
 import { Omnibar } from './Omnibar';
-import { useCardStore } from '../state/useCardStore';
+import { useCardStore, useIsInitialStreamPending } from '../state/useCardStore';
+import { useDelayedLoading } from '@/lib/useDelayedLoading';
 import { APP_VERSION_TAG } from '@/lib/version';
 
 export const StudioHeader: React.FC = () => {
@@ -18,7 +19,11 @@ export const StudioHeader: React.FC = () => {
     showSafeZoneGuides,
     toggleSafeZoneGuides,
     setIsExportModalOpen,
+    isFetchingRepo,
+    fetchingRepoName,
   } = useCardStore();
+  const isInitialStreamPending = useIsInitialStreamPending();
+  const showProgressBar = useDelayedLoading(isFetchingRepo || isInitialStreamPending, 150);
 
   // Listen for global Undo/Redo shortcuts (Cmd/Ctrl + Z, Cmd/Ctrl + Shift + Z)
   useEffect(() => {
@@ -49,7 +54,7 @@ export const StudioHeader: React.FC = () => {
   }, [canUndo, canRedo, undo, redo]);
 
   return (
-    <header className="h-14 border-b border-zinc-800/80 bg-zinc-950/80 backdrop-blur-md px-4 flex items-center justify-between gap-4 z-40 shrink-0">
+    <header className="relative h-14 border-b border-zinc-800/80 bg-zinc-950/80 backdrop-blur-md px-4 flex items-center justify-between gap-4 z-40 shrink-0">
       {/* Brand & Logo */}
       <div className="flex items-center gap-3">
         <Link href="/" className="flex items-center gap-2.5">
@@ -127,6 +132,16 @@ export const StudioHeader: React.FC = () => {
           <span>Export Card</span>
         </button>
       </div>
+
+      {showProgressBar && (
+        <div
+          role="progressbar"
+          aria-label={fetchingRepoName ? `Loading ${fetchingRepoName}` : 'Loading repository'}
+          className="pointer-events-none absolute inset-x-0 -bottom-px h-0.5 overflow-hidden bg-blue-500/15"
+        >
+          <div className="h-full w-full bg-linear-to-r from-blue-500 via-indigo-400 to-blue-500 progress-bar-indeterminate" />
+        </div>
+      )}
     </header>
   );
 };

@@ -70,6 +70,17 @@ test.describe('Gitframe Landing Page & Studio E2E', () => {
 
     await page.waitForURL('**/tailwindlabs/tailwindcss', { timeout: 15000 });
     expect(page.url()).toContain('/tailwindlabs/tailwindcss');
+    await expect(page.getByTestId('studio-card-stage')).toBeVisible();
+    await expect(page.getByTestId('studio-card-stage')).toContainText(/tailwindcss/i);
+
+    // Switching repo in-place from Studio Omnibar keeps card stage mounted and updates URL + card
+    const omnibar = page.locator('input[placeholder*="Search any repository"]');
+    await omnibar.fill('facebook/react');
+    await omnibar.press('Enter');
+
+    await expect(page).toHaveURL(/\/facebook\/react$/, { timeout: 15000 });
+    await expect(page.getByTestId('studio-card-stage')).toBeVisible();
+    await expect(page.getByTestId('studio-card-stage')).toContainText(/react/i);
   });
 
   test('studio loads canvas, inspectors and allows template switching', async ({ page }) => {
