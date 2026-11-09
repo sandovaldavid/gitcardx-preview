@@ -104,7 +104,7 @@ Embed an auto-updating live card in your `README.md` or website:
 - **Library**: [React 19](https://react.dev)
 - **Language**: [TypeScript](https://www.typescriptlang.org) (Strict mode)
 - **Styling**: [Tailwind CSS v4](https://tailwindcss.com) + Lucide Icons + Simple Icons
-- **Card Rendering**: [Satori](https://github.com/vercel/satori) + [@resvg/resvg-js](https://github.com/yisibl/resvg-js)
+- **Card Rendering**: [Satori](https://github.com/vercel/satori) + [@resvg/resvg-js](https://github.com/thx/resvg-js)
 - **Color Engine**: [Colord](https://github.com/omgovich/colord) with WCAG AA/AAA compliance checks
 - **State & Storage**: [Zustand](https://zustand.docs.pmnd.rs) with 30-step undo/redo + [IndexedDB](https://github.com/jakearchibald/idb-keyval)
 - **Testing**: [Vitest](https://vitest.dev) (Unit & Satori renderer) + [Playwright](https://playwright.dev) (E2E)
@@ -165,6 +165,24 @@ bun run test:e2e
 - **Single Branch (`main`)**: The `main` branch serves as the integration environment.
 - **Automated Releases**: [Google Release Please](https://github.com/googleapis/release-please) detects Conventional Commits, creates automated release PRs, generates `CHANGELOG.md`, and tags semver versions (`v1.x.x`).
 - **Zero-Downtime Vercel CD**: When a GitHub Release is published on `main`, the `deploy-production.yml` workflow verifies all quality checks (`format`, `lint`, `typecheck`, `test`, `build`) before triggering production deployment on Vercel.
+
+---
+
+## Acknowledgements & Open Source Credits
+
+Gitframe is powered by the open-source community:
+
+- **[Vercel Satori](https://github.com/vercel/satori)**: Converts React JSX and CSS Flexbox layouts into vector SVG elements with the Yoga layout engine.
+- **[resvg-js](https://github.com/thx/resvg-js)** ([thx](https://github.com/thx)) & **[resvg](https://github.com/RazrFalcon/resvg)** ([RazrFalcon](https://github.com/RazrFalcon)): High-performance Rust-based SVG rasterizer that generates pixel-perfect PNG previews without a headless browser.
+- **[Colord](https://github.com/omgovich/colord)**: High-performance color manipulation, gamut conversions, and WCAG AA/AAA contrast ratios.
+- **Open Source Typography**:
+  - [Inter](https://rsms.me/inter/) by Rasmus Andersson
+  - [JetBrains Mono](https://www.jetbrains.com/lp/mono/) by JetBrains
+  - [Space Grotesk](https://floriankarsten.github.io/space-grotesk/) by Florian Karsten
+  - [Plus Jakarta Sans](https://tokotype.github.io/plusjakartasans/) by Gumpita Rahayu (Tokotype)
+  - [Geist](https://vercel.com/font) by Vercel
+  - [Fira Code](https://github.com/tonsky/FiraCode) by Nikita Prokopov
+- **Icons & Badges**: [SVGL](https://svgl.app) by Pheralb, [Lucide](https://lucide.dev), and [Simple Icons](https://simpleicons.org).
 
 ---
 
