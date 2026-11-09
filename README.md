@@ -7,7 +7,7 @@
 **Instant, high-impact GitHub Social Preview cards (`1280×640px`) & dynamic README heroes in 5 seconds.**
 
 [![CI](https://github.com/sandovaldavid/gitframe/actions/workflows/ci.yml/badge.svg)](https://github.com/sandovaldavid/gitframe/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![License: FSL-1.1-MIT](https://img.shields.io/badge/License-FSL--1.1--MIT-blue.svg)](LICENSE.md)
 [![Release Please](https://img.shields.io/badge/Release-Please-orange.svg)](https://github.com/googleapis/release-please)
 [![Next.js 16](https://img.shields.io/badge/Next.js-16.4-black)](https://nextjs.org)
 [![Tailwind CSS v4](https://img.shields.io/badge/Tailwind-v4-38bdf8)](https://tailwindcss.com)
@@ -170,4 +170,4 @@ bun run test:e2e
 
 ## License
 
-MIT © [David Sandoval](https://github.com/sandovaldavid)
+[FSL-1.1-MIT](LICENSE.md) © [David Sandoval](https://github.com/sandovaldavid)
