@@ -15,6 +15,15 @@ test.describe('Gitframe Landing Page & Studio E2E', () => {
     await expect(page.getByRole('button', { name: 'shadcn/ui' })).toBeVisible();
     await expect(page.getByRole('button', { name: 'facebook/react' })).toBeVisible();
 
+    // Real project comparison section
+    const comparisonSection = page.locator('#comparison');
+    await expect(comparisonSection).toBeVisible();
+    await expect(comparisonSection).toContainText(/Default GitHub Preview vs\. Gitframe/i);
+    await expect(comparisonSection.getByRole('button', { name: 'shadcn-ui/ui' })).toBeVisible();
+    await expect(
+      comparisonSection.getByRole('button', { name: 'tailwindlabs/tailwindcss' })
+    ).toBeVisible();
+
     // Live template showcase (one real render per archetype)
     const templatesSection = page.locator('#templates');
     await expect(templatesSection).toBeVisible();

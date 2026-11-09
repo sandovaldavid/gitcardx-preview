@@ -15,7 +15,7 @@ export const AvatarGroup: React.FC<AvatarGroupProps> = ({
   contributors,
   borderColor,
   maxAvatars = 5,
-  size = 36,
+  size = 44,
 }) => {
   const visible = contributors.slice(0, maxAvatars);
   if (visible.length === 0) return null;
@@ -35,8 +35,8 @@ export const AvatarGroup: React.FC<AvatarGroupProps> = ({
             height: size,
             borderRadius: '50%',
             overflow: 'hidden',
-            border: `2px solid ${borderColor}`,
-            marginLeft: index === 0 ? 0 : -8,
+            border: `2.5px solid ${borderColor}`,
+            marginLeft: index === 0 ? 0 : -10,
             backgroundColor: '#1f2937',
             display: 'flex',
             alignItems: 'center',

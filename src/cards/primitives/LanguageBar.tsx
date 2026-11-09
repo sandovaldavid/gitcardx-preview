@@ -33,9 +33,9 @@ export const LanguageBar: React.FC<LanguageBarProps> = ({
       <div
         style={{
           display: 'flex',
-          height: 6,
+          height: 8,
           width: '100%',
-          borderRadius: 3,
+          borderRadius: 4,
           overflow: 'hidden',
           backgroundColor: 'rgba(255, 255, 255, 0.1)',
         }}
@@ -59,12 +59,12 @@ export const LanguageBar: React.FC<LanguageBarProps> = ({
       <div
         style={{
           display: 'flex',
-          gap: 16,
+          gap: 20,
           flexWrap: 'wrap',
-          fontSize: 13,
-          fontWeight: 500,
+          fontSize: 15,
+          fontWeight: 600,
           color: textColor,
-          opacity: 0.85,
+          opacity: 0.9,
         }}
       >
         {visible.map((lang) => {
@@ -75,19 +75,19 @@ export const LanguageBar: React.FC<LanguageBarProps> = ({
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: 6,
+                gap: 7,
               }}
             >
               <div
                 style={{
-                  width: 8,
-                  height: 8,
+                  width: 10,
+                  height: 10,
                   borderRadius: '50%',
                   backgroundColor: lang.color || '#3b82f6',
                 }}
               />
               <span>{lang.name}</span>
-              <span style={{ opacity: 0.6 }}>{pct}%</span>
+              <span style={{ opacity: 0.65 }}>{pct}%</span>
             </div>
           );
         })}

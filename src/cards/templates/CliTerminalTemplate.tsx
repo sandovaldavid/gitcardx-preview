@@ -61,9 +61,9 @@ export const CliTerminalTemplate: React.FC<CardRenderProps> = ({
             <span
               style={{
                 fontFamily: fontMono,
-                fontSize: 16,
+                fontSize: 18,
                 color: palette.accent,
-                fontWeight: 600,
+                fontWeight: 700,
               }}
             >
               ~/
@@ -71,10 +71,10 @@ export const CliTerminalTemplate: React.FC<CardRenderProps> = ({
             <span
               style={{
                 fontFamily: fontMono,
-                fontSize: 18,
+                fontSize: 20,
                 color: palette.text,
-                opacity: 0.9,
-                fontWeight: 500,
+                opacity: 0.95,
+                fontWeight: 600,
               }}
             >
               {repo.owner.login}/{repo.name}

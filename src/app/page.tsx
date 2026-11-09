@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { LandingNavbar } from '@/landing/components/LandingNavbar';
 import { HeroGenerator } from '@/landing/components/HeroGenerator';
+import { ComparisonSection } from '@/landing/components/ComparisonSection';
 import { ShowcaseSection } from '@/landing/components/ShowcaseSection';
 import { WorkflowSection } from '@/landing/components/WorkflowSection';
 import { FeaturesSection } from '@/landing/components/FeaturesSection';
@@ -19,6 +20,7 @@ export default function HomePage() {
       <LandingNavbar />
       <main className="flex-1">
         <HeroGenerator />
+        <ComparisonSection />
         <ShowcaseSection />
         <WorkflowSection />
         <FeaturesSection />

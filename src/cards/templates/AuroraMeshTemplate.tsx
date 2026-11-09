@@ -67,21 +67,22 @@ export const AuroraMeshTemplate: React.FC<CardRenderProps> = ({
           }}
         >
           {visibility.author ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={config.customLogoUrl || repo.owner.avatarUrl}
                 alt={repo.owner.login}
-                width={44}
-                height={44}
+                width={54}
+                height={54}
                 style={{
-                  width: 44,
-                  height: 44,
-                  borderRadius: 12,
-                  border: `1px solid ${palette.border}`,
+                  width: 54,
+                  height: 54,
+                  borderRadius: 14,
+                  border: `2px solid ${palette.border}`,
+                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
                 }}
               />
-              <span style={{ fontSize: 20, fontWeight: 700, color: palette.text }}>
+              <span style={{ fontSize: 24, fontWeight: 700, color: palette.text }}>
                 {repo.owner.login}
               </span>
             </div>

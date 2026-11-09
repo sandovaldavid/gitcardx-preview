@@ -54,16 +54,17 @@ export const BlueprintGridTemplate: React.FC<CardRenderProps> = ({
           <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
             <div
               style={{
-                paddingLeft: 10,
-                paddingRight: 10,
-                paddingTop: 4,
-                paddingBottom: 4,
+                paddingLeft: 12,
+                paddingRight: 12,
+                paddingTop: 5,
+                paddingBottom: 5,
                 borderRadius: 4,
                 backgroundColor: palette.accent,
                 color: '#000000',
                 fontFamily: fontMono,
-                fontSize: 12,
+                fontSize: 14,
                 fontWeight: 800,
+                letterSpacing: '0.05em',
               }}
             >
               SYS//SPEC
@@ -71,7 +72,8 @@ export const BlueprintGridTemplate: React.FC<CardRenderProps> = ({
             <span
               style={{
                 fontFamily: fontMono,
-                fontSize: 16,
+                fontSize: 18,
+                fontWeight: 600,
                 color: palette.text,
                 opacity: 0.95,
               }}
@@ -87,7 +89,8 @@ export const BlueprintGridTemplate: React.FC<CardRenderProps> = ({
           <span
             style={{
               fontFamily: fontMono,
-              fontSize: 13,
+              fontSize: 15,
+              fontWeight: 500,
               color: palette.text,
               opacity: 0.85,
             }}

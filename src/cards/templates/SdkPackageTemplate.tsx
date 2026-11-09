@@ -63,34 +63,37 @@ export const SdkPackageTemplate: React.FC<CardRenderProps> = ({
         }}
       >
         {visibility.author ? (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={config.customLogoUrl || repo.owner.avatarUrl}
               alt={repo.owner.login}
-              width={44}
-              height={44}
+              width={56}
+              height={56}
               style={{
-                width: 44,
-                height: 44,
-                borderRadius: 10,
-                border: `1px solid ${palette.border}`,
+                width: 56,
+                height: 56,
+                borderRadius: 14,
+                border: `2px solid ${palette.border}`,
+                backgroundColor: 'rgba(255, 255, 255, 0.05)',
               }}
             />
-            <span style={{ fontSize: 20, fontWeight: 600, color: palette.text, opacity: 0.9 }}>
+            <span style={{ fontSize: 24, fontWeight: 700, color: palette.text, opacity: 0.95 }}>
               {repo.owner.login}
             </span>
             <span
               style={{
-                fontSize: 12,
+                fontSize: 13,
                 fontFamily: fontMono,
-                paddingLeft: 8,
-                paddingRight: 8,
-                paddingTop: 3,
-                paddingBottom: 3,
+                fontWeight: 700,
+                paddingLeft: 10,
+                paddingRight: 10,
+                paddingTop: 4,
+                paddingBottom: 4,
                 borderRadius: 6,
-                backgroundColor: 'rgba(255, 255, 255, 0.06)',
+                backgroundColor: 'rgba(255, 255, 255, 0.08)',
                 color: palette.accent,
+                letterSpacing: '0.05em',
               }}
             >
               PACKAGE
