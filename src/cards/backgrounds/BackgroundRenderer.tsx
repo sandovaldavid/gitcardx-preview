@@ -7,11 +7,12 @@ import { AuroraMesh } from './AuroraMesh';
 import { TopographicContours } from './TopographicContours';
 import { CustomImageBackground } from './CustomImageBackground';
 
-interface BackgroundRendererProps {
+export interface BackgroundRendererProps {
   pattern: BackgroundPatternConfig;
   accentColor: string;
   borderColor: string;
   customImageUrl?: string;
+  idPrefix?: string;
 }
 
 export const BackgroundRenderer: React.FC<BackgroundRendererProps> = ({
@@ -19,6 +20,7 @@ export const BackgroundRenderer: React.FC<BackgroundRendererProps> = ({
   accentColor,
   borderColor,
   customImageUrl,
+  idPrefix,
 }) => {
   const opacity = pattern.opacity ?? 0.4;
   const scale = pattern.scale ?? 1;
@@ -33,6 +35,7 @@ export const BackgroundRenderer: React.FC<BackgroundRendererProps> = ({
           borderColor={effectiveBorder}
           opacity={opacity}
           scale={scale}
+          idPrefix={idPrefix}
         />
       );
     case 'dot-matrix':
@@ -42,6 +45,7 @@ export const BackgroundRenderer: React.FC<BackgroundRendererProps> = ({
           borderColor={effectiveBorder}
           opacity={opacity}
           scale={scale}
+          idPrefix={idPrefix}
         />
       );
     case 'radial-spotlight':
@@ -51,6 +55,7 @@ export const BackgroundRenderer: React.FC<BackgroundRendererProps> = ({
           borderColor={effectiveBorder}
           opacity={opacity}
           scale={scale}
+          idPrefix={idPrefix}
         />
       );
     case 'aurora-mesh':
@@ -60,6 +65,7 @@ export const BackgroundRenderer: React.FC<BackgroundRendererProps> = ({
           borderColor={effectiveBorder}
           opacity={opacity}
           scale={scale}
+          idPrefix={idPrefix}
         />
       );
     case 'topographic-contours':
@@ -69,6 +75,7 @@ export const BackgroundRenderer: React.FC<BackgroundRendererProps> = ({
           borderColor={effectiveBorder}
           opacity={opacity}
           scale={scale}
+          idPrefix={idPrefix}
         />
       );
     case 'custom-image':
@@ -79,6 +86,7 @@ export const BackgroundRenderer: React.FC<BackgroundRendererProps> = ({
           opacity={opacity}
           imageUrl={customImageUrl}
           scale={scale}
+          idPrefix={idPrefix}
         />
       );
     default:
@@ -88,6 +96,7 @@ export const BackgroundRenderer: React.FC<BackgroundRendererProps> = ({
           borderColor={effectiveBorder}
           opacity={opacity}
           scale={scale}
+          idPrefix={idPrefix}
         />
       );
   }
