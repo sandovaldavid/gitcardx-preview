@@ -13,6 +13,7 @@ import {
 } from '@/studio/state/useCardStore';
 import type { CardConfig, TemplateId } from '@/core/domain/schemas';
 import { ScaledCard } from './ScaledCard';
+import { SectionLink } from './SectionLink';
 
 const PRESET_REPOS = [
   { label: 'shadcn/ui', value: 'shadcn/ui' },
@@ -162,13 +163,13 @@ export const HeroGenerator: React.FC = () => {
                 {template.label}
               </button>
             ))}
-            <Link
-              href="#templates"
+            <SectionLink
+              sectionId="templates"
               className="inline-flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-medium text-zinc-400 transition-colors duration-200 hover:bg-zinc-800 hover:text-zinc-200"
             >
               All 8
               <ArrowRight className="h-3 w-3" />
-            </Link>
+            </SectionLink>
           </div>
 
           <div className="group relative w-full rounded-2xl border border-zinc-800/80 bg-linear-to-b from-zinc-800/60 to-zinc-900/40 p-2 shadow-2xl backdrop-blur-sm transition-colors duration-300 hover:border-zinc-700">

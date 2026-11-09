@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
+import { SectionLink } from './SectionLink';
 
 export const LandingCta: React.FC = () => {
   return (
@@ -28,12 +29,12 @@ export const LandingCta: React.FC = () => {
               <ArrowRight className="h-4 w-4" />
             </Link>
 
-            <Link
-              href="#templates"
+            <SectionLink
+              sectionId="templates"
               className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-zinc-700 bg-zinc-900/80 px-6 py-3.5 text-sm font-semibold text-zinc-300 transition-colors duration-200 hover:bg-zinc-800 hover:text-white focus-visible:ring-2 focus-visible:ring-blue-500/60 focus-visible:outline-none sm:w-auto"
             >
               Browse templates
-            </Link>
+            </SectionLink>
           </div>
 
           <p className="relative mt-6 text-[11px] text-zinc-500">

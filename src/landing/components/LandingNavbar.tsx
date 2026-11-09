@@ -2,9 +2,11 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { ArrowRight } from 'lucide-react';
 import { GitframeLogo } from '@/components/GitframeLogo';
 import { APP_VERSION_TAG } from '@/lib/version';
+import { SectionLink } from './SectionLink';
 
 const GithubIcon: React.FC<{ className?: string }> = ({ className = 'w-4 h-4' }) => (
   <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
@@ -17,10 +19,32 @@ const GithubIcon: React.FC<{ className?: string }> = ({ className = 'w-4 h-4' })
 );
 
 export const LandingNavbar: React.FC = () => {
+  const pathname = usePathname();
+
+  const handleBrandClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    if (
+      pathname !== '/' ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey ||
+      event.button !== 0
+    ) {
+      return;
+    }
+
+    event.preventDefault();
+    const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      ? 'auto'
+      : 'smooth';
+    window.scrollTo({ top: 0, behavior });
+    window.history.replaceState(null, '', '/');
+  };
+
   return (
     <header className="sticky top-0 z-50 w-full bg-zinc-950/80 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Link href="/" className="flex items-center gap-2.5">
+        <Link href="/" onClick={handleBrandClick} className="flex items-center gap-2.5">
           <GitframeLogo className="h-7 w-7" />
           <div className="flex items-center gap-1.5">
             <span className="text-base font-bold tracking-tight text-white">Gitframe</span>
@@ -34,24 +58,24 @@ export const LandingNavbar: React.FC = () => {
           aria-label="Main navigation"
           className="hidden items-center gap-7 text-sm font-medium text-zinc-400 md:flex"
         >
-          <a
-            href="#templates"
+          <SectionLink
+            sectionId="templates"
             className="whitespace-nowrap transition-colors duration-200 hover:text-zinc-100"
           >
             Templates
-          </a>
-          <a
-            href="#workflow"
+          </SectionLink>
+          <SectionLink
+            sectionId="workflow"
             className="whitespace-nowrap transition-colors duration-200 hover:text-zinc-100"
           >
             Workflow
-          </a>
-          <a
-            href="#features"
+          </SectionLink>
+          <SectionLink
+            sectionId="features"
             className="whitespace-nowrap transition-colors duration-200 hover:text-zinc-100"
           >
             Features
-          </a>
+          </SectionLink>
         </nav>
 
         <div className="flex items-center gap-3">

@@ -32,6 +32,22 @@ test.describe('Gitframe Landing Page & Studio E2E', () => {
     await expect(page.locator('#features')).toBeVisible();
   });
 
+  test('section links scroll repeatedly and the brand returns home', async ({ page }) => {
+    await page.goto('/');
+
+    const allTemplates = page.locator('section:first-of-type a[href="#templates"]');
+    await allTemplates.click();
+    await expect(page.locator('#templates')).toBeInViewport();
+
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+    await allTemplates.click();
+    await expect(page.locator('#templates')).toBeInViewport();
+
+    await page.locator('header a[href="/"]').click();
+    await expect(page).toHaveURL(/\/$/);
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+  });
+
   test('submitting a repository in the hero omnibar redirects to direct repo route', async ({
     page,
   }) => {
