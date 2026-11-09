@@ -149,6 +149,50 @@ describe('Cards Engine & Satori Renderer', () => {
       });
     }
 
+    it('renders with custom-image background pattern using customBackgroundUrl and scale', async () => {
+      const validPng =
+        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+      const configWithCustomBg: CardConfig = {
+        ...baseConfig,
+        customBackgroundUrl: validPng,
+        backgroundPattern: {
+          id: 'custom-image',
+          opacity: 0.75,
+          scale: 1.5,
+        },
+      };
+
+      const svg = await renderCardToSvg(mockRepo, configWithCustomBg);
+      expect(svg.startsWith('<svg')).toBe(true);
+      expect(svg).toContain(validPng);
+    });
+
+    it('renders scaled architectural-grid and dot-matrix patterns', async () => {
+      const scaledGrid: CardConfig = {
+        ...baseConfig,
+        backgroundPattern: {
+          id: 'architectural-grid',
+          opacity: 0.5,
+          scale: 2,
+        },
+      };
+      const svgGrid = await renderCardToSvg(mockRepo, scaledGrid);
+      expect(svgGrid).toContain('arch-large-grid');
+      expect(svgGrid).toContain('width=%22320%22');
+
+      const scaledDots: CardConfig = {
+        ...baseConfig,
+        backgroundPattern: {
+          id: 'dot-matrix',
+          opacity: 0.5,
+          scale: 2,
+        },
+      };
+      const svgDots = await renderCardToSvg(mockRepo, scaledDots);
+      expect(svgDots).toContain('dot-matrix-pattern');
+      expect(svgDots).toContain('width=%2264%22');
+    });
+
     it('dynamically renders chosen background patterns in aurora-mesh and blueprint-grid templates', async () => {
       const auroraWithDots: CardConfig = {
         ...baseConfig,

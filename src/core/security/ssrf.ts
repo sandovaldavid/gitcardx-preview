@@ -15,9 +15,11 @@ export function sanitizeImageUrl(rawUrl?: string | null, fallbackUrl = ''): stri
 
   const trimmed = rawUrl.trim();
 
-  // Allow safe inline data URIs for client-uploaded logos/icons
+  // Allow safe inline data URIs for client-uploaded logos/icons/textures
   if (
     trimmed.startsWith('data:image/png;base64,') ||
+    trimmed.startsWith('data:image/jpeg;base64,') ||
+    trimmed.startsWith('data:image/webp;base64,') ||
     trimmed.startsWith('data:image/svg+xml;base64,')
   ) {
     return trimmed;

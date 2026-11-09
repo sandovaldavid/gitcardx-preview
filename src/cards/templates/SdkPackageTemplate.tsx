@@ -46,7 +46,7 @@ export const SdkPackageTemplate: React.FC<CardRenderProps> = ({
         pattern={backgroundPattern}
         accentColor={palette.accent}
         borderColor={palette.border}
-        customImageUrl={config.customLogoUrl}
+        customImageUrl={config.customBackgroundUrl}
       />
 
       {/* Left Column (55%): Branding, Title, Tagline, Stack */}

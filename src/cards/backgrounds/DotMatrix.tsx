@@ -4,9 +4,15 @@ interface BackgroundProps {
   accentColor: string;
   borderColor: string;
   opacity?: number;
+  scale?: number;
 }
 
-export const DotMatrix: React.FC<BackgroundProps> = ({ borderColor, opacity = 0.4 }) => {
+export const DotMatrix: React.FC<BackgroundProps> = ({ borderColor, opacity = 0.4, scale = 1 }) => {
+  const s = Math.max(0.25, Math.min(scale, 4));
+  const spacing = Math.max(12, Math.round(32 * s));
+  const center = Math.round(spacing / 2);
+  const r = Math.max(1, Number((1.5 * Math.min(s, 2)).toFixed(1)));
+
   return (
     <svg
       width="1280"
@@ -24,8 +30,13 @@ export const DotMatrix: React.FC<BackgroundProps> = ({ borderColor, opacity = 0.
       xmlns="http://www.w3.org/2000/svg"
     >
       <defs>
-        <pattern id="dot-matrix-pattern" width="32" height="32" patternUnits="userSpaceOnUse">
-          <circle cx="16" cy="16" r="1.5" fill={borderColor} />
+        <pattern
+          id="dot-matrix-pattern"
+          width={spacing}
+          height={spacing}
+          patternUnits="userSpaceOnUse"
+        >
+          <circle cx={center} cy={center} r={r} fill={borderColor} />
         </pattern>
         <radialGradient id="dot-fade-mask" cx="50%" cy="40%" r="65%">
           <stop offset="0%" stopColor="#ffffff" stopOpacity="1" />

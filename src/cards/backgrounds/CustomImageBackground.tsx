@@ -5,14 +5,17 @@ interface BackgroundProps {
   borderColor: string;
   opacity?: number;
   imageUrl?: string;
+  scale?: number;
 }
 
 export const CustomImageBackground: React.FC<BackgroundProps> = ({
   accentColor,
   opacity = 0.35,
   imageUrl,
+  scale = 1,
 }) => {
   if (imageUrl) {
+    const bgSize = scale === 1 ? 'cover' : `${Math.round(100 * scale)}%`;
     return (
       <div
         style={{
@@ -22,7 +25,7 @@ export const CustomImageBackground: React.FC<BackgroundProps> = ({
           width: 1280,
           height: 640,
           backgroundImage: `url(${imageUrl})`,
-          backgroundSize: 'cover',
+          backgroundSize: bgSize,
           backgroundPosition: 'center',
           opacity,
           pointerEvents: 'none',

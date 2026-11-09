@@ -4,9 +4,17 @@ interface BackgroundProps {
   accentColor: string;
   borderColor: string;
   opacity?: number;
+  scale?: number;
 }
 
-export const TopographicContours: React.FC<BackgroundProps> = ({ borderColor, opacity = 0.35 }) => {
+export const TopographicContours: React.FC<BackgroundProps> = ({
+  borderColor,
+  opacity = 0.35,
+  scale = 1,
+}) => {
+  const s = Math.max(0.25, Math.min(scale, 4));
+  const strokeWidth = Number((1.25 * Math.min(s, 2.5)).toFixed(2));
+
   return (
     <svg
       width="1280"
@@ -23,7 +31,13 @@ export const TopographicContours: React.FC<BackgroundProps> = ({ borderColor, op
       }}
       xmlns="http://www.w3.org/2000/svg"
     >
-      <g fill="none" stroke={borderColor} strokeWidth="1.25">
+      <g
+        fill="none"
+        stroke={borderColor}
+        strokeWidth={strokeWidth}
+        transform={`scale(${s})`}
+        style={{ transformOrigin: 'center center' }}
+      >
         <path d="M -100 200 C 200 100, 450 350, 750 220 C 1050 90, 1200 280, 1400 210" />
         <path
           d="M -100 260 C 220 160, 470 410, 770 280 C 1070 150, 1220 340, 1400 270"

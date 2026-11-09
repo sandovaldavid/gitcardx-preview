@@ -21,26 +21,52 @@ export const BackgroundRenderer: React.FC<BackgroundRendererProps> = ({
   customImageUrl,
 }) => {
   const opacity = pattern.opacity ?? 0.4;
+  const scale = pattern.scale ?? 1;
 
   switch (pattern.id) {
     case 'architectural-grid':
       return (
-        <ArchitecturalGrid accentColor={accentColor} borderColor={borderColor} opacity={opacity} />
+        <ArchitecturalGrid
+          accentColor={accentColor}
+          borderColor={borderColor}
+          opacity={opacity}
+          scale={scale}
+        />
       );
     case 'dot-matrix':
-      return <DotMatrix accentColor={accentColor} borderColor={borderColor} opacity={opacity} />;
+      return (
+        <DotMatrix
+          accentColor={accentColor}
+          borderColor={borderColor}
+          opacity={opacity}
+          scale={scale}
+        />
+      );
     case 'radial-spotlight':
       return (
-        <RadialSpotlight accentColor={accentColor} borderColor={borderColor} opacity={opacity} />
+        <RadialSpotlight
+          accentColor={accentColor}
+          borderColor={borderColor}
+          opacity={opacity}
+          scale={scale}
+        />
       );
     case 'aurora-mesh':
-      return <AuroraMesh accentColor={accentColor} borderColor={borderColor} opacity={opacity} />;
+      return (
+        <AuroraMesh
+          accentColor={accentColor}
+          borderColor={borderColor}
+          opacity={opacity}
+          scale={scale}
+        />
+      );
     case 'topographic-contours':
       return (
         <TopographicContours
           accentColor={accentColor}
           borderColor={borderColor}
           opacity={opacity}
+          scale={scale}
         />
       );
     case 'custom-image':
@@ -50,11 +76,17 @@ export const BackgroundRenderer: React.FC<BackgroundRendererProps> = ({
           borderColor={borderColor}
           opacity={opacity}
           imageUrl={customImageUrl}
+          scale={scale}
         />
       );
     default:
       return (
-        <ArchitecturalGrid accentColor={accentColor} borderColor={borderColor} opacity={opacity} />
+        <ArchitecturalGrid
+          accentColor={accentColor}
+          borderColor={borderColor}
+          opacity={opacity}
+          scale={scale}
+        />
       );
   }
 };

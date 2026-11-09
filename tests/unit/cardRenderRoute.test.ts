@@ -109,4 +109,32 @@ describe('On-Demand Card Render Route (/api/card/render)', () => {
     const res = await POST(req);
     expect(res.status).toBe(400);
   });
+
+  it('sanitizes customBackgroundUrl and customLogoUrl against SSRF', async () => {
+    const validPng =
+      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+    const req = new NextRequest('https://gitframe.dev/api/card/render', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        repo: DEFAULT_REPO,
+        config: {
+          ...DEFAULT_CONFIG,
+          customLogoUrl: 'http://169.254.169.254/latest/meta-data',
+          customBackgroundUrl: validPng,
+          backgroundPattern: {
+            id: 'custom-image',
+            opacity: 0.5,
+          },
+        },
+        format: 'svg',
+      }),
+    });
+
+    const res = await POST(req);
+    expect(res.status).toBe(200);
+    const svg = await res.text();
+    expect(svg).not.toContain('169.254.169.254');
+    expect(svg).toContain(validPng);
+  });
 });

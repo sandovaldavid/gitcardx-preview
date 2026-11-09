@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { renderCardToPng, renderCardToSvg } from '@/cards/engine/satoriRenderer';
-import { RepoMetadataSchema, CardConfigSchema } from '@/core/domain/schemas';
+import { RepoMetadataSchema, CardConfigSchema, type CardConfig } from '@/core/domain/schemas';
 import { sanitizeImageUrl } from '@/core/security/ssrf';
 
 export async function POST(request: NextRequest) {
@@ -42,7 +42,18 @@ export async function POST(request: NextRequest) {
       })),
     };
 
-    const safeConfig = parsedConfig.data;
+    const sanitizedLogo = parsedConfig.data.customLogoUrl
+      ? sanitizeImageUrl(parsedConfig.data.customLogoUrl) || undefined
+      : undefined;
+    const sanitizedBg = parsedConfig.data.customBackgroundUrl
+      ? sanitizeImageUrl(parsedConfig.data.customBackgroundUrl) || undefined
+      : undefined;
+
+    const safeConfig: CardConfig = {
+      ...parsedConfig.data,
+      customLogoUrl: sanitizedLogo,
+      customBackgroundUrl: sanitizedBg,
+    };
     const isSvg = format === 'svg';
     const numericScale = Math.min(Math.max(Number(scale) || 1, 1), 3);
 

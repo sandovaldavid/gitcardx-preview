@@ -38,7 +38,7 @@ export const LinearMinimalTemplate: React.FC<CardRenderProps> = ({
         pattern={backgroundPattern}
         accentColor={palette.accent}
         borderColor={palette.border}
-        customImageUrl={config.customLogoUrl}
+        customImageUrl={config.customBackgroundUrl}
       />
 
       {/* Top Header: Owner Identity */}
