@@ -77,6 +77,24 @@ test.describe('Gitframe Landing Page & Studio E2E', () => {
     await expect(page.getByRole('button', { name: /Open issues overlay/i })).toHaveCount(0);
 
     // Verify the 1280x640 card scaler is properly scaled and dead-center inside main canvas
+    await expect(page.getByTestId('studio-card-scaler')).toBeVisible();
+    await expect
+      .poll(async () => {
+        const mainBox = await page.getByTestId('studio-canvas').boundingBox();
+        const scalerBox = await page.getByTestId('studio-card-scaler').boundingBox();
+        if (!mainBox || !scalerBox) return null;
+        return {
+          width: scalerBox.width,
+          dx: Math.abs(scalerBox.x + scalerBox.width / 2 - (mainBox.x + mainBox.width / 2)),
+          dy: Math.abs(scalerBox.y + scalerBox.height / 2 - (mainBox.y + mainBox.height / 2)),
+        };
+      })
+      .toEqual({
+        width: expect.any(Number),
+        dx: expect.any(Number),
+        dy: expect.any(Number),
+      });
+
     const mainBox = await page.getByTestId('studio-canvas').boundingBox();
     const scalerBox = await page.getByTestId('studio-card-scaler').boundingBox();
     expect(mainBox).not.toBeNull();
@@ -158,6 +176,47 @@ test.describe('Gitframe Landing Page & Studio E2E', () => {
     const safeZoneBtn = page.getByRole('button', { name: /Safe Zone/i });
     await safeZoneBtn.click();
     await expect(page.getByText(/40px SAFE ZONE/i)).toBeVisible();
+  });
+
+  test('studio font picker searches API catalog, updates live preview, and exports SVG cleanly', async ({
+    page,
+  }) => {
+    await page.goto('/studio');
+
+    // Open Typography / Fonts tab in Right Inspector
+    await page.getByRole('button', { name: 'Fonts' }).click();
+    await expect(page.getByText(/Curated Pairings/i)).toBeVisible();
+
+    // Open Heading Font Picker and search for "Outfit"
+    await page.getByTestId('font-picker-trigger-heading').click();
+    const searchInput = page.getByTestId('font-picker-search-heading');
+    await expect(searchInput).toBeVisible();
+    await searchInput.fill('Outfit');
+
+    await page.getByTestId('font-option-outfit').click();
+
+    // Verify dynamic @font-face rule injected for Outfit and live card canvas reflects Outfit
+    await expect
+      .poll(() =>
+        page.evaluate(() => document.getElementById('gitframe-dynamic-fonts')?.textContent ?? '')
+      )
+      .toContain("font-family:'Outfit'");
+
+    await expect(page.getByTestId('font-picker-trigger-heading')).toContainText('Outfit');
+
+    // Switch Monospace Font via picker to Space Mono
+    await page.getByTestId('font-picker-trigger-mono').click();
+    await page.getByTestId('font-option-space-mono').click();
+    await expect(page.getByTestId('font-picker-trigger-mono')).toContainText('Space Mono');
+
+    // Verify Export Modal Dynamic README snippet includes chosen fonts
+    await page.getByRole('button', { name: /export/i }).click();
+    await page.getByRole('button', { name: /Dynamic README Hero/i }).click();
+    await expect(page.locator('pre').first()).toContainText('font_heading=Outfit');
+    await expect(page.locator('pre').first()).toContainText('font_mono=Space+Mono');
+
+    // Ensure zero Next.js runtime/dev overlay errors
+    await expect(page.getByRole('button', { name: /Open issues overlay/i })).toHaveCount(0);
   });
 
   test('social simulator switches between all 5 platforms cleanly', async ({ page }) => {

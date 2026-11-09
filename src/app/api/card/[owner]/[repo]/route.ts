@@ -10,6 +10,11 @@ import {
 } from '@/core/domain/schemas';
 import { PRESET_PALETTES, ThemeEngine } from '@/core/theme/ThemeEngine';
 import { sanitizeImageUrl } from '@/core/security/ssrf';
+import {
+  DEFAULT_HEADING_FONT,
+  DEFAULT_MONO_FONT,
+  sanitizeFontFamily,
+} from '@/cards/fonts/fontCatalog';
 
 const githubService = new GitHubService();
 
@@ -150,6 +155,15 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
     );
   }
 
+  const fontHeading = sanitizeFontFamily(
+    searchParams.get('font_heading') || searchParams.get('fontHeading'),
+    DEFAULT_HEADING_FONT
+  );
+  const fontMono = sanitizeFontFamily(
+    searchParams.get('font_mono') || searchParams.get('fontMono'),
+    DEFAULT_MONO_FONT
+  );
+
   // Build CardConfig from query params with smart defaults
   const cardConfig: CardConfig = {
     templateId,
@@ -164,8 +178,8 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
     customLogoUrl: sanitizedLogoUrl,
     customBackgroundUrl: sanitizedBgUrl,
     typography: {
-      fontHeading: 'Inter',
-      fontMono: 'JetBrains Mono',
+      fontHeading,
+      fontMono,
     },
     backgroundPattern: {
       id: patternId,

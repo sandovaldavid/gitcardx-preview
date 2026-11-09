@@ -15,6 +15,7 @@ export const AuroraGlassTemplate: React.FC<CardRenderProps> = ({
   const { palette, visibility, backgroundPattern } = config;
   const isCenter = config.contentAlign === 'center';
   const fontHeading = config.typography?.fontHeading || 'Inter';
+  const fontMono = config.typography?.fontMono || 'JetBrains Mono';
   const techStack = detectTechStack(repo.languages, repo.topics, 5);
   const isLight = ThemeEngine.isLightColor(palette.background);
 
@@ -97,6 +98,7 @@ export const AuroraGlassTemplate: React.FC<CardRenderProps> = ({
                 textColor={palette.text}
                 borderColor={palette.border}
                 accentColor={palette.accent}
+                fontFamily={fontMono}
               />
             )}
           </div>
@@ -167,6 +169,7 @@ export const AuroraGlassTemplate: React.FC<CardRenderProps> = ({
                 textColor={palette.text}
                 borderColor={palette.border}
                 accentColor={palette.accent}
+                fontFamily={fontMono}
               />
             )}
             {visibility.forks && (
@@ -176,6 +179,7 @@ export const AuroraGlassTemplate: React.FC<CardRenderProps> = ({
                 textColor={palette.text}
                 borderColor={palette.border}
                 accentColor={palette.accent}
+                fontFamily={fontMono}
               />
             )}
             {visibility.issues && typeof repo.openIssuesCount === 'number' && (
@@ -186,6 +190,7 @@ export const AuroraGlassTemplate: React.FC<CardRenderProps> = ({
                 borderColor={palette.border}
                 accentColor={palette.accent}
                 label="issues"
+                fontFamily={fontMono}
               />
             )}
             {visibility.discussions && typeof repo.discussionsCount === 'number' && (
@@ -196,6 +201,7 @@ export const AuroraGlassTemplate: React.FC<CardRenderProps> = ({
                 borderColor={palette.border}
                 accentColor={palette.accent}
                 label="discussions"
+                fontFamily={fontMono}
               />
             )}
             {visibility.license && repo.license && (
@@ -205,6 +211,7 @@ export const AuroraGlassTemplate: React.FC<CardRenderProps> = ({
                 textColor={palette.text}
                 borderColor={palette.border}
                 accentColor={palette.accent}
+                fontFamily={fontMono}
               />
             )}
           </div>

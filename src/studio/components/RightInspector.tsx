@@ -20,6 +20,8 @@ import { PRESET_PALETTES, ThemeEngine } from '@/core/theme/ThemeEngine';
 import type { BackgroundPatternConfig } from '@/core/domain/schemas';
 import { BrandKitVault } from './BrandKitVault';
 import { PatternPresetVault } from './PatternPresetVault';
+import { FontPicker } from './FontPicker';
+import { FONT_PAIRING_PRESETS } from '@/cards/fonts/fontCatalog';
 
 export const RightInspector: React.FC = () => {
   const {
@@ -541,42 +543,79 @@ export const RightInspector: React.FC = () => {
         {/* TAB 4: TYPOGRAPHY */}
         {activeRightTab === 'typography' && (
           <div className="flex flex-col gap-5">
-            <span className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">
-              Font Pairings
-            </span>
+            <div className="flex flex-col gap-2.5">
+              <span className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">
+                Curated Pairings
+              </span>
+              <div className="grid grid-cols-1 gap-1.5">
+                {FONT_PAIRING_PRESETS.map((preset) => {
+                  const isActive =
+                    config.typography.fontHeading === preset.fontHeading &&
+                    config.typography.fontMono === preset.fontMono;
 
-            <div className="flex flex-col gap-2">
-              <label className="text-xs text-zinc-400">Heading Font</label>
-              <select
-                value={config.typography.fontHeading}
-                onChange={(e) =>
-                  updateConfig({
-                    typography: { ...config.typography, fontHeading: e.target.value },
-                  })
-                }
-                className="w-full h-9 px-3 rounded-lg bg-zinc-900 border border-zinc-800 text-sm text-zinc-200 outline-none"
-              >
-                <option value="Inter">Inter (Clean Modern Sans)</option>
-                <option value="Geist">Geist (Developer Aesthetic)</option>
-                <option value="Space Grotesk">Space Grotesk (Tech / Brutalist)</option>
-                <option value="Plus Jakarta Sans">Plus Jakarta Sans (High-End SaaS)</option>
-              </select>
+                  return (
+                    <button
+                      key={preset.id}
+                      type="button"
+                      data-testid={`font-pairing-${preset.id}`}
+                      onClick={() =>
+                        updateConfig({
+                          typography: {
+                            fontHeading: preset.fontHeading,
+                            fontMono: preset.fontMono,
+                          },
+                        })
+                      }
+                      className={`px-3 py-2 rounded-xl border text-left flex items-center justify-between gap-2 transition-colors cursor-pointer ${
+                        isActive
+                          ? 'bg-blue-600/15 border-blue-500/40 text-zinc-100'
+                          : 'bg-zinc-900/60 border-zinc-800/80 text-zinc-300 hover:border-zinc-700 hover:bg-zinc-900'
+                      }`}
+                    >
+                      <div className="flex flex-col min-w-0">
+                        <span className="text-xs font-semibold truncate">{preset.label}</span>
+                        <span className="text-[11px] text-zinc-400 truncate">
+                          {preset.description}
+                        </span>
+                      </div>
+                      {isActive && <Check className="w-3.5 h-3.5 text-blue-400 shrink-0" />}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
-            <div className="flex flex-col gap-2">
-              <label className="text-xs text-zinc-400">Monospace Font</label>
-              <select
-                value={config.typography.fontMono}
-                onChange={(e) =>
+            <div className="pt-3 border-t border-zinc-800/80 flex flex-col gap-4">
+              <span className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">
+                Custom Font Explorer
+              </span>
+
+              <FontPicker
+                label="Heading / Display Font"
+                role="heading"
+                value={config.typography.fontHeading}
+                onChange={(fontHeading) =>
                   updateConfig({
-                    typography: { ...config.typography, fontMono: e.target.value },
+                    typography: { ...config.typography, fontHeading },
                   })
                 }
-                className="w-full h-9 px-3 rounded-lg bg-zinc-900 border border-zinc-800 text-sm text-zinc-200 outline-none"
-              >
-                <option value="JetBrains Mono">JetBrains Mono</option>
-                <option value="Fira Code">Fira Code</option>
-              </select>
+              />
+
+              <FontPicker
+                label="Monospace / Code Font"
+                role="mono"
+                value={config.typography.fontMono}
+                onChange={(fontMono) =>
+                  updateConfig({
+                    typography: { ...config.typography, fontMono },
+                  })
+                }
+              />
+
+              <p className="text-[11px] text-zinc-500 leading-relaxed">
+                Selected open-source fonts stream live in the Studio and automatically compile from
+                binary TTF/WOFF into PNG, SVG, and Dynamic README exports.
+              </p>
             </div>
           </div>
         )}

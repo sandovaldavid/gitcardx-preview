@@ -3,32 +3,24 @@ import satori from 'satori';
 import { Resvg } from '@resvg/resvg-js';
 import { CardRenderer } from '../templates/CardTemplateRegistry';
 import { getCardFonts } from '../fonts/fontLoader';
+import { DEFAULT_HEADING_FONT, DEFAULT_MONO_FONT, sanitizeFontFamily } from '../fonts/fontCatalog';
 import type { RepoMetadata, CardConfig } from '@/core/domain/schemas';
 
 export async function renderCardToSvg(repo: RepoMetadata, config: CardConfig): Promise<string> {
-  const fonts = await getCardFonts();
+  const safeHeading = sanitizeFontFamily(config.typography?.fontHeading, DEFAULT_HEADING_FONT);
+  const safeMono = sanitizeFontFamily(config.typography?.fontMono, DEFAULT_MONO_FONT);
 
-  const fontList = [...fonts];
-  const fontHeading = config.typography?.fontHeading;
-  const fontMono = config.typography?.fontMono;
+  const normalizedConfig: CardConfig = {
+    ...config,
+    typography: {
+      fontHeading: safeHeading,
+      fontMono: safeMono,
+    },
+  };
 
-  if (fontHeading && !fontList.some((f) => f.name === fontHeading)) {
-    const fallbackReg = fonts.find((f) => f.name === 'Inter' && f.weight === 400);
-    const fallbackBold = fonts.find((f) => f.name === 'Inter' && f.weight === 700);
-    if (fallbackReg && fallbackBold) {
-      fontList.push({ ...fallbackReg, name: fontHeading }, { ...fallbackBold, name: fontHeading });
-    }
-  }
+  const fontList = await getCardFonts(normalizedConfig.typography);
 
-  if (fontMono && !fontList.some((f) => f.name === fontMono)) {
-    const fallbackReg = fonts.find((f) => f.name === 'JetBrains Mono' && f.weight === 400);
-    const fallbackBold = fonts.find((f) => f.name === 'JetBrains Mono' && f.weight === 700);
-    if (fallbackReg && fallbackBold) {
-      fontList.push({ ...fallbackReg, name: fontMono }, { ...fallbackBold, name: fontMono });
-    }
-  }
-
-  const svg = await satori(<CardRenderer repo={repo} config={config} />, {
+  const svg = await satori(<CardRenderer repo={repo} config={normalizedConfig} />, {
     width: 1280,
     height: 640,
     fonts: fontList.map((f) => ({

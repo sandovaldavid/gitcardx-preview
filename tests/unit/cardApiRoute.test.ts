@@ -112,6 +112,20 @@ describe('Dynamic Card Route (/api/card/[owner]/[repo])', () => {
     expect(text).toContain('%2300ffcc');
   });
 
+  it('supports custom typography query parameters (font_heading and font_mono)', async () => {
+    const req = new NextRequest(
+      'https://gitframe.dev/api/card/sandovaldavid/gitframe?format=svg&font_heading=Space+Grotesk&font_mono=Fira+Code'
+    );
+    const res = await GET(req, {
+      params: Promise.resolve({ owner: 'sandovaldavid', repo: 'gitframe' }),
+    });
+
+    expect(res.status).toBe(200);
+    expect(res.headers.get('Content-Type')).toContain('image/svg+xml');
+    const text = await res.text();
+    expect(text.startsWith('<svg')).toBe(true);
+  });
+
   it('renders a fallback card gracefully when repository is not found or fails', async () => {
     const req = new NextRequest('https://gitframe.dev/api/card/nonexistent/missing-repo.svg');
     const res = await GET(req, {
