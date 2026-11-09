@@ -67,17 +67,17 @@ export const TerminalWindow: React.FC<TerminalWindowProps> = ({
         style={{
           display: 'flex',
           alignItems: 'center',
-          gap: 10,
-          paddingLeft: 16,
-          paddingRight: 16,
-          paddingTop: 12,
-          paddingBottom: 12,
+          gap: 12,
+          paddingLeft: 18,
+          paddingRight: 18,
+          paddingTop: 14,
+          paddingBottom: 14,
           fontFamily: fontMono,
-          fontSize: 15,
+          fontSize: 17,
         }}
       >
         <span style={{ color: accentColor, fontWeight: 700 }}>$</span>
-        <span style={{ color: textColor, fontWeight: 500 }}>{command}</span>
+        <span style={{ color: textColor, fontWeight: 600 }}>{command}</span>
       </div>
     </div>
   );

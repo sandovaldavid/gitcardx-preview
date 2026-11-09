@@ -5,6 +5,9 @@ import { AvatarGroup } from '../primitives/AvatarGroup';
 import { FormattedText } from '../primitives/FormattedText';
 import { LanguageBar } from '../primitives/LanguageBar';
 import { MetricPill } from '../primitives/MetricPill';
+import { StackBadgeRow } from '../primitives/StackBadgeRow';
+import { StarMetricIcon, ForkMetricIcon } from '../icons/metricIcons';
+import { detectTechStack } from '@/core/domain/stackMapper';
 import { SafeZoneGuides } from '../primitives/SafeZoneGuides';
 
 export const OssCredibilityTemplate: React.FC<CardRenderProps> = ({
@@ -15,6 +18,7 @@ export const OssCredibilityTemplate: React.FC<CardRenderProps> = ({
   const { palette, visibility, backgroundPattern } = config;
   const isCenter = config.contentAlign === 'center';
   const fontHeading = config.typography?.fontHeading || 'Inter';
+  const techStack = detectTechStack(repo.languages, repo.topics, 4);
 
   return (
     <div
@@ -49,27 +53,30 @@ export const OssCredibilityTemplate: React.FC<CardRenderProps> = ({
         }}
       >
         {visibility.author ? (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={config.customLogoUrl || repo.owner.avatarUrl}
               alt={repo.owner.login}
-              width={44}
-              height={44}
+              width={56}
+              height={56}
               style={{
-                width: 44,
-                height: 44,
-                borderRadius: '50%',
-                border: `1px solid ${palette.border}`,
+                width: 56,
+                height: 56,
+                borderRadius: 14,
+                border: `2px solid ${palette.border}`,
+                backgroundColor: 'rgba(255, 255, 255, 0.05)',
               }}
             />
-            <span style={{ fontSize: 20, fontWeight: 600, color: palette.text }}>
-              {repo.owner.login}
-            </span>
-            <span style={{ fontSize: 18, color: palette.border }}>/</span>
-            <span style={{ fontSize: 20, fontWeight: 700, color: palette.accent }}>
-              {repo.name}
-            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <span style={{ fontSize: 24, fontWeight: 700, color: palette.text }}>
+                {repo.owner.login}
+              </span>
+              <span style={{ fontSize: 22, color: palette.border, opacity: 0.8 }}>/</span>
+              <span style={{ fontSize: 24, fontWeight: 800, color: palette.accent }}>
+                {repo.name}
+              </span>
+            </div>
           </div>
         ) : (
           <div />
@@ -97,14 +104,14 @@ export const OssCredibilityTemplate: React.FC<CardRenderProps> = ({
         </div>
       </div>
 
-      {/* Middle: Title, Description & Hero Metric Cards */}
+      {/* Middle: Title, Description, Stack Badges & Hero Metric Cards */}
       <div
         style={{
           display: 'flex',
           flexDirection: isCenter ? 'column' : 'row',
           justifyContent: isCenter ? 'center' : 'space-between',
           alignItems: 'center',
-          gap: isCenter ? 20 : 40,
+          gap: isCenter ? 24 : 40,
           zIndex: 1,
         }}
       >
@@ -114,16 +121,16 @@ export const OssCredibilityTemplate: React.FC<CardRenderProps> = ({
             flexDirection: 'column',
             alignItems: isCenter ? 'center' : 'flex-start',
             textAlign: isCenter ? 'center' : 'left',
-            gap: 14,
+            gap: 16,
             flex: isCenter ? undefined : 1,
           }}
         >
           <h1
             style={{
-              fontSize: 54,
+              fontSize: 58,
               fontWeight: 800,
-              letterSpacing: '-0.025em',
-              lineHeight: 1.1,
+              letterSpacing: '-0.03em',
+              lineHeight: 1.08,
               color: palette.text,
               margin: 0,
             }}
@@ -142,7 +149,7 @@ export const OssCredibilityTemplate: React.FC<CardRenderProps> = ({
                 color: palette.text,
                 opacity: 0.9,
                 margin: 0,
-                maxWidth: 720,
+                maxWidth: 680,
               }}
             >
               <FormattedText
@@ -156,13 +163,24 @@ export const OssCredibilityTemplate: React.FC<CardRenderProps> = ({
               />
             </p>
           )}
+
+          {visibility.techStack && techStack.length > 0 && (
+            <div style={{ display: 'flex', marginTop: 4 }}>
+              <StackBadgeRow
+                items={techStack}
+                textColor={palette.text}
+                borderColor={palette.border}
+                showOfficialLogos={visibility.languageLogos}
+              />
+            </div>
+          )}
         </div>
 
         {/* Hero Stat Box */}
         <div
           style={{
             display: 'flex',
-            gap: 16,
+            gap: 18,
           }}
         >
           {visibility.stars && (
@@ -172,19 +190,40 @@ export const OssCredibilityTemplate: React.FC<CardRenderProps> = ({
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                paddingTop: 18,
-                paddingBottom: 18,
-                paddingLeft: 28,
-                paddingRight: 28,
-                borderRadius: 16,
-                border: `1px solid ${palette.border}`,
-                backgroundColor: 'rgba(255, 255, 255, 0.03)',
+                paddingTop: 20,
+                paddingBottom: 20,
+                paddingLeft: 30,
+                paddingRight: 30,
+                borderRadius: 20,
+                border: `1.5px solid ${palette.border}`,
+                backgroundColor: 'rgba(255, 255, 255, 0.04)',
+                gap: 8,
               }}
             >
-              <span style={{ fontSize: 36, fontWeight: 800, color: palette.accent }}>
-                {repo.stars.toLocaleString()}
-              </span>
-              <span style={{ fontSize: 14, fontWeight: 500, color: palette.text, opacity: 0.88 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <StarMetricIcon color={palette.accent} size={32} />
+                <span
+                  style={{
+                    fontSize: 46,
+                    fontWeight: 800,
+                    letterSpacing: '-0.02em',
+                    lineHeight: 1,
+                    color: palette.accent,
+                  }}
+                >
+                  {repo.stars.toLocaleString()}
+                </span>
+              </div>
+              <span
+                style={{
+                  fontSize: 15,
+                  fontWeight: 700,
+                  color: palette.text,
+                  opacity: 0.9,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.06em',
+                }}
+              >
                 GitHub Stars
               </span>
             </div>
@@ -197,19 +236,40 @@ export const OssCredibilityTemplate: React.FC<CardRenderProps> = ({
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                paddingTop: 18,
-                paddingBottom: 18,
-                paddingLeft: 28,
-                paddingRight: 28,
-                borderRadius: 16,
-                border: `1px solid ${palette.border}`,
-                backgroundColor: 'rgba(255, 255, 255, 0.03)',
+                paddingTop: 20,
+                paddingBottom: 20,
+                paddingLeft: 30,
+                paddingRight: 30,
+                borderRadius: 20,
+                border: `1.5px solid ${palette.border}`,
+                backgroundColor: 'rgba(255, 255, 255, 0.04)',
+                gap: 8,
               }}
             >
-              <span style={{ fontSize: 36, fontWeight: 800, color: palette.text }}>
-                {repo.forks.toLocaleString()}
-              </span>
-              <span style={{ fontSize: 14, fontWeight: 500, color: palette.text, opacity: 0.88 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <ForkMetricIcon color={palette.text} size={32} />
+                <span
+                  style={{
+                    fontSize: 46,
+                    fontWeight: 800,
+                    letterSpacing: '-0.02em',
+                    lineHeight: 1,
+                    color: palette.text,
+                  }}
+                >
+                  {repo.forks.toLocaleString()}
+                </span>
+              </div>
+              <span
+                style={{
+                  fontSize: 15,
+                  fontWeight: 700,
+                  color: palette.text,
+                  opacity: 0.9,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.06em',
+                }}
+              >
                 Forks
               </span>
             </div>
@@ -235,22 +295,22 @@ export const OssCredibilityTemplate: React.FC<CardRenderProps> = ({
           }}
         >
           {visibility.contributors && repo.contributors.length > 0 && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
               <AvatarGroup
                 contributors={repo.contributors}
                 borderColor={palette.border}
                 maxAvatars={6}
-                size={38}
+                size={44}
               />
-              <span style={{ fontSize: 14, color: palette.text, opacity: 0.88 }}>
-                active maintainers
+              <span style={{ fontSize: 16, fontWeight: 600, color: palette.text, opacity: 0.95 }}>
+                Active maintainers
               </span>
             </div>
           )}
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontSize: 14, color: palette.text, opacity: 0.88 }}>
-              verified open source repository
+            <span style={{ fontSize: 15, fontWeight: 600, color: palette.accent }}>
+              Verified open source repository
             </span>
           </div>
         </div>

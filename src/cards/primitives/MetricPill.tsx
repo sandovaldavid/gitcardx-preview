@@ -31,20 +31,20 @@ export const MetricPill: React.FC<MetricPillProps> = ({
       style={{
         display: 'flex',
         alignItems: 'center',
-        gap: 8,
-        paddingLeft: 14,
-        paddingRight: 16,
-        paddingTop: 6,
-        paddingBottom: 6,
+        gap: 10,
+        paddingLeft: 16,
+        paddingRight: 18,
+        paddingTop: 8,
+        paddingBottom: 8,
         borderRadius: 9999,
         border: `1px solid ${borderColor}`,
-        backgroundColor: 'rgba(255, 255, 255, 0.04)',
-        fontSize: 16,
-        fontWeight: 500,
+        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+        fontSize: 18,
+        fontWeight: 600,
         color: textColor,
       }}
     >
-      <MetricIcon type={type} textColor={textColor} accentColor={accentColor} />
+      <MetricIcon type={type} textColor={textColor} accentColor={accentColor} size={22} />
       <span>{displayValue}</span>
     </div>
   );

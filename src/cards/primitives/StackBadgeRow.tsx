@@ -32,16 +32,16 @@ export const StackBadgeRow: React.FC<StackBadgeRowProps> = ({
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: 8,
-            paddingLeft: 12,
-            paddingRight: 14,
-            paddingTop: 5,
-            paddingBottom: 5,
-            borderRadius: 8,
+            gap: 10,
+            paddingLeft: 14,
+            paddingRight: 16,
+            paddingTop: 7,
+            paddingBottom: 7,
+            borderRadius: 10,
             border: `1px solid ${borderColor}`,
-            backgroundColor: 'rgba(255, 255, 255, 0.03)',
-            fontSize: 14,
-            fontWeight: 500,
+            backgroundColor: 'rgba(255, 255, 255, 0.05)',
+            fontSize: 16,
+            fontWeight: 600,
             color: textColor,
           }}
         >
@@ -49,7 +49,7 @@ export const StackBadgeRow: React.FC<StackBadgeRowProps> = ({
             name={item.name}
             id={item.id}
             color={item.color || '#3b82f6'}
-            size={15}
+            size={20}
             showOfficialLogo={showOfficialLogos}
           />
           <span>{item.name}</span>
