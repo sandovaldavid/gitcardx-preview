@@ -320,10 +320,17 @@ export const LeftInspector: React.FC = () => {
                   <input
                     type="number"
                     min="0"
-                    value={repo.openIssuesCount ?? 0}
+                    value={repo.openIssuesCount ?? ''}
+                    placeholder="-"
                     onChange={(e) =>
                       setRepo(
-                        { ...repo, openIssuesCount: Math.max(0, parseInt(e.target.value) || 0) },
+                        {
+                          ...repo,
+                          openIssuesCount:
+                            e.target.value === ''
+                              ? undefined
+                              : Math.max(0, parseInt(e.target.value, 10)),
+                        },
                         false
                       )
                     }
@@ -335,10 +342,17 @@ export const LeftInspector: React.FC = () => {
                   <input
                     type="number"
                     min="0"
-                    value={repo.discussionsCount ?? 0}
+                    value={repo.discussionsCount ?? ''}
+                    placeholder="-"
                     onChange={(e) =>
                       setRepo(
-                        { ...repo, discussionsCount: Math.max(0, parseInt(e.target.value) || 0) },
+                        {
+                          ...repo,
+                          discussionsCount:
+                            e.target.value === ''
+                              ? undefined
+                              : Math.max(0, parseInt(e.target.value, 10)),
+                        },
                         false
                       )
                     }

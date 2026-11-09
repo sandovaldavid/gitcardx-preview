@@ -328,7 +328,7 @@ describe('Cards Engine & Satori Renderer', () => {
     expect(svgRelease).toContain('width="1280"');
     expect(svgRelease).toContain('height="640"');
 
-    // 2. Repo without release (renders cleanly without throwing)
+    // 2. Repo without release (renders cleanly without simulating fake 'main' release)
     const repoNoRelease: RepoMetadata = {
       ...mockRepo,
       latestRelease: null,
@@ -337,6 +337,7 @@ describe('Cards Engine & Satori Renderer', () => {
     expect(svgNoRelease.startsWith('<svg')).toBe(true);
     expect(svgNoRelease).toContain('width="1280"');
     expect(svgNoRelease).toContain('height="640"');
+    expect(svgNoRelease).not.toContain('>main<');
   });
 
   it('renders all 8 templates within exact 1280x640 bounds without cropping or box-sizing overflow', async () => {

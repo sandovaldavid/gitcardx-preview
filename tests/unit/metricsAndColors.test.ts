@@ -34,10 +34,12 @@ describe('formatCompactMetric', () => {
     expect(formatCompactMetric(2000000)).toBe('2M');
   });
 
-  it('handles negative or invalid numbers safely', () => {
-    expect(formatCompactMetric(-5)).toBe('0');
-    expect(formatCompactMetric(NaN)).toBe('0');
-    expect(formatCompactMetric(Infinity)).toBe('0');
+  it('handles negative, nullish, or invalid numbers by returning hyphen rather than simulating zero', () => {
+    expect(formatCompactMetric(-5)).toBe('-');
+    expect(formatCompactMetric(NaN)).toBe('-');
+    expect(formatCompactMetric(Infinity)).toBe('-');
+    expect(formatCompactMetric(null)).toBe('-');
+    expect(formatCompactMetric(undefined)).toBe('-');
   });
 });
 

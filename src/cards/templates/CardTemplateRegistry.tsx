@@ -36,7 +36,7 @@ export const CARD_TEMPLATES: Record<TemplateId, TemplateDefinition> = {
   'oss-credibility': {
     id: 'oss-credibility',
     name: 'OSS Credibility',
-    description: 'Puts stars, forks, maintainers, and language metrics front and center.',
+    description: 'Puts stars, forks, contributors, and language metrics front and center.',
     recommendedFor: 'Popular open-source libraries, mature communities',
     component: OssCredibilityTemplate,
   },

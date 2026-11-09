@@ -325,8 +325,10 @@ export const OssCredibilityTemplate: React.FC<CardRenderProps> = ({
               />
               <span style={{ fontSize: 16, fontWeight: 600, color: palette.text, opacity: 0.95 }}>
                 {repo.contributorsCount && repo.contributorsCount > 1
-                  ? `${formatCompactMetric(repo.contributorsCount)} maintainers`
-                  : 'Active maintainers'}
+                  ? `${formatCompactMetric(repo.contributorsCount)} contributors`
+                  : repo.contributorsCount === 1
+                    ? '1 contributor'
+                    : 'Active contributors'}
               </span>
             </div>
           )}

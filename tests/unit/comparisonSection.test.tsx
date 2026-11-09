@@ -30,6 +30,20 @@ describe('ComparisonSection (Real Project Comparison)', () => {
     expect(html).toContain('SDK Package');
     expect(html).toContain('Blueprint Grid');
     expect(html).toContain('Aurora Mesh');
+    expect(html).toContain('CLI Terminal');
+    expect(html).toContain('Release Spotlight');
+  });
+
+  it('renders interactive before/after split slider container with accessible role and attributes', () => {
+    const html = renderToString(<ComparisonSection />);
+    expect(html).toContain('role="slider"');
+    expect(html).toContain('aria-valuemin="0"');
+    expect(html).toContain('aria-valuemax="100"');
+    expect(html).toContain('aria-valuenow="50"');
+    expect(html).toContain('100% GitHub');
+    expect(html).toContain('50/50 Split');
+    expect(html).toContain('100% Gitframe');
+    expect(html).toContain('clip-path:inset(0 50% 0 0)');
   });
 
   it('renders Studio customization link targeting the real project and template', () => {

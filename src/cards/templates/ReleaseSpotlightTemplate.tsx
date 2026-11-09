@@ -18,7 +18,7 @@ export const ReleaseSpotlightTemplate: React.FC<CardRenderProps> = ({
   const fontMono = config.typography?.fontMono || 'JetBrains Mono';
   const techStack = detectTechStack(repo.languages, repo.topics, 5);
   const hasRealRelease = Boolean(repo.latestRelease?.tag);
-  const releaseTag = repo.latestRelease?.tag || 'main';
+  const releaseTag = repo.latestRelease?.tag || '-';
 
   return (
     <div
@@ -134,8 +134,8 @@ export const ReleaseSpotlightTemplate: React.FC<CardRenderProps> = ({
                 paddingTop: 8,
                 paddingBottom: 8,
                 borderRadius: 12,
-                backgroundColor: palette.accent,
-                color: '#000000',
+                backgroundColor: hasRealRelease ? palette.accent : 'rgba(255, 255, 255, 0.1)',
+                color: hasRealRelease ? '#000000' : palette.text,
                 fontFamily: fontMono,
                 fontSize: 28,
                 fontWeight: 800,
