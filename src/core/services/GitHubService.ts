@@ -22,6 +22,8 @@ const GET_REPO_QUERY = `
       stargazerCount
       forkCount
       isArchived
+      hasIssuesEnabled
+      hasDiscussionsEnabled
       owner {
         __typename
         login
@@ -130,8 +132,8 @@ export const KNOWN_REPO_FALLBACKS: Record<string, RepoMetadata> = {
     name: 'portfolio',
     description: "Portfolio's David",
     homepageUrl: 'https://sandovaldavid.com',
-    stars: 8,
-    forks: 2,
+    stars: 1,
+    forks: 0,
     primaryLanguage: { name: 'TypeScript', color: '#3178C6' },
     languages: [
       { name: 'TypeScript', color: '#3178C6', size: 372000 },
@@ -146,7 +148,7 @@ export const KNOWN_REPO_FALLBACKS: Record<string, RepoMetadata> = {
     ],
     contributorsCount: 1,
     openIssuesCount: 0,
-    discussionsCount: 0,
+    discussionsCount: undefined,
   },
   'sandovaldavid/gitframe': {
     owner: {
@@ -158,22 +160,23 @@ export const KNOWN_REPO_FALLBACKS: Record<string, RepoMetadata> = {
     description:
       'Instant GitHub Social Preview card generator for developers. 8 Satori templates, generative backgrounds, zero sign-up.',
     homepageUrl: 'https://gitframe.dev',
-    stars: 1250,
-    forks: 180,
+    stars: 0,
+    forks: 0,
     primaryLanguage: { name: 'TypeScript', color: '#3178C6' },
     languages: [
-      { name: 'TypeScript', color: '#3178C6', size: 85000 },
-      { name: 'CSS', color: '#1572B6', size: 15000 },
+      { name: 'TypeScript', color: '#3178C6', size: 756970 },
+      { name: 'JavaScript', color: '#F7DF1E', size: 10672 },
+      { name: 'CSS', color: '#1572B6', size: 2573 },
     ],
     topics: ['nextjs', 'social-preview', 'developer-tools', 'typescript'],
     license: 'MIT',
-    latestRelease: { tag: 'v1.0.0', publishedAt: '2026-11-01T12:00:00Z' },
+    latestRelease: null,
     contributors: [
       { login: 'sandovaldavid', avatarUrl: 'https://avatars.githubusercontent.com/u/102970701' },
     ],
     contributorsCount: 1,
     openIssuesCount: 0,
-    discussionsCount: 0,
+    discussionsCount: undefined,
   },
   'sandovaldavid/gitcardx-preview': {
     owner: {
@@ -185,22 +188,23 @@ export const KNOWN_REPO_FALLBACKS: Record<string, RepoMetadata> = {
     description:
       'Instant GitHub Social Preview card generator for developers. 8 Satori templates, generative backgrounds, zero sign-up.',
     homepageUrl: 'https://gitframe.dev',
-    stars: 1250,
-    forks: 180,
+    stars: 0,
+    forks: 0,
     primaryLanguage: { name: 'TypeScript', color: '#3178C6' },
     languages: [
-      { name: 'TypeScript', color: '#3178C6', size: 85000 },
-      { name: 'CSS', color: '#1572B6', size: 15000 },
+      { name: 'TypeScript', color: '#3178C6', size: 756970 },
+      { name: 'JavaScript', color: '#F7DF1E', size: 10672 },
+      { name: 'CSS', color: '#1572B6', size: 2573 },
     ],
     topics: ['nextjs', 'social-preview', 'developer-tools', 'typescript'],
     license: 'MIT',
-    latestRelease: { tag: 'v1.0.0', publishedAt: '2026-11-01T12:00:00Z' },
+    latestRelease: null,
     contributors: [
       { login: 'sandovaldavid', avatarUrl: 'https://avatars.githubusercontent.com/u/102970701' },
     ],
     contributorsCount: 1,
     openIssuesCount: 0,
-    discussionsCount: 0,
+    discussionsCount: undefined,
   },
   'tailwindlabs/tailwindcss': {
     owner: {
@@ -211,8 +215,8 @@ export const KNOWN_REPO_FALLBACKS: Record<string, RepoMetadata> = {
     name: 'tailwindcss',
     description: 'A utility-first CSS framework for rapid UI development.',
     homepageUrl: 'https://tailwindcss.com',
-    stars: 86500,
-    forks: 4300,
+    stars: 98649,
+    forks: 6862,
     primaryLanguage: { name: 'Rust', color: '#DEA584' },
     languages: [
       { name: 'Rust', color: '#DEA584', size: 65000 },
@@ -220,15 +224,15 @@ export const KNOWN_REPO_FALLBACKS: Record<string, RepoMetadata> = {
     ],
     topics: ['css', 'tailwindcss', 'compiler', 'responsive-design'],
     license: 'MIT',
-    latestRelease: { tag: 'v4.0.0', publishedAt: '2026-01-22T16:00:00Z' },
+    latestRelease: { tag: 'v4.3.5', publishedAt: '2026-11-06T15:05:05Z' },
     contributors: [
       { login: 'adamwathan', avatarUrl: 'https://avatars.githubusercontent.com/u/4323180' },
       { login: 'reinink', avatarUrl: 'https://avatars.githubusercontent.com/u/882133' },
       { login: 'RobinMalfait', avatarUrl: 'https://avatars.githubusercontent.com/u/1834413' },
     ],
-    contributorsCount: 390,
-    openIssuesCount: 116,
-    discussionsCount: 520,
+    contributorsCount: 388,
+    openIssuesCount: 43,
+    discussionsCount: 10016,
   },
   'facebook/react': {
     owner: {
@@ -239,8 +243,8 @@ export const KNOWN_REPO_FALLBACKS: Record<string, RepoMetadata> = {
     name: 'react',
     description: 'The library for web and native user interfaces.',
     homepageUrl: 'https://react.dev',
-    stars: 232000,
-    forks: 46800,
+    stars: 252429,
+    forks: 52031,
     primaryLanguage: { name: 'JavaScript', color: '#F7DF1E' },
     languages: [
       { name: 'JavaScript', color: '#F7DF1E', size: 90000 },
@@ -248,13 +252,13 @@ export const KNOWN_REPO_FALLBACKS: Record<string, RepoMetadata> = {
     ],
     topics: ['declarative', 'frontend', 'javascript', 'react', 'ui'],
     license: 'MIT',
-    latestRelease: { tag: 'v19.0.0', publishedAt: '2025-12-05T12:00:00Z' },
+    latestRelease: { tag: 'v19.3.1', publishedAt: '2026-10-14T17:06:15Z' },
     contributors: [
       { login: 'gaearon', avatarUrl: 'https://avatars.githubusercontent.com/u/810438' },
     ],
-    contributorsCount: 2030,
-    openIssuesCount: 1150,
-    discussionsCount: 940,
+    contributorsCount: 1788,
+    openIssuesCount: 862,
+    discussionsCount: undefined,
   },
   'shadcn-ui/ui': {
     owner: {
@@ -265,8 +269,8 @@ export const KNOWN_REPO_FALLBACKS: Record<string, RepoMetadata> = {
     name: 'ui',
     description: 'A set of beautifully-designed, accessible components and templates.',
     homepageUrl: 'https://ui.shadcn.com',
-    stars: 128500,
-    forks: 12300,
+    stars: 127665,
+    forks: 11757,
     primaryLanguage: { name: 'TypeScript', color: '#3178C6' },
     languages: [
       { name: 'TypeScript', color: '#3178C6', size: 90000 },
@@ -275,7 +279,7 @@ export const KNOWN_REPO_FALLBACKS: Record<string, RepoMetadata> = {
     ],
     topics: ['components', 'radix-ui', 'react', 'tailwind'],
     license: 'MIT',
-    latestRelease: { tag: 'v2.0.0', publishedAt: '2026-02-15T10:00:00Z' },
+    latestRelease: { tag: 'shadcn@4.23.0', publishedAt: '2026-10-27T12:31:47Z' },
     contributors: [
       { login: 'shadcn', avatarUrl: 'https://avatars.githubusercontent.com/u/124599' },
       { login: 'colinhacks', avatarUrl: 'https://avatars.githubusercontent.com/u/30652791' },
@@ -283,8 +287,8 @@ export const KNOWN_REPO_FALLBACKS: Record<string, RepoMetadata> = {
       { login: 'pacocoursey', avatarUrl: 'https://avatars.githubusercontent.com/u/34928425' },
     ],
     contributorsCount: 635,
-    openIssuesCount: 42,
-    discussionsCount: 180,
+    openIssuesCount: 774,
+    discussionsCount: 2164,
   },
   'astral-sh/uv': {
     owner: {
@@ -295,8 +299,8 @@ export const KNOWN_REPO_FALLBACKS: Record<string, RepoMetadata> = {
     name: 'uv',
     description: 'An extremely fast Python package and project manager, written in Rust.',
     homepageUrl: 'https://docs.astral.sh/uv',
-    stars: 48000,
-    forks: 1600,
+    stars: 91783,
+    forks: 3781,
     primaryLanguage: { name: 'Rust', color: '#DEA584' },
     languages: [
       { name: 'Rust', color: '#DEA584', size: 92000 },
@@ -304,15 +308,15 @@ export const KNOWN_REPO_FALLBACKS: Record<string, RepoMetadata> = {
     ],
     topics: ['python', 'rust', 'package-manager', 'pip', 'virtualenv'],
     license: 'MIT',
-    latestRelease: { tag: '0.5.0', publishedAt: '2026-02-01T12:00:00Z' },
+    latestRelease: { tag: '0.13.7', publishedAt: '2026-11-03T02:45:04Z' },
     contributors: [
       { login: 'charliermarsh', avatarUrl: 'https://avatars.githubusercontent.com/u/1309177' },
       { login: 'konstin', avatarUrl: 'https://avatars.githubusercontent.com/u/10510431' },
       { login: 'alwx', avatarUrl: 'https://avatars.githubusercontent.com/u/597097' },
     ],
-    contributorsCount: 610,
-    openIssuesCount: 95,
-    discussionsCount: 88,
+    contributorsCount: 616,
+    openIssuesCount: 2403,
+    discussionsCount: undefined,
   },
 };
 
@@ -420,13 +424,8 @@ export class GitHubService {
     let languagesList: Array<{ name: string; color: string; size: number }> = langName
       ? [{ name: langName, color: langColor || '#3178C6', size: raw.size || 1000 }]
       : [];
-    let contributorsList: Array<{ login: string; avatarUrl: string }> = [
-      {
-        login: raw.owner.login,
-        avatarUrl: raw.owner.avatar_url,
-      },
-    ];
-    let contributorsCount = 1;
+    let contributorsList: Array<{ login: string; avatarUrl: string }> = [];
+    let contributorsCount: number | undefined = undefined;
 
     try {
       const authHeaders = this.authToken
@@ -543,8 +542,13 @@ export class GitHubService {
       latestRelease,
       contributors: contributorsList,
       contributorsCount,
-      openIssuesCount: typeof raw.open_issues_count === 'number' ? raw.open_issues_count : 0,
-      discussionsCount: 0,
+      openIssuesCount:
+        raw.has_issues === false
+          ? undefined
+          : typeof raw.open_issues_count === 'number'
+            ? raw.open_issues_count
+            : undefined,
+      discussionsCount: undefined,
     };
 
     const parsed = RepoMetadataSchema.parse(metadata);
@@ -662,6 +666,8 @@ export class GitHubService {
           stargazerCount: number;
           forkCount: number;
           isArchived: boolean;
+          hasIssuesEnabled: boolean;
+          hasDiscussionsEnabled: boolean;
           owner: {
             __typename: string;
             login: string;
@@ -754,9 +760,12 @@ export class GitHubService {
           avatarUrl: u.avatarUrl,
         })),
         contributorsCount:
-          raw.mentionableUsers?.totalCount ?? raw.mentionableUsers?.nodes?.length ?? 1,
-        openIssuesCount: raw.issues?.totalCount ?? 0,
-        discussionsCount: raw.discussions?.totalCount ?? 0,
+          raw.mentionableUsers?.totalCount ??
+          (raw.mentionableUsers?.nodes?.length ? raw.mentionableUsers.nodes.length : undefined),
+        openIssuesCount: raw.hasIssuesEnabled !== false ? (raw.issues?.totalCount ?? 0) : undefined,
+        discussionsCount: raw.hasDiscussionsEnabled
+          ? (raw.discussions?.totalCount ?? 0)
+          : undefined,
       };
 
       // Enrich with exact public contributors count if available via REST pagination header

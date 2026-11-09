@@ -182,7 +182,7 @@ describe('GitHubService', () => {
 
       const repo = await service.getRepository('sandovaldavid', 'portfolio');
       expect(repo.name).toBe('portfolio');
-      expect(repo.stars).toBe(8);
+      expect(repo.stars).toBe(1);
       expect(repo.primaryLanguage?.name).toBe('TypeScript');
     });
 

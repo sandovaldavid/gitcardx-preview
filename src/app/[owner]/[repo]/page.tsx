@@ -68,6 +68,9 @@ async function RepoHydratedStudio({ params }: PageProps) {
       license: null,
       latestRelease: null,
       contributors: [],
+      contributorsCount: undefined,
+      openIssuesCount: undefined,
+      discussionsCount: undefined,
     };
   }
 

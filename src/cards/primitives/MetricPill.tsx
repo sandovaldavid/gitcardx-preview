@@ -6,7 +6,7 @@ export type { MetricType };
 
 interface MetricPillProps {
   type: MetricType;
-  value: string | number;
+  value: string | number | null | undefined;
   textColor: string;
   borderColor: string;
   accentColor: string;
@@ -21,6 +21,10 @@ export const MetricPill: React.FC<MetricPillProps> = ({
   accentColor,
   label,
 }) => {
+  if (value === null || value === undefined || value === '') {
+    return null;
+  }
+
   const displayValue = typeof value === 'number' ? formatCompactMetric(value) : value;
 
   return (

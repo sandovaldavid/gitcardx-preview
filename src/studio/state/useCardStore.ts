@@ -14,34 +14,32 @@ import { suggestInstallCommand } from '@/core/domain/stackMapper';
 export const DEFAULT_REPO: RepoMetadata = {
   owner: {
     login: 'sandovaldavid',
-    avatarUrl: 'https://avatars.githubusercontent.com/u/12345',
+    avatarUrl: 'https://avatars.githubusercontent.com/u/102970701',
     isOrg: false,
   },
   name: 'gitframe',
   description: 'Instant 5-second GitHub Social Preview card generator for developers.',
   homepageUrl: 'https://gitframe.dev',
-  stars: 1250,
-  forks: 180,
+  stars: 0,
+  forks: 0,
   primaryLanguage: {
     name: 'TypeScript',
     color: '#3178C6',
   },
   languages: [
-    { name: 'TypeScript', color: '#3178C6', size: 85000 },
-    { name: 'CSS', color: '#1572B6', size: 15000 },
+    { name: 'TypeScript', color: '#3178C6', size: 756970 },
+    { name: 'JavaScript', color: '#F7DF1E', size: 10672 },
+    { name: 'CSS', color: '#1572B6', size: 2573 },
   ],
   topics: ['nextjs', 'social-preview', 'developer-tools', 'typescript'],
   license: 'MIT',
-  latestRelease: {
-    tag: 'v1.0.0',
-    publishedAt: '2026-11-01T12:00:00Z',
-  },
+  latestRelease: null,
   contributors: [
-    { login: 'sandovaldavid', avatarUrl: 'https://avatars.githubusercontent.com/u/12345' },
+    { login: 'sandovaldavid', avatarUrl: 'https://avatars.githubusercontent.com/u/102970701' },
   ],
   contributorsCount: 1,
   openIssuesCount: 0,
-  discussionsCount: 0,
+  discussionsCount: undefined,
 };
 
 export const DEFAULT_CONFIG: CardConfig = {

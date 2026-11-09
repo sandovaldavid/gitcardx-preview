@@ -129,6 +129,9 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
       license: null,
       latestRelease: null,
       contributors: [],
+      contributorsCount: undefined,
+      openIssuesCount: undefined,
+      discussionsCount: undefined,
     };
   }
 
