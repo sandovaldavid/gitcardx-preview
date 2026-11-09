@@ -1,6 +1,7 @@
 import React from 'react';
+import { MetricIcon, MetricType } from '../icons/metricIcons';
 
-export type MetricType = 'stars' | 'forks' | 'release' | 'license';
+export type { MetricType };
 
 interface MetricPillProps {
   type: MetricType;
@@ -43,61 +44,7 @@ export const MetricPill: React.FC<MetricPillProps> = ({
         color: textColor,
       }}
     >
-      {type === 'stars' && (
-        <svg width="18" height="18" viewBox="0 0 24 24" fill={accentColor}>
-          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-        </svg>
-      )}
-
-      {type === 'forks' && (
-        <svg
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke={textColor}
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <line x1="6" y1="3" x2="6" y2="15" />
-          <circle cx="18" cy="6" r="3" />
-          <circle cx="6" cy="18" r="3" />
-          <path d="M18 9a9 9 0 0 1-9 9" />
-        </svg>
-      )}
-
-      {type === 'release' && (
-        <svg
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke={accentColor}
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
-          <line x1="7" y1="7" x2="7.01" y2="7" />
-        </svg>
-      )}
-
-      {type === 'license' && (
-        <svg
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke={textColor}
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-        </svg>
-      )}
-
+      <MetricIcon type={type} textColor={textColor} accentColor={accentColor} />
       <span>{displayValue}</span>
     </div>
   );
