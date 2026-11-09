@@ -58,12 +58,12 @@ export const LandingFooter: React.FC = () => {
             <span>Repository</span>
           </a>
           <a
-            href="https://github.com/sandovaldavid/gitframe/blob/main/LICENSE"
+            href="https://github.com/sandovaldavid/gitframe/blob/main/LICENSE.md"
             target="_blank"
             rel="noopener noreferrer"
             className="transition-colors duration-200 hover:text-zinc-300"
           >
-            MIT License
+            FSL-1.1-MIT License
           </a>
         </div>
       </div>
