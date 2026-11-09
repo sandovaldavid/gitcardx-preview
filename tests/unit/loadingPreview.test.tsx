@@ -16,22 +16,13 @@ describe('CardLoadingPreview & StudioLoadingView', () => {
     expect(html).toContain('shimmer-sweep');
   });
 
-  it('renders repository name prominently inside CardLoadingPreview and HUD', () => {
+  it('renders repository name prominently inside CardLoadingPreview skeleton', () => {
     const repoTarget = 'sandovaldavid/portfolio';
     const html = renderToString(<CardLoadingPreview repoName={repoTarget} />);
 
     expect(html).toContain(repoTarget);
-    expect(html).toContain('Extracting Repository');
-    expect(html).toContain('Connecting to GitHub API v4');
-    expect(html).toContain('Extracting stats &amp; tech stack');
-    expect(html).toContain('Synthesizing card preview');
-  });
-
-  it('hides extraction HUD when showHud is set to false', () => {
-    const html = renderToString(<CardLoadingPreview showHud={false} />);
-
+    expect(html).toContain('shimmer-sweep');
     expect(html).not.toContain('Extracting Repository');
-    expect(html).not.toContain('Connecting to GitHub API v4');
   });
 
   it('renders StudioLoadingView with header, panels, and loading card preview', () => {
