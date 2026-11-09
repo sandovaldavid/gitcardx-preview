@@ -1,4 +1,5 @@
 import { Suspense } from 'react';
+import { connection } from 'next/server';
 import type { Metadata } from 'next';
 import { GitHubService } from '@/core/services/GitHubService';
 import { StudioLayout } from '@/studio/components/StudioLayout';
@@ -44,6 +45,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 async function RepoHydratedStudio({ params }: PageProps) {
+  await connection();
   const { owner, repo } = await params;
   let repoMetadata: RepoMetadata;
 
@@ -79,7 +81,7 @@ async function RepoHydratedStudio({ params }: PageProps) {
 
 export default function ViralRepoStudioPage(props: PageProps) {
   return (
-    <Suspense fallback={<StudioLayout />}>
+    <Suspense fallback={<StudioLayout isPendingInitialRepo />}>
       <RepoHydratedStudio {...props} />
     </Suspense>
   );

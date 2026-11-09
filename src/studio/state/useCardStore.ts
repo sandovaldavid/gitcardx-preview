@@ -1,3 +1,4 @@
+import { createContext, useContext } from 'react';
 import { create } from 'zustand';
 import type {
   RepoMetadata,
@@ -82,14 +83,60 @@ export const TEMPLATE_SIGNATURE_PATTERNS: Partial<
   'version-hero': 'radial-spotlight',
 };
 
+export interface HydrateRepoOptions {
+  autoTheme?: boolean;
+  templateId?: TemplateId;
+}
+
+export function deriveConfigForRepo(
+  repo: RepoMetadata,
+  baseConfig: CardConfig,
+  options?: HydrateRepoOptions
+): CardConfig {
+  const autoTheme = options?.autoTheme ?? true;
+  const templateId = options?.templateId
+    ? normalizeTemplateId(options.templateId)
+    : baseConfig.templateId;
+  const signaturePattern = options?.templateId
+    ? TEMPLATE_SIGNATURE_PATTERNS[templateId]
+    : undefined;
+
+  let newPalette = baseConfig.palette;
+  if (autoTheme && repo.primaryLanguage?.color) {
+    newPalette = ThemeEngine.generatePaletteFromLanguageColor(repo.primaryLanguage.color, 'dark');
+  }
+
+  const suggestedCmd = suggestInstallCommand(
+    repo.languages,
+    repo.topics,
+    repo.name,
+    repo.owner.login
+  );
+
+  return {
+    ...baseConfig,
+    templateId,
+    backgroundPattern: signaturePattern
+      ? { ...baseConfig.backgroundPattern, id: signaturePattern }
+      : baseConfig.backgroundPattern,
+    title: repo.name,
+    tagline: repo.description || 'Modern developer tool and open source project.',
+    installCommand: suggestedCmd,
+    palette: newPalette,
+  };
+}
+
 interface CardStoreState {
   repo: RepoMetadata;
   config: CardConfig;
+  hasCustomRepo: boolean;
+  hydratedRouteKey: string | null;
   past: CardConfig[];
   future: CardConfig[];
   zoom: number;
   showSafeZoneGuides: boolean;
   isFetchingRepo: boolean;
+  fetchingRepoName: string | null;
   fetchError: string | null;
   activeRightTab: 'templates' | 'theme' | 'background' | 'typography' | 'vault';
   isExportModalOpen: boolean;
@@ -97,6 +144,7 @@ interface CardStoreState {
 
   // Actions
   setRepo: (repo: RepoMetadata, autoTheme?: boolean) => void;
+  hydrateRepo: (repo: RepoMetadata, options?: HydrateRepoOptions) => void;
   updateConfig: (partial: Partial<CardConfig>) => void;
   setTemplateId: (templateId: TemplateId) => void;
   setContentAlign: (align: ContentAlign) => void;
@@ -108,7 +156,7 @@ interface CardStoreState {
   setActiveRightTab: (tab: 'templates' | 'theme' | 'background' | 'typography' | 'vault') => void;
   setViewMode: (mode: 'canvas' | 'social') => void;
   setIsExportModalOpen: (open: boolean) => void;
-  setIsFetchingRepo: (fetching: boolean) => void;
+  setIsFetchingRepo: (fetching: boolean, repoName?: string | null) => void;
   setFetchError: (error: string | null) => void;
 
   // History Actions
@@ -121,49 +169,52 @@ interface CardStoreState {
 
 const MAX_HISTORY = 30;
 
-export const useCardStore = create<CardStoreState>((set, get) => ({
+const useBaseCardStore = create<CardStoreState>((set, get) => ({
   repo: DEFAULT_REPO,
   config: DEFAULT_CONFIG,
+  hasCustomRepo: false,
+  hydratedRouteKey: null,
   past: [],
   future: [],
   zoom: 1,
   showSafeZoneGuides: false,
   isFetchingRepo: false,
+  fetchingRepoName: null,
   fetchError: null,
   activeRightTab: 'templates',
   isExportModalOpen: false,
   viewMode: 'canvas',
 
   setRepo: (repo, autoTheme = true) => {
-    const currentConfig = get().config;
-    let newPalette = currentConfig.palette;
-
-    if (autoTheme && repo.primaryLanguage?.color) {
-      newPalette = ThemeEngine.generatePaletteFromLanguageColor(repo.primaryLanguage.color, 'dark');
-    }
-
-    const suggestedCmd = suggestInstallCommand(
-      repo.languages,
-      repo.topics,
-      repo.name,
-      repo.owner.login
-    );
-
-    const nextConfig: CardConfig = {
-      ...currentConfig,
-      title: repo.name,
-      tagline: repo.description || 'Modern developer tool and open source project.',
-      installCommand: suggestedCmd,
-      palette: newPalette,
-    };
+    const nextConfig = deriveConfigForRepo(repo, get().config, { autoTheme });
 
     set((state) => ({
       repo,
+      hasCustomRepo: true,
       past: [...state.past.slice(-(MAX_HISTORY - 1)), state.config],
       future: [],
       config: nextConfig,
+      isFetchingRepo: false,
+      fetchingRepoName: null,
       fetchError: null,
     }));
+  },
+
+  hydrateRepo: (repo, options) => {
+    const nextConfig = deriveConfigForRepo(repo, get().config, options);
+    const routeKey = `${repo.owner.login.toLowerCase()}/${repo.name.toLowerCase()}`;
+
+    set({
+      repo,
+      hasCustomRepo: true,
+      hydratedRouteKey: routeKey,
+      past: [],
+      future: [],
+      config: nextConfig,
+      isFetchingRepo: false,
+      fetchingRepoName: null,
+      fetchError: null,
+    });
   },
 
   updateConfig: (partial) => {
@@ -242,8 +293,8 @@ export const useCardStore = create<CardStoreState>((set, get) => ({
     set({ isExportModalOpen });
   },
 
-  setIsFetchingRepo: (isFetchingRepo) => {
-    set({ isFetchingRepo });
+  setIsFetchingRepo: (isFetchingRepo, fetchingRepoName = null) => {
+    set({ isFetchingRepo, fetchingRepoName: isFetchingRepo ? fetchingRepoName : null });
   },
 
   setFetchError: (fetchError) => {
@@ -289,3 +340,42 @@ export const useCardStore = create<CardStoreState>((set, get) => ({
     }));
   },
 }));
+
+export interface StudioHydrationOverride {
+  repo?: RepoMetadata;
+  config?: CardConfig;
+  isPendingInitialRepo?: boolean;
+}
+
+export const StudioHydrationContext = createContext<StudioHydrationOverride | null>(null);
+
+export function useIsInitialStreamPending(): boolean {
+  const hydration = useContext(StudioHydrationContext);
+  const hasCustomRepo = useBaseCardStore((state) => state.hasCustomRepo);
+  return Boolean(hydration?.isPendingInitialRepo && !hasCustomRepo);
+}
+
+function useCardStoreHook(): CardStoreState;
+function useCardStoreHook<T>(selector: (state: CardStoreState) => T): T;
+function useCardStoreHook<T>(selector?: (state: CardStoreState) => T): T | CardStoreState {
+  const hydrationOverride = useContext(StudioHydrationContext);
+  const storeState = useBaseCardStore();
+  const effectiveState =
+    hydrationOverride?.repo && hydrationOverride?.config
+      ? {
+          ...storeState,
+          repo: hydrationOverride.repo,
+          config: hydrationOverride.config,
+          hasCustomRepo: true,
+        }
+      : storeState;
+
+  return selector ? selector(effectiveState) : effectiveState;
+}
+
+export const useCardStore = Object.assign(useCardStoreHook, {
+  getState: useBaseCardStore.getState,
+  setState: useBaseCardStore.setState,
+  subscribe: useBaseCardStore.subscribe,
+  getInitialState: useBaseCardStore.getInitialState,
+});

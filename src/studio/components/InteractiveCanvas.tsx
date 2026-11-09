@@ -1,19 +1,13 @@
 'use client';
 
-import React, { useRef, useState, useEffect } from 'react';
-import {
-  ZoomIn,
-  ZoomOut,
-  Maximize2,
-  Loader2,
-  AlertCircle,
-  X,
-  CreditCard,
-  Share2,
-} from 'lucide-react';
-import { useCardStore } from '../state/useCardStore';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { ZoomIn, ZoomOut, Maximize2, AlertCircle, X, CreditCard, Share2 } from 'lucide-react';
+import { useCardStore, useIsInitialStreamPending } from '../state/useCardStore';
 import { CardRenderer } from '@/cards/templates/CardTemplateRegistry';
+import { useDelayedLoading } from '@/lib/useDelayedLoading';
 import { SocialSimulator } from './SocialSimulator';
+
+const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
 export const InteractiveCanvas: React.FC = () => {
   const {
@@ -29,15 +23,23 @@ export const InteractiveCanvas: React.FC = () => {
     setViewMode,
   } = useCardStore();
 
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [autoScale, setAutoScale] = useState(0.7);
+  const isInitialStreamPending = useIsInitialStreamPending();
+  const isSlowFetching = useDelayedLoading(isFetchingRepo, 150);
 
-  // Dynamically calculate the ideal scale to fit the card inside the container
-  useEffect(() => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [autoScale, setAutoScale] = useState<number | null>(null);
+
+  // Synchronously calculate ideal scale before first browser paint to match CSS container fit
+  useIsomorphicLayoutEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
     function calculateScale() {
       if (!containerRef.current) return;
       const { clientWidth, clientHeight } = containerRef.current;
-      const padding = 64; // Available padding around card
+      if (clientWidth === 0 || clientHeight === 0) return;
+
+      const padding = 64;
       const availableW = Math.max(clientWidth - padding, 320);
       const availableH = Math.max(clientHeight - padding, 200);
 
@@ -45,21 +47,32 @@ export const InteractiveCanvas: React.FC = () => {
       const scaleH = availableH / 640;
       const bestScale = Math.min(scaleW, scaleH, 1.0);
 
-      setAutoScale(Number(bestScale.toFixed(3)));
+      setAutoScale(Number(bestScale.toFixed(4)));
     }
 
     calculateScale();
+
+    if (typeof ResizeObserver !== 'undefined') {
+      const observer = new ResizeObserver(calculateScale);
+      observer.observe(container);
+      return () => observer.disconnect();
+    }
+
     window.addEventListener('resize', calculateScale);
     return () => window.removeEventListener('resize', calculateScale);
   }, []);
 
-  const effectiveScale = autoScale * zoom;
+  const effectiveScale = autoScale !== null ? autoScale * zoom : null;
+  const repoIdentityKey = `${repo.owner.login}/${repo.name}`;
 
   return (
     <main
       ref={containerRef}
+      data-testid="studio-canvas"
+      aria-busy={isFetchingRepo || isInitialStreamPending}
       className="flex-1 relative flex flex-col items-center justify-center overflow-hidden bg-zinc-950 select-none p-4"
       style={{
+        containerType: 'size',
         backgroundImage: `radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.05) 1px, transparent 0)`,
         backgroundSize: '24px 24px',
       }}
@@ -108,41 +121,54 @@ export const InteractiveCanvas: React.FC = () => {
         </div>
       )}
 
-      {/* Loading Overlay */}
-      {isFetchingRepo && (
-        <div className="absolute inset-0 bg-zinc-950/60 backdrop-blur-sm z-40 flex flex-col items-center justify-center gap-3">
-          <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
-          <span className="text-xs font-medium text-zinc-300">
-            Fetching repository from GitHub GraphQL v4...
-          </span>
-        </div>
-      )}
-
       {/* VIEW 1: CARD STUDIO CANVAS */}
       {viewMode === 'canvas' ? (
         <>
-          <div
-            className="relative shadow-2xl rounded-2xl transition-transform duration-100 ease-out"
-            style={{
-              width: 1280 * effectiveScale,
-              height: 640 * effectiveScale,
-            }}
-          >
+          {!isInitialStreamPending && (
             <div
-              style={{
-                width: 1280,
-                height: 640,
-                transform: `scale(${effectiveScale})`,
-                transformOrigin: 'top left',
-                borderRadius: 16,
-                overflow: 'hidden',
-                boxShadow:
-                  '0 25px 60px -15px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.08)',
-              }}
+              data-testid="studio-card-stage"
+              className={`relative shadow-2xl rounded-2xl transition-[opacity,transform] duration-200 ease-out ${
+                effectiveScale === null ? 'studio-stage-fit' : ''
+              } ${isSlowFetching ? 'opacity-60 scale-[0.99]' : 'opacity-100 scale-100'}`}
+              style={
+                effectiveScale !== null
+                  ? {
+                      width: 1280 * effectiveScale,
+                      height: 640 * effectiveScale,
+                    }
+                  : undefined
+              }
             >
-              <CardRenderer repo={repo} config={config} showSafeZoneGuides={showSafeZoneGuides} />
+              <div
+                data-testid="studio-card-scaler"
+                className={
+                  effectiveScale === null ? 'card-scale absolute top-0 left-0 origin-top-left' : ''
+                }
+                style={{
+                  width: 1280,
+                  height: 640,
+                  transform: effectiveScale !== null ? `scale(${effectiveScale})` : undefined,
+                  transformOrigin: 'top left',
+                  borderRadius: 16,
+                  overflow: 'hidden',
+                  boxShadow:
+                    '0 25px 60px -15px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.08)',
+                }}
+              >
+                <div
+                  key={repoIdentityKey}
+                  className="studio-card-fade"
+                  style={{ width: 1280, height: 640 }}
+                >
+                  <CardRenderer
+                    repo={repo}
+                    config={config}
+                    showSafeZoneGuides={showSafeZoneGuides}
+                  />
+                </div>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Zoom Controls Floating Bar */}
           <div className="absolute bottom-5 z-30 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-zinc-900/90 border border-zinc-800/80 backdrop-blur-md shadow-xl text-zinc-300">
@@ -182,7 +208,11 @@ export const InteractiveCanvas: React.FC = () => {
         </>
       ) : (
         /* VIEW 2: SOCIAL SIMULATOR */
-        <div className="w-full h-full flex flex-col pt-12 overflow-y-auto">
+        <div
+          className={`w-full h-full flex flex-col pt-12 overflow-y-auto transition-opacity duration-200 ${
+            isSlowFetching ? 'opacity-60' : 'opacity-100'
+          }`}
+        >
           <SocialSimulator />
         </div>
       )}

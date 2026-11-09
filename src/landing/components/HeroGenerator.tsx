@@ -1,17 +1,19 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowRight, CornerDownLeft, ShieldCheck, Sparkles, Zap } from 'lucide-react';
+import { ArrowRight, CornerDownLeft, ShieldCheck, Sparkles, Zap, Loader2 } from 'lucide-react';
 import { parseGitHubInput } from '@/core/domain/parser';
 import { CardRenderer } from '@/cards/templates/CardTemplateRegistry';
 import {
   DEFAULT_CONFIG,
   DEFAULT_REPO,
   TEMPLATE_SIGNATURE_PATTERNS,
+  useCardStore,
 } from '@/studio/state/useCardStore';
-import type { CardConfig, TemplateId } from '@/core/domain/schemas';
+import type { CardConfig, RepoMetadata, TemplateId } from '@/core/domain/schemas';
+import { useDelayedLoading } from '@/lib/useDelayedLoading';
 import { ScaledCard } from './ScaledCard';
 import { SectionLink } from './SectionLink';
 
@@ -33,9 +35,20 @@ export const HeroGenerator: React.FC = () => {
   const router = useRouter();
   const [inputValue, setInputValue] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
   const [activeTemplate, setActiveTemplate] = useState<TemplateId>('modern-minimal');
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const isSlowGenerating = useDelayedLoading(isGenerating, 150);
 
-  const handleGenerate = (target?: string) => {
+  // Reset generating state when Next.js 16 Activity hides the route after navigation
+  useEffect(() => {
+    return () => {
+      abortControllerRef.current?.abort();
+      setIsGenerating(false);
+    };
+  }, []);
+
+  const handleGenerate = async (target?: string) => {
     const raw = target || inputValue;
     if (!raw.trim()) {
       setError('Please enter a GitHub repository (e.g. vercel/next.js)');
@@ -52,8 +65,47 @@ export const HeroGenerator: React.FC = () => {
       return;
     }
 
+    abortControllerRef.current?.abort();
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
+    const targetRoute = `/${parsed.owner}/${parsed.repo}`;
     setError(null);
-    router.push(`/${parsed.owner}/${parsed.repo}`);
+    setIsGenerating(true);
+
+    // Warm the Studio route bundle in parallel with metadata extraction
+    router.prefetch(targetRoute);
+
+    try {
+      const res = await fetch(
+        `/api/github/repo?owner=${encodeURIComponent(parsed.owner)}&repo=${encodeURIComponent(parsed.repo)}`,
+        { signal: controller.signal }
+      );
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        setError(
+          errorData.error || `Repository '${parsed.owner}/${parsed.repo}' could not be loaded.`
+        );
+        setIsGenerating(false);
+        return;
+      }
+
+      const repoData: RepoMetadata = await res.json();
+      useCardStore.getState().hydrateRepo(repoData, {
+        autoTheme: true,
+        templateId: activeTemplate,
+      });
+
+      router.push(targetRoute);
+    } catch (err: unknown) {
+      if (err instanceof DOMException && err.name === 'AbortError') {
+        return;
+      }
+      const message = err instanceof Error ? err.message : 'Failed to load repository metadata.';
+      setError(message);
+      setIsGenerating(false);
+    }
   };
 
   const previewConfig: CardConfig = {
@@ -112,9 +164,9 @@ export const HeroGenerator: React.FC = () => {
           <form
             onSubmit={(event) => {
               event.preventDefault();
-              handleGenerate();
+              void handleGenerate();
             }}
-            className="relative flex items-center rounded-2xl border border-zinc-700/80 bg-zinc-900/90 p-2 shadow-2xl shadow-blue-500/5 transition-[border-color,box-shadow] duration-200 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20"
+            className="relative flex items-center overflow-hidden rounded-2xl border border-zinc-700/80 bg-zinc-900/90 p-2 shadow-2xl shadow-blue-500/5 transition-[border-color,box-shadow] duration-200 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20"
           >
             <div className="hidden pr-2 pl-3 font-mono text-sm text-zinc-500 select-none sm:block">
               github.com/
@@ -134,11 +186,32 @@ export const HeroGenerator: React.FC = () => {
             />
             <button
               type="submit"
-              className="ml-2 flex shrink-0 items-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-semibold text-white shadow-md transition-colors duration-200 hover:bg-blue-500 active:bg-blue-700 focus-visible:ring-2 focus-visible:ring-blue-400/60 focus-visible:outline-none sm:px-5"
+              disabled={isGenerating}
+              aria-label="Generate"
+              className="ml-2 flex shrink-0 items-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-semibold text-white shadow-md transition-colors duration-200 hover:bg-blue-500 active:bg-blue-700 focus-visible:ring-2 focus-visible:ring-blue-400/60 focus-visible:outline-none disabled:opacity-75 disabled:cursor-not-allowed sm:px-5"
             >
-              <span>Generate</span>
-              <CornerDownLeft className="h-3.5 w-3.5" />
+              {isGenerating ? (
+                <>
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  <span>Loading...</span>
+                </>
+              ) : (
+                <>
+                  <span>Generate</span>
+                  <CornerDownLeft className="h-3.5 w-3.5" />
+                </>
+              )}
             </button>
+
+            {isSlowGenerating && (
+              <div
+                role="progressbar"
+                aria-label="Loading repository metadata"
+                className="pointer-events-none absolute inset-x-3 bottom-0 h-0.5 overflow-hidden rounded-full bg-blue-500/15"
+              >
+                <div className="h-full w-full rounded-full bg-linear-to-r from-blue-500 via-indigo-400 to-blue-500 progress-bar-indeterminate" />
+              </div>
+            )}
           </form>
 
           {error && (
@@ -153,11 +226,12 @@ export const HeroGenerator: React.FC = () => {
               <button
                 key={preset.value}
                 type="button"
+                disabled={isGenerating}
                 onClick={() => {
                   setInputValue(preset.value);
-                  handleGenerate(preset.value);
+                  void handleGenerate(preset.value);
                 }}
-                className="rounded-lg border border-zinc-800 bg-zinc-900 px-2.5 py-1 font-mono text-[11px] text-zinc-300 transition-colors duration-200 hover:border-zinc-700 hover:bg-zinc-800 hover:text-white focus-visible:ring-2 focus-visible:ring-blue-500/60 focus-visible:outline-none"
+                className="rounded-lg border border-zinc-800 bg-zinc-900 px-2.5 py-1 font-mono text-[11px] text-zinc-300 transition-colors duration-200 hover:border-zinc-700 hover:bg-zinc-800 hover:text-white focus-visible:ring-2 focus-visible:ring-blue-500/60 focus-visible:outline-none disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {preset.label}
               </button>

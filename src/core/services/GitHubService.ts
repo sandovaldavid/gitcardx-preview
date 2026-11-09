@@ -498,10 +498,15 @@ export class GitHubService {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const contribsData = (await contribsRes.value.json()) as any[];
         if (Array.isArray(contribsData) && contribsData.length > 0) {
-          contributorsList = contribsData.slice(0, 5).map((c) => ({
-            login: c.login,
-            avatarUrl: c.avatar_url,
-          }));
+          contributorsList = contribsData
+            .filter((c): c is { login: string; avatar_url: string } =>
+              Boolean(c && typeof c.login === 'string' && typeof c.avatar_url === 'string')
+            )
+            .slice(0, 5)
+            .map((c) => ({
+              login: c.login,
+              avatarUrl: c.avatar_url,
+            }));
           contributorsCount = contribsData.length;
 
           // Parse Link header for total pagination count (rel="last")

@@ -70,6 +70,59 @@ test.describe('Gitframe Landing Page & Studio E2E', () => {
 
     await page.waitForURL('**/tailwindlabs/tailwindcss', { timeout: 15000 });
     expect(page.url()).toContain('/tailwindlabs/tailwindcss');
+    await expect(page.getByTestId('studio-card-stage')).toBeVisible();
+    await expect(page.getByTestId('studio-card-stage')).toContainText(/tailwindcss/i);
+
+    // Ensure zero Next.js Blocking Route / runtime issues in dev overlay
+    await expect(page.getByRole('button', { name: /Open issues overlay/i })).toHaveCount(0);
+
+    // Verify the 1280x640 card scaler is properly scaled and dead-center inside main canvas
+    const mainBox = await page.getByTestId('studio-canvas').boundingBox();
+    const scalerBox = await page.getByTestId('studio-card-scaler').boundingBox();
+    expect(mainBox).not.toBeNull();
+    expect(scalerBox).not.toBeNull();
+    if (mainBox && scalerBox) {
+      expect(scalerBox.width).toBeLessThan(1200);
+      const mainCenterX = mainBox.x + mainBox.width / 2;
+      const mainCenterY = mainBox.y + mainBox.height / 2;
+      const cardCenterX = scalerBox.x + scalerBox.width / 2;
+      const cardCenterY = scalerBox.y + scalerBox.height / 2;
+      expect(Math.abs(cardCenterX - mainCenterX)).toBeLessThanOrEqual(2);
+      expect(Math.abs(cardCenterY - mainCenterY)).toBeLessThanOrEqual(2);
+    }
+
+    // Switching repo in-place from Studio Omnibar keeps card stage mounted and updates URL + card
+    const omnibar = page.locator('input[placeholder*="Search any repository"]');
+    await omnibar.fill('facebook/react');
+    await omnibar.press('Enter');
+
+    await expect(page).toHaveURL(/\/facebook\/react$/, { timeout: 15000 });
+    await expect(page.getByTestId('studio-card-stage')).toBeVisible();
+    await expect(page.getByTestId('studio-card-stage')).toContainText(/react/i);
+
+    // Direct cold navigation to /[owner]/[repo] also renders centered with zero Blocking Route errors
+    await page.goto('/sandovaldavid/portfolio');
+    await expect(page.getByTestId('studio-card-stage')).toBeVisible();
+    await expect(page.getByTestId('studio-card-stage')).toContainText(/portfolio/i);
+    await expect(page.getByRole('button', { name: /Open issues overlay/i })).toHaveCount(0);
+
+    const coldMainBox = await page.getByTestId('studio-canvas').boundingBox();
+    const coldScalerBox = await page.getByTestId('studio-card-scaler').boundingBox();
+    expect(coldMainBox).not.toBeNull();
+    expect(coldScalerBox).not.toBeNull();
+    if (coldMainBox && coldScalerBox) {
+      expect(coldScalerBox.width).toBeLessThan(1200);
+      expect(
+        Math.abs(
+          coldScalerBox.x + coldScalerBox.width / 2 - (coldMainBox.x + coldMainBox.width / 2)
+        )
+      ).toBeLessThanOrEqual(2);
+      expect(
+        Math.abs(
+          coldScalerBox.y + coldScalerBox.height / 2 - (coldMainBox.y + coldMainBox.height / 2)
+        )
+      ).toBeLessThanOrEqual(2);
+    }
   });
 
   test('studio loads canvas, inspectors and allows template switching', async ({ page }) => {
