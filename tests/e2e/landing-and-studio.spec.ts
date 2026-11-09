@@ -15,25 +15,21 @@ test.describe('Gitframe Landing Page & Studio E2E', () => {
     await expect(page.getByRole('button', { name: 'shadcn/ui' })).toBeVisible();
     await expect(page.getByRole('button', { name: 'facebook/react' })).toBeVisible();
 
-    // Archetype showcase section
+    // Live template showcase (one real render per archetype)
     const templatesSection = page.locator('#templates');
     await expect(templatesSection).toBeVisible();
-    await expect(templatesSection).toContainText(/8 Purpose-Built Archetypes/i);
+    await expect(templatesSection).toContainText(/Eight templates/i);
+    await expect(templatesSection.locator('a[href^="/studio?template="]')).toHaveCount(8);
+    await expect(templatesSection).toContainText(/Gitframe/i);
 
-    // Comparison section
-    const comparisonSection = page.locator('#comparison');
-    await expect(comparisonSection).toBeVisible();
-    await expect(comparisonSection).toContainText(/Default GitHub Card vs. Gitframe/i);
+    // URL shortcut + README endpoint section
+    const workflowSection = page.locator('#workflow');
+    await expect(workflowSection).toBeVisible();
+    await expect(workflowSection).toContainText(/One URL\. Every surface\./i);
+    await expect(workflowSection).toContainText(/gitframe\.dev/i);
 
-    // URL shortcut section
-    const urlTrickSection = page.locator('#url-trick');
-    await expect(urlTrickSection).toBeVisible();
-    await expect(urlTrickSection).toContainText(/gitframe\.dev/i);
-
-    // Dynamic API section
-    const dynamicApiSection = page.locator('#dynamic-api');
-    await expect(dynamicApiSection).toBeVisible();
-    await expect(dynamicApiSection).toContainText(/Embed Live in your README/i);
+    // Feature bento
+    await expect(page.locator('#features')).toBeVisible();
   });
 
   test('submitting a repository in the hero omnibar redirects to direct repo route', async ({

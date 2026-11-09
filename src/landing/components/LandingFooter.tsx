@@ -2,7 +2,6 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Heart } from 'lucide-react';
 import { GitframeLogo } from '@/components/GitframeLogo';
 import { APP_VERSION_TAG } from '@/lib/version';
 
@@ -18,52 +17,51 @@ const GithubIcon: React.FC<{ className?: string }> = ({ className = 'w-3.5 h-3.5
 
 export const LandingFooter: React.FC = () => {
   return (
-    <footer className="border-t border-zinc-800/80 bg-zinc-950/60 py-12 text-xs text-zinc-500">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
-        {/* Brand & Copyright */}
-        <div className="flex flex-col sm:flex-row items-center gap-3">
-          <Link href="/" className="flex items-center gap-2 text-zinc-300 font-semibold text-sm">
-            <GitframeLogo className="w-5 h-5" />
+    <footer className="border-t border-zinc-800/80 bg-zinc-950/60 py-10 text-xs text-zinc-500">
+      <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+          <Link
+            href="/"
+            className="flex items-center gap-2 text-sm font-semibold text-zinc-300 transition-colors duration-200 hover:text-white"
+          >
+            <GitframeLogo className="h-5 w-5" />
             <span>Gitframe</span>
-            <span className="text-[10px] font-mono text-zinc-400 bg-zinc-900 border border-zinc-800 px-1.5 py-0.5 rounded font-normal">
+            <span className="rounded border border-zinc-800 bg-zinc-900 px-1.5 py-0.5 font-mono text-[10px] font-normal text-zinc-400">
               {APP_VERSION_TAG}
             </span>
           </Link>
-          <span className="hidden sm:inline text-zinc-700">·</span>
-          <span>Crafted with</span>
-          <Heart className="w-3.5 h-3.5 text-red-500 fill-red-500" />
+          <span className="hidden text-zinc-700 sm:inline">·</span>
           <span>
-            by{' '}
+            Development by{' '}
             <a
               href="https://github.com/sandovaldavid"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-zinc-300 hover:text-white underline underline-offset-4 decoration-zinc-700 hover:decoration-white transition-colors"
+              className="text-zinc-300 underline decoration-zinc-700 underline-offset-4 transition-colors duration-200 hover:text-white hover:decoration-white"
             >
-              David Sandoval
+              @sandovaldavid
             </a>
           </span>
         </div>
 
-        {/* Links */}
         <div className="flex items-center gap-6">
-          <Link href="/studio" className="hover:text-zinc-300 transition-colors">
+          <Link href="/studio" className="transition-colors duration-200 hover:text-zinc-300">
             Studio
           </Link>
           <a
             href="https://github.com/sandovaldavid/gitframe"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 hover:text-zinc-300 transition-colors"
+            className="flex items-center gap-1.5 transition-colors duration-200 hover:text-zinc-300"
           >
-            <GithubIcon className="w-3.5 h-3.5" />
+            <GithubIcon className="h-3.5 w-3.5" />
             <span>Repository</span>
           </a>
           <a
             href="https://github.com/sandovaldavid/gitframe/blob/main/LICENSE"
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-zinc-300 transition-colors"
+            className="transition-colors duration-200 hover:text-zinc-300"
           >
             MIT License
           </a>
