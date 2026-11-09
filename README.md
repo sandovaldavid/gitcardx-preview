@@ -173,7 +173,7 @@ bun run test:e2e
 Gitframe is powered by the open-source community:
 
 - **[Vercel Satori](https://github.com/vercel/satori)**: Converts React JSX and CSS Flexbox layouts into vector SVG elements with the Yoga layout engine.
-- **[resvg-js](https://github.com/thx/resvg-js)** ([thx](https://github.com/thx)) & **[resvg](https://github.com/RazrFalcon/resvg)** ([RazrFalcon](https://github.com/RazrFalcon)): High-performance Rust-based SVG rasterizer that generates pixel-perfect PNG previews without a headless browser.
+- **[resvg-js](https://github.com/thx/resvg-js)** ([thx](https://github.com/thx)) & **[resvg](https://github.com/linebender/resvg)** (created by [RazrFalcon](https://github.com/RazrFalcon), maintained by [Linebender](https://github.com/linebender)): High-performance Rust-based SVG rasterizer that generates pixel-perfect PNG previews without a headless browser.
 - **[Colord](https://github.com/omgovich/colord)**: High-performance color manipulation, gamut conversions, and WCAG AA/AAA contrast ratios.
 - **Open Source Typography**:
   - [Inter](https://rsms.me/inter/) by Rasmus Andersson
