@@ -33,6 +33,27 @@ export const LandingFooter: React.FC = () => {
               @sandovaldavid
             </a>
           </span>
+          <span className="hidden text-zinc-700 sm:inline">·</span>
+          <span>
+            Powered by{' '}
+            <a
+              href="https://github.com/vercel/satori"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-zinc-400 underline decoration-zinc-700 underline-offset-4 transition-colors duration-200 hover:text-white hover:decoration-white"
+            >
+              Satori
+            </a>{' '}
+            &{' '}
+            <a
+              href="https://github.com/thx/resvg-js"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-zinc-400 underline decoration-zinc-700 underline-offset-4 transition-colors duration-200 hover:text-white hover:decoration-white"
+            >
+              resvg
+            </a>
+          </span>
         </div>
 
         <div className="flex items-center gap-6">

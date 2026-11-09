@@ -72,7 +72,26 @@ export const HeroGenerator: React.FC = () => {
       <div className="mx-auto flex max-w-6xl flex-col items-center px-4 text-center sm:px-6 lg:px-8">
         <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-zinc-800 bg-zinc-900 px-3.5 py-1.5 text-xs text-zinc-300 shadow-sm">
           <Sparkles className="h-3.5 w-3.5 text-blue-400" />
-          <span className="font-medium">Free · Zero sign-up · Satori + Resvg powered</span>
+          <span className="font-medium">
+            Free · Zero sign-up · Powered by{' '}
+            <a
+              href="https://github.com/vercel/satori"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-zinc-200 underline decoration-zinc-600 underline-offset-2 transition-colors hover:text-white hover:decoration-white"
+            >
+              Satori
+            </a>{' '}
+            +{' '}
+            <a
+              href="https://github.com/thx/resvg-js"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-zinc-200 underline decoration-zinc-600 underline-offset-2 transition-colors hover:text-white hover:decoration-white"
+            >
+              Resvg
+            </a>
+          </span>
         </div>
 
         <h1 className="max-w-4xl text-4xl leading-[1.1] font-extrabold tracking-tight text-white sm:text-6xl lg:text-7xl">
