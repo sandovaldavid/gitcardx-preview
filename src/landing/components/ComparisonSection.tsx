@@ -15,7 +15,7 @@ interface CompareProject {
   label: string;
   owner: string;
   repoName: string;
-  templateId: TemplateId;
+  defaultTemplateId: TemplateId;
   paletteKey: keyof typeof PRESET_PALETTES;
   title: string;
   tagline: string;
@@ -29,7 +29,7 @@ const COMPARISON_PROJECTS: CompareProject[] = [
     label: 'shadcn-ui/ui',
     owner: 'shadcn-ui',
     repoName: 'ui',
-    templateId: 'linear-minimal',
+    defaultTemplateId: 'oss-credibility',
     paletteKey: 'slate-minimal',
     title: 'shadcn/ui',
     tagline: 'Beautifully designed components that you can copy and paste into your apps.',
@@ -41,8 +41,8 @@ const COMPARISON_PROJECTS: CompareProject[] = [
     label: 'tailwindlabs/tailwindcss',
     owner: 'tailwindlabs',
     repoName: 'tailwindcss',
-    templateId: 'blueprint-grid',
-    paletteKey: 'cobalt-blueprint',
+    defaultTemplateId: 'blueprint-grid',
+    paletteKey: 'dark-oled',
     title: 'Tailwind CSS',
     tagline: 'A utility-first CSS framework for rapidly building modern websites.',
     installCommand: 'npm i tailwindcss @tailwindcss/vite',
@@ -53,8 +53,8 @@ const COMPARISON_PROJECTS: CompareProject[] = [
     label: 'astral-sh/uv',
     owner: 'astral-sh',
     repoName: 'uv',
-    templateId: 'cli-terminal',
-    paletteKey: 'tokyo-night',
+    defaultTemplateId: 'cli-terminal',
+    paletteKey: 'dark-oled',
     title: 'astral-sh / uv',
     tagline: 'An extremely fast Python package and project manager, written in Rust.',
     installCommand: 'curl -LsSf https://astral.sh/uv/install.sh | sh',
@@ -62,14 +62,20 @@ const COMPARISON_PROJECTS: CompareProject[] = [
   },
 ];
 
-function buildProjectConfig(project: CompareProject): CardConfig {
+const SHOWCASE_TEMPLATES: { id: TemplateId; label: string }[] = [
+  { id: 'oss-credibility', label: 'OSS Credibility' },
+  { id: 'sdk-package', label: 'SDK Package' },
+  { id: 'blueprint-grid', label: 'Blueprint Grid' },
+  { id: 'aurora-mesh', label: 'Aurora Mesh' },
+];
+
+function buildProjectConfig(project: CompareProject, templateId: TemplateId): CardConfig {
   const palette = PRESET_PALETTES[project.paletteKey] ?? DEFAULT_CONFIG.palette;
-  const patternId =
-    TEMPLATE_SIGNATURE_PATTERNS[project.templateId] ?? DEFAULT_CONFIG.backgroundPattern.id;
+  const patternId = TEMPLATE_SIGNATURE_PATTERNS[templateId] ?? DEFAULT_CONFIG.backgroundPattern.id;
 
   return {
     ...DEFAULT_CONFIG,
-    templateId: project.templateId,
+    templateId,
     title: project.title,
     tagline: project.tagline,
     installCommand: project.installCommand,
@@ -95,14 +101,21 @@ function buildProjectConfig(project: CompareProject): CardConfig {
 
 export const ComparisonSection: React.FC = () => {
   const [activeProjectId, setActiveProjectId] = useState<string>('shadcn');
+  const [selectedTemplateOverride, setSelectedTemplateOverride] = useState<TemplateId | null>(null);
   const [githubImageError, setGithubImageError] = useState<Record<string, boolean>>({});
 
   const activeProject =
     COMPARISON_PROJECTS.find((p) => p.id === activeProjectId) ?? COMPARISON_PROJECTS[0];
 
-  const gitframeConfig = buildProjectConfig(activeProject);
+  const activeTemplateId = selectedTemplateOverride ?? activeProject.defaultTemplateId;
+  const gitframeConfig = buildProjectConfig(activeProject, activeTemplateId);
   const githubOgUrl = `https://opengraph.githubassets.com/1/${activeProject.owner}/${activeProject.repoName}`;
   const isImageFailed = Boolean(githubImageError[activeProject.id]);
+
+  const handleSelectProject = (projectId: string) => {
+    setActiveProjectId(projectId);
+    setSelectedTemplateOverride(null);
+  };
 
   return (
     <section id="comparison" className="relative border-t border-zinc-800/80 py-20 md:py-28">
@@ -130,7 +143,7 @@ export const ComparisonSection: React.FC = () => {
                 <button
                   key={project.id}
                   type="button"
-                  onClick={() => setActiveProjectId(project.id)}
+                  onClick={() => handleSelectProject(project.id)}
                   aria-pressed={isActive}
                   className={`rounded-lg px-3.5 py-1.5 font-mono text-xs font-medium transition-all duration-200 focus-visible:ring-2 focus-visible:ring-blue-500/60 focus-visible:outline-none ${
                     isActive
@@ -218,21 +231,20 @@ export const ComparisonSection: React.FC = () => {
               <li className="flex items-start gap-2.5">
                 <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-rose-400/80" />
                 <span>
-                  Monotonous dark grey box that blends into dark social feeds with zero scroll-stop
-                  contrast.
+                  Rigid, cookie-cutter layout with small text metrics and generic GitHub styling.
                 </span>
               </li>
               <li className="flex items-start gap-2.5">
                 <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-rose-400/80" />
                 <span>
-                  No ecosystem stack badges or framework logos (e.g. Next.js, Tailwind, Rust,
-                  React).
+                  No ecosystem stack badges or vector framework logos (e.g. Next.js, Tailwind,
+                  React, Radix).
                 </span>
               </li>
               <li className="flex items-start gap-2.5">
                 <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-rose-400/80" />
                 <span>
-                  No package manager install command to drive direct developer onboarding.
+                  No package manager install snippet to drive direct developer onboarding.
                 </span>
               </li>
               <li className="flex items-start gap-2.5">
@@ -245,7 +257,7 @@ export const ComparisonSection: React.FC = () => {
           {/* Gitframe Preview (After) */}
           <div className="reveal flex flex-col justify-between overflow-hidden rounded-2xl border border-blue-500/40 bg-linear-to-b from-blue-950/20 via-zinc-900/60 to-zinc-950/80 p-6 shadow-2xl shadow-blue-500/5 md:p-8">
             <div>
-              <div className="mb-6 flex items-center justify-between border-b border-zinc-800/80 pb-4">
+              <div className="mb-4 flex items-center justify-between border-b border-zinc-800/80 pb-4">
                 <div className="flex items-center gap-2 text-sm font-semibold text-blue-400">
                   <CheckCircle2 className="h-4 w-4" />
                   <span>Gitframe Social Preview</span>
@@ -255,10 +267,33 @@ export const ComparisonSection: React.FC = () => {
                 </span>
               </div>
 
+              {/* Archetype Selector */}
+              <div className="mb-3 flex flex-wrap items-center gap-1.5">
+                <span className="mr-1 text-[11px] font-medium text-zinc-400">Template:</span>
+                {SHOWCASE_TEMPLATES.map((tpl) => {
+                  const isSelected = activeTemplateId === tpl.id;
+                  return (
+                    <button
+                      key={tpl.id}
+                      type="button"
+                      onClick={() => setSelectedTemplateOverride(tpl.id)}
+                      aria-pressed={isSelected}
+                      className={`rounded-md px-2.5 py-1 font-mono text-[11px] transition-all duration-150 focus-visible:ring-1 focus-visible:ring-blue-500 focus-visible:outline-none ${
+                        isSelected
+                          ? 'border border-blue-500/50 bg-blue-500/20 font-semibold text-blue-300 shadow-xs'
+                          : 'border border-zinc-800 bg-zinc-900/60 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
+                      }`}
+                    >
+                      {tpl.label}
+                    </button>
+                  );
+                })}
+              </div>
+
               {/* Real Gitframe Card Renderer */}
               <div className="relative aspect-2/1 w-full overflow-hidden rounded-xl border border-blue-500/30 bg-zinc-950 shadow-2xl">
                 <ScaledCard>
-                  <div key={activeProject.id} className="card-enter">
+                  <div key={`${activeProject.id}-${activeTemplateId}`} className="card-enter">
                     <CardRenderer repo={activeProject.repo} config={gitframeConfig} />
                   </div>
                 </ScaledCard>
@@ -270,22 +305,22 @@ export const ComparisonSection: React.FC = () => {
               <li className="flex items-start gap-2.5">
                 <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-blue-400" />
                 <span>
-                  High-contrast typography and generative SVG patterns engineered to capture
-                  attention in social feeds.
+                  High-impact OSS credibility: Giant hero metric badges highlighting{' '}
+                  {activeProject.repo.stars.toLocaleString()}+ stars,{' '}
+                  {activeProject.repo.forks.toLocaleString()}+ forks, and active maintainers.
                 </span>
               </li>
               <li className="flex items-start gap-2.5">
                 <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-blue-400" />
                 <span>
-                  Automatic tech stack mapper showcasing official vector logos (SVGL) for instant
-                  credibility.
+                  Multi-language vector distribution bar and automated official tech stack logos.
                 </span>
               </li>
               <li className="flex items-start gap-2.5">
                 <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-blue-400" />
                 <span>
                   Prominent install command snippet and active release milestone badge (
-                  {activeProject.repo.latestRelease?.tag || 'v1.0.0'}).
+                  {activeProject.repo.latestRelease?.tag || 'v2.0.0'}).
                 </span>
               </li>
               <li className="flex items-start gap-2.5">
@@ -300,10 +335,10 @@ export const ComparisonSection: React.FC = () => {
             {/* Studio Link for this real project */}
             <div className="mt-8 flex items-center justify-between border-t border-zinc-800/80 pt-4">
               <span className="font-mono text-[11px] text-zinc-500">
-                Template: {activeProject.templateId}
+                Active: {activeTemplateId}
               </span>
               <Link
-                href={`/studio?repo=${activeProject.owner}/${activeProject.repoName}&template=${activeProject.templateId}`}
+                href={`/studio?repo=${activeProject.owner}/${activeProject.repoName}&template=${activeTemplateId}`}
                 className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-400 transition-colors duration-200 hover:text-blue-300"
               >
                 <span>Customize {activeProject.repoName} in Studio</span>

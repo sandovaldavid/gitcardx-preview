@@ -237,6 +237,8 @@ export const KNOWN_REPO_FALLBACKS: Record<string, RepoMetadata> = {
     latestRelease: { tag: 'v4.0.0', publishedAt: '2026-01-22T16:00:00Z' },
     contributors: [
       { login: 'adamwathan', avatarUrl: 'https://avatars.githubusercontent.com/u/4323180' },
+      { login: 'reinink', avatarUrl: 'https://avatars.githubusercontent.com/u/882133' },
+      { login: 'RobinMalfait', avatarUrl: 'https://avatars.githubusercontent.com/u/1834413' },
     ],
   },
   'facebook/react': {
@@ -271,15 +273,22 @@ export const KNOWN_REPO_FALLBACKS: Record<string, RepoMetadata> = {
     name: 'ui',
     description: 'A set of beautifully-designed, accessible components and templates.',
     homepageUrl: 'https://ui.shadcn.com',
-    stars: 82000,
-    forks: 7200,
+    stars: 128500,
+    forks: 12300,
     primaryLanguage: { name: 'TypeScript', color: '#3178C6' },
-    languages: [{ name: 'TypeScript', color: '#3178C6', size: 100000 }],
+    languages: [
+      { name: 'TypeScript', color: '#3178C6', size: 90000 },
+      { name: 'JavaScript', color: '#F7DF1E', size: 8000 },
+      { name: 'CSS', color: '#1572B6', size: 2000 },
+    ],
     topics: ['components', 'radix-ui', 'react', 'tailwind'],
     license: 'MIT',
     latestRelease: { tag: 'v2.0.0', publishedAt: '2026-02-15T10:00:00Z' },
     contributors: [
       { login: 'shadcn', avatarUrl: 'https://avatars.githubusercontent.com/u/124599' },
+      { login: 'colinhacks', avatarUrl: 'https://avatars.githubusercontent.com/u/30652791' },
+      { login: 'leerob', avatarUrl: 'https://avatars.githubusercontent.com/u/9113740' },
+      { login: 'pacocoursey', avatarUrl: 'https://avatars.githubusercontent.com/u/34928425' },
     ],
   },
   'astral-sh/uv': {
@@ -303,6 +312,8 @@ export const KNOWN_REPO_FALLBACKS: Record<string, RepoMetadata> = {
     latestRelease: { tag: '0.5.0', publishedAt: '2026-02-01T12:00:00Z' },
     contributors: [
       { login: 'charliermarsh', avatarUrl: 'https://avatars.githubusercontent.com/u/1309177' },
+      { login: 'konstin', avatarUrl: 'https://avatars.githubusercontent.com/u/10510431' },
+      { login: 'alwx', avatarUrl: 'https://avatars.githubusercontent.com/u/597097' },
     ],
   },
 };

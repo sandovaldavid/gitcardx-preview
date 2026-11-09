@@ -24,9 +24,17 @@ describe('ComparisonSection (Real Project Comparison)', () => {
     expect(html).toContain('https://opengraph.githubassets.com/1/shadcn-ui/ui');
   });
 
-  it('renders Studio customization link targeting the real project', () => {
+  it('renders archetype selector buttons', () => {
     const html = renderToString(<ComparisonSection />);
-    expect(html).toContain('/studio?repo=shadcn-ui/ui&amp;template=linear-minimal');
+    expect(html).toContain('OSS Credibility');
+    expect(html).toContain('SDK Package');
+    expect(html).toContain('Blueprint Grid');
+    expect(html).toContain('Aurora Mesh');
+  });
+
+  it('renders Studio customization link targeting the real project and template', () => {
+    const html = renderToString(<ComparisonSection />);
+    expect(html).toContain('/studio?repo=shadcn-ui/ui&amp;template=oss-credibility');
     expect(html).toMatch(/Customize.+ui.+in Studio/);
   });
 });
