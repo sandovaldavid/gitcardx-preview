@@ -39,6 +39,9 @@ export const DEFAULT_REPO: RepoMetadata = {
   contributors: [
     { login: 'sandovaldavid', avatarUrl: 'https://avatars.githubusercontent.com/u/12345' },
   ],
+  contributorsCount: 1,
+  openIssuesCount: 0,
+  discussionsCount: 0,
 };
 
 export const DEFAULT_CONFIG: CardConfig = {
@@ -67,6 +70,8 @@ export const DEFAULT_CONFIG: CardConfig = {
     author: true,
     tagline: true,
     installCommand: true,
+    issues: false,
+    discussions: false,
   },
 };
 

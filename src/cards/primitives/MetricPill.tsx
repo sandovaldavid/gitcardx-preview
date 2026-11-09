@@ -1,5 +1,6 @@
 import React from 'react';
 import { MetricIcon, MetricType } from '../icons/metricIcons';
+import { formatCompactMetric } from './formatters';
 
 export type { MetricType };
 
@@ -9,12 +10,7 @@ interface MetricPillProps {
   textColor: string;
   borderColor: string;
   accentColor: string;
-}
-
-function formatNumber(num: number): string {
-  if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
-  if (num >= 1000) return `${(num / 1000).toFixed(1)}k`;
-  return String(num);
+  label?: string;
 }
 
 export const MetricPill: React.FC<MetricPillProps> = ({
@@ -23,8 +19,9 @@ export const MetricPill: React.FC<MetricPillProps> = ({
   textColor,
   borderColor,
   accentColor,
+  label,
 }) => {
-  const displayValue = typeof value === 'number' ? formatNumber(value) : value;
+  const displayValue = typeof value === 'number' ? formatCompactMetric(value) : value;
 
   return (
     <div
@@ -39,13 +36,15 @@ export const MetricPill: React.FC<MetricPillProps> = ({
         borderRadius: 9999,
         border: `1px solid ${borderColor}`,
         backgroundColor: 'rgba(255, 255, 255, 0.05)',
-        fontSize: 18,
-        fontWeight: 600,
+        fontSize: 19,
+        fontWeight: 700,
         color: textColor,
+        letterSpacing: '-0.01em',
       }}
     >
       <MetricIcon type={type} textColor={textColor} accentColor={accentColor} size={22} />
       <span>{displayValue}</span>
+      {label && <span style={{ opacity: 0.7, fontWeight: 500, fontSize: 16 }}>{label}</span>}
     </div>
   );
 };

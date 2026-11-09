@@ -1,6 +1,7 @@
 import React from 'react';
 
-export type MetricType = 'stars' | 'forks' | 'release' | 'license';
+export type MetricType =
+  'stars' | 'forks' | 'release' | 'license' | 'issues' | 'discussions' | 'contributors';
 
 export interface BaseMetricIconProps {
   color: string;
@@ -62,6 +63,55 @@ export const LicenseMetricIcon: React.FC<BaseMetricIconProps> = ({ color, size =
   </svg>
 );
 
+export const IssueMetricIcon: React.FC<BaseMetricIconProps> = ({ color, size = 18 }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke={color}
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <circle cx="12" cy="12" r="10" />
+    <circle cx="12" cy="12" r="1.5" fill={color} />
+  </svg>
+);
+
+export const DiscussionMetricIcon: React.FC<BaseMetricIconProps> = ({ color, size = 18 }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke={color}
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+  </svg>
+);
+
+export const ContributorMetricIcon: React.FC<BaseMetricIconProps> = ({ color, size = 18 }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke={color}
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+    <circle cx="9" cy="7" r="4" />
+    <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+  </svg>
+);
+
 export interface MetricIconProps {
   type: MetricType;
   textColor: string;
@@ -84,5 +134,11 @@ export const MetricIcon: React.FC<MetricIconProps> = ({
       return <ReleaseMetricIcon color={accentColor} size={size} />;
     case 'license':
       return <LicenseMetricIcon color={textColor} size={size} />;
+    case 'issues':
+      return <IssueMetricIcon color={accentColor} size={size} />;
+    case 'discussions':
+      return <DiscussionMetricIcon color={accentColor} size={size} />;
+    case 'contributors':
+      return <ContributorMetricIcon color={textColor} size={size} />;
   }
 };

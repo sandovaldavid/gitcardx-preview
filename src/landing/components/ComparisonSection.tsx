@@ -95,6 +95,8 @@ function buildProjectConfig(project: CompareProject, templateId: TemplateId): Ca
       author: true,
       tagline: true,
       installCommand: true,
+      issues: false,
+      discussions: false,
     },
   };
 }

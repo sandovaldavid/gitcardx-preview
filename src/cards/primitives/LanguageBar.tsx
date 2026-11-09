@@ -1,6 +1,7 @@
 import React from 'react';
 import type { RepoLanguageSchema } from '@/core/domain/schemas';
 import { z } from 'zod';
+import { resolveDistinctLanguageColors } from '@/core/domain/languageColors';
 
 type Language = z.infer<typeof RepoLanguageSchema>;
 
@@ -15,7 +16,7 @@ export const LanguageBar: React.FC<LanguageBarProps> = ({
   textColor,
   maxLanguages = 4,
 }) => {
-  const visible = languages.slice(0, maxLanguages);
+  const visible = resolveDistinctLanguageColors(languages.slice(0, maxLanguages));
   const totalSize = visible.reduce((acc, l) => acc + l.size, 0);
 
   if (totalSize === 0) return null;
@@ -25,7 +26,7 @@ export const LanguageBar: React.FC<LanguageBarProps> = ({
       style={{
         display: 'flex',
         flexDirection: 'column',
-        gap: 8,
+        gap: 10,
         width: '100%',
       }}
     >
@@ -33,9 +34,9 @@ export const LanguageBar: React.FC<LanguageBarProps> = ({
       <div
         style={{
           display: 'flex',
-          height: 8,
+          height: 10,
           width: '100%',
-          borderRadius: 4,
+          borderRadius: 5,
           overflow: 'hidden',
           backgroundColor: 'rgba(255, 255, 255, 0.1)',
         }}
@@ -48,7 +49,7 @@ export const LanguageBar: React.FC<LanguageBarProps> = ({
               style={{
                 width: `${pct}%`,
                 height: '100%',
-                backgroundColor: lang.color || '#3b82f6',
+                backgroundColor: lang.color,
               }}
             />
           );
@@ -59,12 +60,12 @@ export const LanguageBar: React.FC<LanguageBarProps> = ({
       <div
         style={{
           display: 'flex',
-          gap: 20,
+          gap: 24,
           flexWrap: 'wrap',
-          fontSize: 15,
-          fontWeight: 600,
+          fontSize: 17,
+          fontWeight: 700,
           color: textColor,
-          opacity: 0.9,
+          opacity: 0.95,
         }}
       >
         {visible.map((lang) => {
@@ -75,19 +76,19 @@ export const LanguageBar: React.FC<LanguageBarProps> = ({
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: 7,
+                gap: 8,
               }}
             >
               <div
                 style={{
-                  width: 10,
-                  height: 10,
+                  width: 12,
+                  height: 12,
                   borderRadius: '50%',
-                  backgroundColor: lang.color || '#3b82f6',
+                  backgroundColor: lang.color,
                 }}
               />
               <span>{lang.name}</span>
-              <span style={{ opacity: 0.65 }}>{pct}%</span>
+              <span style={{ opacity: 0.7, fontWeight: 500 }}>{pct}%</span>
             </div>
           );
         })}

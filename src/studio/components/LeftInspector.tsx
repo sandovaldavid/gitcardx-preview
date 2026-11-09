@@ -16,6 +16,8 @@ import {
   User,
   Star,
   GitFork,
+  CircleDot,
+  MessageSquare,
   Tag,
   Scale,
   Users,
@@ -38,6 +40,8 @@ export const LeftInspector: React.FC = () => {
     { key: 'tagline', label: 'Tagline Description', icon: AlignLeft },
     { key: 'stars', label: 'GitHub Stars', icon: Star },
     { key: 'forks', label: 'Forks Count', icon: GitFork },
+    { key: 'issues', label: 'Open Issues', icon: CircleDot },
+    { key: 'discussions', label: 'Discussions', icon: MessageSquare },
     { key: 'release', label: 'Latest Release', icon: Tag },
     { key: 'license', label: 'License Badge', icon: Scale },
     { key: 'techStack', label: 'Tech Stack Badges', icon: Layers },
@@ -209,7 +213,8 @@ export const LeftInspector: React.FC = () => {
               <span>Visible Elements & Layers</span>
             </label>
             <span className="text-[10px] font-mono text-zinc-500 bg-zinc-900 border border-zinc-800 px-1.5 py-0.5 rounded">
-              {Object.values(config.visibility).filter(Boolean).length}/10 active
+              {Object.values(config.visibility).filter(Boolean).length}/{elementLayers.length}{' '}
+              active
             </span>
           </div>
 
@@ -303,6 +308,39 @@ export const LeftInspector: React.FC = () => {
                     value={repo.forks}
                     onChange={(e) =>
                       setRepo({ ...repo, forks: Math.max(0, parseInt(e.target.value) || 0) }, false)
+                    }
+                    className="w-full h-8 px-2 rounded bg-zinc-950 border border-zinc-800 text-xs text-zinc-200"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <div className="flex-1">
+                  <label className="text-[11px] text-zinc-500">Open Issues</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={repo.openIssuesCount ?? 0}
+                    onChange={(e) =>
+                      setRepo(
+                        { ...repo, openIssuesCount: Math.max(0, parseInt(e.target.value) || 0) },
+                        false
+                      )
+                    }
+                    className="w-full h-8 px-2 rounded bg-zinc-950 border border-zinc-800 text-xs text-zinc-200"
+                  />
+                </div>
+                <div className="flex-1">
+                  <label className="text-[11px] text-zinc-500">Discussions</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={repo.discussionsCount ?? 0}
+                    onChange={(e) =>
+                      setRepo(
+                        { ...repo, discussionsCount: Math.max(0, parseInt(e.target.value) || 0) },
+                        false
+                      )
                     }
                     className="w-full h-8 px-2 rounded bg-zinc-950 border border-zinc-800 text-xs text-zinc-200"
                   />

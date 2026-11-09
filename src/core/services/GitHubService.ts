@@ -1,5 +1,6 @@
 import { Octokit } from 'octokit';
 import { RepoMetadataSchema, type RepoMetadata } from '../domain/schemas';
+import { getLanguageColor } from '../domain/languageColors';
 
 export interface RepoAutocompleteItem {
   name: string;
@@ -53,7 +54,14 @@ const GET_REPO_QUERY = `
         tagName
         publishedAt
       }
+      issues(states: OPEN) {
+        totalCount
+      }
+      discussions {
+        totalCount
+      }
       mentionableUsers(first: 5) {
+        totalCount
         nodes {
           login
           avatarUrl(size: 96)
@@ -96,37 +104,6 @@ const GET_USER_REPOS_QUERY = `
   }
 `;
 
-const COMMON_LANGUAGE_COLORS: Record<string, string> = {
-  typescript: '#3178C6',
-  javascript: '#F7DF1E',
-  python: '#3776AB',
-  rust: '#DEA584',
-  go: '#00ADD8',
-  html: '#E34F26',
-  css: '#1572B6',
-  java: '#ED8B00',
-  c: '#A8B9CC',
-  'c++': '#00599C',
-  'c#': '#239120',
-  ruby: '#CC342D',
-  php: '#777BB4',
-  swift: '#F05138',
-  kotlin: '#7F52FF',
-  dart: '#0175C2',
-  elixir: '#4B275F',
-  shell: '#89E051',
-  vue: '#41B883',
-  svelte: '#FF3E00',
-  scala: '#DC322F',
-  r: '#276DC3',
-  lua: '#000080',
-};
-
-function getLanguageColor(name: string): string {
-  const normalized = name.toLowerCase().trim();
-  return COMMON_LANGUAGE_COLORS[normalized] || '#3178C6';
-}
-
 interface CacheEntry<T> {
   data: T;
   expiresAt: number;
@@ -167,6 +144,9 @@ export const KNOWN_REPO_FALLBACKS: Record<string, RepoMetadata> = {
     contributors: [
       { login: 'sandovaldavid', avatarUrl: 'https://avatars.githubusercontent.com/u/102970701' },
     ],
+    contributorsCount: 1,
+    openIssuesCount: 0,
+    discussionsCount: 0,
   },
   'sandovaldavid/gitframe': {
     owner: {
@@ -191,6 +171,9 @@ export const KNOWN_REPO_FALLBACKS: Record<string, RepoMetadata> = {
     contributors: [
       { login: 'sandovaldavid', avatarUrl: 'https://avatars.githubusercontent.com/u/102970701' },
     ],
+    contributorsCount: 1,
+    openIssuesCount: 0,
+    discussionsCount: 0,
   },
   'sandovaldavid/gitcardx-preview': {
     owner: {
@@ -215,6 +198,9 @@ export const KNOWN_REPO_FALLBACKS: Record<string, RepoMetadata> = {
     contributors: [
       { login: 'sandovaldavid', avatarUrl: 'https://avatars.githubusercontent.com/u/102970701' },
     ],
+    contributorsCount: 1,
+    openIssuesCount: 0,
+    discussionsCount: 0,
   },
   'tailwindlabs/tailwindcss': {
     owner: {
@@ -240,6 +226,9 @@ export const KNOWN_REPO_FALLBACKS: Record<string, RepoMetadata> = {
       { login: 'reinink', avatarUrl: 'https://avatars.githubusercontent.com/u/882133' },
       { login: 'RobinMalfait', avatarUrl: 'https://avatars.githubusercontent.com/u/1834413' },
     ],
+    contributorsCount: 310,
+    openIssuesCount: 28,
+    discussionsCount: 520,
   },
   'facebook/react': {
     owner: {
@@ -263,6 +252,9 @@ export const KNOWN_REPO_FALLBACKS: Record<string, RepoMetadata> = {
     contributors: [
       { login: 'gaearon', avatarUrl: 'https://avatars.githubusercontent.com/u/810438' },
     ],
+    contributorsCount: 1650,
+    openIssuesCount: 1150,
+    discussionsCount: 940,
   },
   'shadcn-ui/ui': {
     owner: {
@@ -290,6 +282,9 @@ export const KNOWN_REPO_FALLBACKS: Record<string, RepoMetadata> = {
       { login: 'leerob', avatarUrl: 'https://avatars.githubusercontent.com/u/9113740' },
       { login: 'pacocoursey', avatarUrl: 'https://avatars.githubusercontent.com/u/34928425' },
     ],
+    contributorsCount: 1240,
+    openIssuesCount: 42,
+    discussionsCount: 180,
   },
   'astral-sh/uv': {
     owner: {
@@ -315,6 +310,9 @@ export const KNOWN_REPO_FALLBACKS: Record<string, RepoMetadata> = {
       { login: 'konstin', avatarUrl: 'https://avatars.githubusercontent.com/u/10510431' },
       { login: 'alwx', avatarUrl: 'https://avatars.githubusercontent.com/u/597097' },
     ],
+    contributorsCount: 145,
+    openIssuesCount: 95,
+    discussionsCount: 88,
   },
 };
 
@@ -532,6 +530,9 @@ export class GitHubService {
       license: raw.license?.spdx_id || raw.license?.name || null,
       latestRelease,
       contributors: contributorsList,
+      contributorsCount: contributorsList.length > 0 ? contributorsList.length : 1,
+      openIssuesCount: typeof raw.open_issues_count === 'number' ? raw.open_issues_count : 0,
+      discussionsCount: 0,
     };
 
     const parsed = RepoMetadataSchema.parse(metadata);
@@ -681,7 +682,14 @@ export class GitHubService {
             tagName: string;
             publishedAt: string;
           } | null;
+          issues: {
+            totalCount: number;
+          } | null;
+          discussions: {
+            totalCount: number;
+          } | null;
           mentionableUsers: {
+            totalCount?: number;
             nodes: Array<{
               login: string;
               avatarUrl: string;
@@ -733,6 +741,10 @@ export class GitHubService {
           login: u.login,
           avatarUrl: u.avatarUrl,
         })),
+        contributorsCount:
+          raw.mentionableUsers?.totalCount ?? raw.mentionableUsers?.nodes?.length ?? 1,
+        openIssuesCount: raw.issues?.totalCount ?? 0,
+        discussionsCount: raw.discussions?.totalCount ?? 0,
       };
 
       const parsed = RepoMetadataSchema.parse(metadata);
