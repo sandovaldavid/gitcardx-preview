@@ -1,14 +1,15 @@
 import React from 'react';
 import type { TemplateId } from '@/core/domain/schemas';
+import { normalizeTemplateId } from '@/core/domain/schemas';
 import type { CardRenderProps, CardTemplateComponent } from '../types';
-import { LinearMinimalTemplate } from './LinearMinimalTemplate';
-import { CliTerminalTemplate } from './CliTerminalTemplate';
-import { OssCredibilityTemplate } from './OssCredibilityTemplate';
-import { SdkPackageTemplate } from './SdkPackageTemplate';
-import { AuroraMeshTemplate } from './AuroraMeshTemplate';
+import { ModernMinimalTemplate } from './ModernMinimalTemplate';
+import { TerminalPromptTemplate } from './TerminalPromptTemplate';
+import { MetricShowcaseTemplate } from './MetricShowcaseTemplate';
+import { SplitConsoleTemplate } from './SplitConsoleTemplate';
+import { AuroraGlassTemplate } from './AuroraGlassTemplate';
 import { BlueprintGridTemplate } from './BlueprintGridTemplate';
-import { ReleaseSpotlightTemplate } from './ReleaseSpotlightTemplate';
-import { CreatorSignatureTemplate } from './CreatorSignatureTemplate';
+import { VersionHeroTemplate } from './VersionHeroTemplate';
+import { AuthorSpotlightTemplate } from './AuthorSpotlightTemplate';
 
 export interface TemplateDefinition {
   id: TemplateId;
@@ -19,90 +20,95 @@ export interface TemplateDefinition {
 }
 
 export const CARD_TEMPLATES: Record<TemplateId, TemplateDefinition> = {
-  'linear-minimal': {
-    id: 'linear-minimal',
-    name: 'Linear Minimal',
-    description: 'Sleek, modern, and uncluttered layout inspired by Linear and modern SaaS tools.',
-    recommendedFor: 'Frameworks, developer platforms, modern web apps',
-    component: LinearMinimalTemplate,
+  'modern-minimal': {
+    id: 'modern-minimal',
+    name: 'Modern Minimal',
+    description: 'Clean, refined layout with balanced negative space and high typographic clarity.',
+    recommendedFor: 'High clarity, balanced spacing, and clean typography',
+    component: ModernMinimalTemplate,
   },
-  'cli-terminal': {
-    id: 'cli-terminal',
-    name: 'CLI Terminal Hero',
-    description: 'Terminal window prominently displaying your install command and shell interface.',
-    recommendedFor: 'CLI utilities, package runners, dev infrastructure',
-    component: CliTerminalTemplate,
+  'terminal-prompt': {
+    id: 'terminal-prompt',
+    name: 'Terminal Prompt',
+    description: 'Terminal command window front and center with clean developer aesthetics.',
+    recommendedFor: 'Quick install commands, developer tools, and console workflows',
+    component: TerminalPromptTemplate,
   },
-  'oss-credibility': {
-    id: 'oss-credibility',
-    name: 'OSS Credibility',
-    description: 'Puts stars, forks, contributors, and language metrics front and center.',
-    recommendedFor: 'Popular open-source libraries, mature communities',
-    component: OssCredibilityTemplate,
+  'metric-showcase': {
+    id: 'metric-showcase',
+    name: 'Metric Showcase',
+    description:
+      'High-density split layout highlighting repository metrics, traction, and community.',
+    recommendedFor: 'Key metrics, community traction, and project impact',
+    component: MetricShowcaseTemplate,
   },
-  'sdk-package': {
-    id: 'sdk-package',
-    name: 'SDK & Package Split',
-    description: 'Two-column balanced design pairing package identity with a code or install box.',
-    recommendedFor: 'SDKs, client libraries, REST/GraphQL clients',
-    component: SdkPackageTemplate,
+  'split-console': {
+    id: 'split-console',
+    name: 'Split Console',
+    description:
+      'Two-column balanced layout pairing repository identity with an interactive terminal box and stats.',
+    recommendedFor: 'Two-column balance, code installation, and metadata',
+    component: SplitConsoleTemplate,
   },
-  'aurora-mesh': {
-    id: 'aurora-mesh',
-    name: 'Aurora Mesh Glass',
-    description: 'Vibrant fluid glow with frosted container card and modern startup vibes.',
-    recommendedFor: 'AI tools, design systems, next-gen startups',
-    component: AuroraMeshTemplate,
+  'aurora-glass': {
+    id: 'aurora-glass',
+    name: 'Aurora Glass',
+    description: 'Vibrant fluid gradient glow behind a frosted glass container card.',
+    recommendedFor: 'Modern fluid gradients, frosted glass, and vibrant visuals',
+    component: AuroraGlassTemplate,
   },
   'blueprint-grid': {
     id: 'blueprint-grid',
     name: 'Blueprint Grid',
     description:
-      'Precision architectural blueprint styling with coordinate lines and technical badges.',
-    recommendedFor: 'System architectures, databases, cloud native tools',
+      'Technical blueprint architecture with coordinate crosshairs and engineering badges.',
+    recommendedFor: 'Technical precision, architectural grids, and coordinate lines',
     component: BlueprintGridTemplate,
   },
-  'release-spotlight': {
-    id: 'release-spotlight',
-    name: 'Release Spotlight',
-    description: 'Heroic version badge celebrating releases, changelogs, and milestones.',
-    recommendedFor: 'Major version drops, product launches, releases',
-    component: ReleaseSpotlightTemplate,
-  },
-  'creator-signature': {
-    id: 'creator-signature',
-    name: 'Creator Signature',
+  'version-hero': {
+    id: 'version-hero',
+    name: 'Version Hero',
     description:
-      'Highlights the project creator with prominent author avatar and project identity.',
-    recommendedFor: 'Indie hackers, solo founders, personal portfolio repos',
-    component: CreatorSignatureTemplate,
+      'Heroic centered layout with a prominent version or milestone badge above the title.',
+    recommendedFor: 'Version milestones, prominent releases, and centered focus',
+    component: VersionHeroTemplate,
+  },
+  'author-spotlight': {
+    id: 'author-spotlight',
+    name: 'Author Spotlight',
+    description:
+      'Two-column layout highlighting author profile and avatar alongside project identity.',
+    recommendedFor: 'Prominent author avatar, developer profile, and project identity',
+    component: AuthorSpotlightTemplate,
   },
 };
 
-export function getTemplateComponent(id: TemplateId): CardTemplateComponent {
-  const definition = CARD_TEMPLATES[id];
-  return definition ? definition.component : LinearMinimalTemplate;
+export function getTemplateComponent(id: TemplateId | string): CardTemplateComponent {
+  const normalized = normalizeTemplateId(id);
+  const definition = CARD_TEMPLATES[normalized];
+  return definition ? definition.component : ModernMinimalTemplate;
 }
 
 export const CardRenderer: React.FC<CardRenderProps> = (props) => {
-  switch (props.config.templateId) {
-    case 'linear-minimal':
-      return <LinearMinimalTemplate {...props} />;
-    case 'cli-terminal':
-      return <CliTerminalTemplate {...props} />;
-    case 'oss-credibility':
-      return <OssCredibilityTemplate {...props} />;
-    case 'sdk-package':
-      return <SdkPackageTemplate {...props} />;
-    case 'aurora-mesh':
-      return <AuroraMeshTemplate {...props} />;
+  const templateId = normalizeTemplateId(props.config.templateId);
+  switch (templateId) {
+    case 'modern-minimal':
+      return <ModernMinimalTemplate {...props} />;
+    case 'terminal-prompt':
+      return <TerminalPromptTemplate {...props} />;
+    case 'metric-showcase':
+      return <MetricShowcaseTemplate {...props} />;
+    case 'split-console':
+      return <SplitConsoleTemplate {...props} />;
+    case 'aurora-glass':
+      return <AuroraGlassTemplate {...props} />;
     case 'blueprint-grid':
       return <BlueprintGridTemplate {...props} />;
-    case 'release-spotlight':
-      return <ReleaseSpotlightTemplate {...props} />;
-    case 'creator-signature':
-      return <CreatorSignatureTemplate {...props} />;
+    case 'version-hero':
+      return <VersionHeroTemplate {...props} />;
+    case 'author-spotlight':
+      return <AuthorSpotlightTemplate {...props} />;
     default:
-      return <LinearMinimalTemplate {...props} />;
+      return <ModernMinimalTemplate {...props} />;
   }
 };

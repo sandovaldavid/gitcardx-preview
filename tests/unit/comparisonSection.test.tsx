@@ -26,12 +26,12 @@ describe('ComparisonSection (Real Project Comparison)', () => {
 
   it('renders archetype selector buttons', () => {
     const html = renderToString(<ComparisonSection />);
-    expect(html).toContain('OSS Credibility');
-    expect(html).toContain('SDK Package');
+    expect(html).toContain('Metric Showcase');
+    expect(html).toContain('Split Console');
     expect(html).toContain('Blueprint Grid');
-    expect(html).toContain('Aurora Mesh');
-    expect(html).toContain('CLI Terminal');
-    expect(html).toContain('Release Spotlight');
+    expect(html).toContain('Aurora Glass');
+    expect(html).toContain('Terminal Prompt');
+    expect(html).toContain('Version Hero');
   });
 
   it('renders interactive before/after split slider container with accessible role and attributes', () => {
@@ -48,7 +48,7 @@ describe('ComparisonSection (Real Project Comparison)', () => {
 
   it('renders Studio customization link targeting the real project and template', () => {
     const html = renderToString(<ComparisonSection />);
-    expect(html).toContain('/studio?repo=shadcn-ui/ui&amp;template=oss-credibility');
+    expect(html).toContain('/studio?repo=shadcn-ui/ui&amp;template=metric-showcase');
     expect(html).toMatch(/Customize.+ui.+in Studio/);
   });
 });

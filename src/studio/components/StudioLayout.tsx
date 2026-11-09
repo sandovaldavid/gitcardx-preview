@@ -8,8 +8,8 @@ import { InteractiveCanvas } from './InteractiveCanvas';
 import { RightInspector } from './RightInspector';
 import { ExportModal } from './ExportModal';
 import { useCardStore } from '../state/useCardStore';
-import type { RepoMetadata, TemplateId } from '@/core/domain/schemas';
-import { CARD_TEMPLATES } from '@/cards/templates/CardTemplateRegistry';
+import type { RepoMetadata } from '@/core/domain/schemas';
+import { normalizeTemplateId } from '@/core/domain/schemas';
 
 interface StudioLayoutProps {
   initialRepo?: RepoMetadata;
@@ -17,7 +17,7 @@ interface StudioLayoutProps {
 
 const StudioInner: React.FC<StudioLayoutProps> = ({ initialRepo }) => {
   const searchParams = useSearchParams();
-  const templateParam = searchParams.get('template') as TemplateId | null;
+  const templateParam = searchParams.get('template');
   const { setRepo, setTemplateId } = useCardStore();
 
   useEffect(() => {
@@ -27,8 +27,8 @@ const StudioInner: React.FC<StudioLayoutProps> = ({ initialRepo }) => {
   }, [initialRepo, setRepo]);
 
   useEffect(() => {
-    if (templateParam && CARD_TEMPLATES[templateParam]) {
-      setTemplateId(templateParam);
+    if (templateParam) {
+      setTemplateId(normalizeTemplateId(templateParam));
     }
   }, [templateParam, setTemplateId]);
 

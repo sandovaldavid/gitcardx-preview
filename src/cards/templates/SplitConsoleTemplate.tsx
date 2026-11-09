@@ -9,7 +9,7 @@ import { detectTechStack, suggestInstallCommand } from '@/core/domain/stackMappe
 import { SafeZoneGuides } from '../primitives/SafeZoneGuides';
 import { ThemeEngine } from '@/core/theme/ThemeEngine';
 
-export const SdkPackageTemplate: React.FC<CardRenderProps> = ({
+export const SplitConsoleTemplate: React.FC<CardRenderProps> = ({
   repo,
   config,
   showSafeZoneGuides = false,
@@ -256,3 +256,5 @@ export const SdkPackageTemplate: React.FC<CardRenderProps> = ({
     </div>
   );
 };
+
+export const SdkPackageTemplate = SplitConsoleTemplate;

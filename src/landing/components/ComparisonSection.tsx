@@ -36,7 +36,7 @@ const COMPARISON_PROJECTS: CompareProject[] = [
     label: 'shadcn-ui/ui',
     owner: 'shadcn-ui',
     repoName: 'ui',
-    defaultTemplateId: 'oss-credibility',
+    defaultTemplateId: 'metric-showcase',
     paletteKey: 'slate-minimal',
     title: 'shadcn/ui',
     tagline: 'Beautifully designed components that you can copy and paste into your apps.',
@@ -60,7 +60,7 @@ const COMPARISON_PROJECTS: CompareProject[] = [
     label: 'astral-sh/uv',
     owner: 'astral-sh',
     repoName: 'uv',
-    defaultTemplateId: 'cli-terminal',
+    defaultTemplateId: 'terminal-prompt',
     paletteKey: 'dark-oled',
     title: 'astral-sh / uv',
     tagline: 'An extremely fast Python package and project manager, written in Rust.',
@@ -70,12 +70,12 @@ const COMPARISON_PROJECTS: CompareProject[] = [
 ];
 
 const SHOWCASE_TEMPLATES: { id: TemplateId; label: string }[] = [
-  { id: 'oss-credibility', label: 'OSS Credibility' },
-  { id: 'sdk-package', label: 'SDK Package' },
+  { id: 'metric-showcase', label: 'Metric Showcase' },
+  { id: 'split-console', label: 'Split Console' },
   { id: 'blueprint-grid', label: 'Blueprint Grid' },
-  { id: 'aurora-mesh', label: 'Aurora Mesh' },
-  { id: 'cli-terminal', label: 'CLI Terminal' },
-  { id: 'release-spotlight', label: 'Release Spotlight' },
+  { id: 'aurora-glass', label: 'Aurora Glass' },
+  { id: 'terminal-prompt', label: 'Terminal Prompt' },
+  { id: 'version-hero', label: 'Version Hero' },
 ];
 
 function buildProjectConfig(project: CompareProject, templateId: TemplateId): CardConfig {

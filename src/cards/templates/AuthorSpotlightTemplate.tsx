@@ -9,7 +9,7 @@ import { detectTechStack } from '@/core/domain/stackMapper';
 import { SafeZoneGuides } from '../primitives/SafeZoneGuides';
 import { ThemeEngine } from '@/core/theme/ThemeEngine';
 
-export const CreatorSignatureTemplate: React.FC<CardRenderProps> = ({
+export const AuthorSpotlightTemplate: React.FC<CardRenderProps> = ({
   repo,
   config,
   showSafeZoneGuides = false,
@@ -264,3 +264,5 @@ export const CreatorSignatureTemplate: React.FC<CardRenderProps> = ({
     </div>
   );
 };
+
+export const CreatorSignatureTemplate = AuthorSpotlightTemplate;

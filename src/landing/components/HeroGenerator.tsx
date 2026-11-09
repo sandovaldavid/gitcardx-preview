@@ -23,9 +23,9 @@ const PRESET_REPOS = [
 ];
 
 const FEATURED_TEMPLATES: Array<{ id: TemplateId; label: string }> = [
-  { id: 'linear-minimal', label: 'Linear Minimal' },
-  { id: 'cli-terminal', label: 'CLI Terminal' },
-  { id: 'aurora-mesh', label: 'Aurora Mesh' },
+  { id: 'modern-minimal', label: 'Modern Minimal' },
+  { id: 'terminal-prompt', label: 'Terminal Prompt' },
+  { id: 'aurora-glass', label: 'Aurora Glass' },
   { id: 'blueprint-grid', label: 'Blueprint Grid' },
 ];
 
@@ -33,7 +33,7 @@ export const HeroGenerator: React.FC = () => {
   const router = useRouter();
   const [inputValue, setInputValue] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [activeTemplate, setActiveTemplate] = useState<TemplateId>('linear-minimal');
+  const [activeTemplate, setActiveTemplate] = useState<TemplateId>('modern-minimal');
 
   const handleGenerate = (target?: string) => {
     const raw = target || inputValue;

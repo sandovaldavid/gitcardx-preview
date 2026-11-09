@@ -20,7 +20,7 @@ describe('useCardStore (Zustand state & history)', () => {
   it('initializes with default repo and configuration', () => {
     const state = useCardStore.getState();
     expect(state.repo.name).toBe('gitframe');
-    expect(state.config.templateId).toBe('linear-minimal');
+    expect(state.config.templateId).toBe('modern-minimal');
     expect(state.zoom).toBe(1);
     expect(state.canUndo()).toBe(false);
     expect(state.canRedo()).toBe(false);
@@ -45,11 +45,11 @@ describe('useCardStore (Zustand state & history)', () => {
 
   it('switches template correctly and assigns signature background pattern when present', () => {
     const { setTemplateId, setBackgroundPattern } = useCardStore.getState();
-    setTemplateId('cli-terminal');
-    expect(useCardStore.getState().config.templateId).toBe('cli-terminal');
+    setTemplateId('terminal-prompt');
+    expect(useCardStore.getState().config.templateId).toBe('terminal-prompt');
 
-    setTemplateId('aurora-mesh');
-    expect(useCardStore.getState().config.templateId).toBe('aurora-mesh');
+    setTemplateId('aurora-glass');
+    expect(useCardStore.getState().config.templateId).toBe('aurora-glass');
     expect(useCardStore.getState().config.backgroundPattern.id).toBe('aurora-mesh');
 
     // User can customize pattern afterwards

@@ -69,7 +69,21 @@ describe('Dynamic Card Route (/api/card/[owner]/[repo])', () => {
 
   it('supports query parameters like format=svg, template, theme=light and accent', async () => {
     const req = new NextRequest(
-      'https://gitframe.dev/api/card/sandovaldavid/gitframe?format=svg&template=cli-terminal&theme=light&accent=ff5500'
+      'https://gitframe.dev/api/card/sandovaldavid/gitframe?format=svg&template=terminal-prompt&theme=light&accent=ff5500'
+    );
+    const res = await GET(req, {
+      params: Promise.resolve({ owner: 'sandovaldavid', repo: 'gitframe' }),
+    });
+
+    expect(res.status).toBe(200);
+    expect(res.headers.get('Content-Type')).toContain('image/svg+xml');
+    const text = await res.text();
+    expect(text.startsWith('<svg')).toBe(true);
+  });
+
+  it('normalizes legacy template IDs in query parameters seamlessly', async () => {
+    const req = new NextRequest(
+      'https://gitframe.dev/api/card/sandovaldavid/gitframe?format=svg&template=cli-terminal'
     );
     const res = await GET(req, {
       params: Promise.resolve({ owner: 'sandovaldavid', repo: 'gitframe' }),

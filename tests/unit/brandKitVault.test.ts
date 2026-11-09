@@ -7,7 +7,7 @@ describe('BrandKitVault & Storage', () => {
   const sampleKit: BrandKit = {
     id: 'bk_test_1',
     name: 'Production Minimal',
-    templateId: 'linear-minimal',
+    templateId: 'modern-minimal',
     palette: {
       background: '#090d16',
       text: '#f8fafc',

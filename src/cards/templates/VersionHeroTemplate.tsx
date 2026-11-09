@@ -8,7 +8,7 @@ import { detectTechStack } from '@/core/domain/stackMapper';
 import { SafeZoneGuides } from '../primitives/SafeZoneGuides';
 import { ThemeEngine } from '@/core/theme/ThemeEngine';
 
-export const ReleaseSpotlightTemplate: React.FC<CardRenderProps> = ({
+export const VersionHeroTemplate: React.FC<CardRenderProps> = ({
   repo,
   config,
   showSafeZoneGuides = false,
@@ -310,3 +310,5 @@ export const ReleaseSpotlightTemplate: React.FC<CardRenderProps> = ({
     </div>
   );
 };
+
+export const ReleaseSpotlightTemplate = VersionHeroTemplate;

@@ -8,6 +8,7 @@ import type {
   CardVisibility,
   ContentAlign,
 } from '@/core/domain/schemas';
+import { normalizeTemplateId } from '@/core/domain/schemas';
 import { PRESET_PALETTES, ThemeEngine } from '@/core/theme/ThemeEngine';
 import { suggestInstallCommand } from '@/core/domain/stackMapper';
 
@@ -43,7 +44,7 @@ export const DEFAULT_REPO: RepoMetadata = {
 };
 
 export const DEFAULT_CONFIG: CardConfig = {
-  templateId: 'linear-minimal',
+  templateId: 'modern-minimal',
   title: 'Gitframe',
   tagline: 'Give your GitHub repository a memorable visual identity.',
   installCommand: 'bun add gitframe',
@@ -76,9 +77,9 @@ export const DEFAULT_CONFIG: CardConfig = {
 export const TEMPLATE_SIGNATURE_PATTERNS: Partial<
   Record<TemplateId, BackgroundPatternConfig['id']>
 > = {
-  'aurora-mesh': 'aurora-mesh',
+  'aurora-glass': 'aurora-mesh',
   'blueprint-grid': 'architectural-grid',
-  'release-spotlight': 'radial-spotlight',
+  'version-hero': 'radial-spotlight',
 };
 
 interface CardStoreState {
@@ -176,7 +177,8 @@ export const useCardStore = create<CardStoreState>((set, get) => ({
     }));
   },
 
-  setTemplateId: (templateId) => {
+  setTemplateId: (rawTemplateId) => {
+    const templateId = normalizeTemplateId(rawTemplateId);
     const signaturePattern = TEMPLATE_SIGNATURE_PATTERNS[templateId];
     if (signaturePattern) {
       get().updateConfig({
