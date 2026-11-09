@@ -65,6 +65,9 @@ describe('Zero-jump repository loading & hydration flow', () => {
     expect(html).toContain('Portfolio&#x27;s David');
     expect(html).not.toContain(DEFAULT_CONFIG.tagline);
     expect(html).toContain('data-testid="studio-card-stage"');
+    expect(html).toContain('data-testid="studio-card-scaler"');
+    // Scale wrapper must never carry card-enter (which would override inline scale transforms)
+    expect(html).not.toContain('card-enter');
   });
 
   it('suppresses DEFAULT_REPO flash during cold SSR stream while preserving real Studio chrome', () => {

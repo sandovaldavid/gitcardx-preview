@@ -70,6 +70,29 @@ body {
   transform: scale(calc(100cqw / 1280px));
 }
 
+/* Pre-hydration Studio canvas stage sizing so SSR frames are already centered and fitted. */
+.studio-stage-fit {
+  width: min(max(100cqw - 32px, 320px), calc(max(100cqh - 32px, 200px) * 2), 1280px);
+  aspect-ratio: 2 / 1;
+  container-type: inline-size;
+}
+
+/* Opacity-only Studio repo transition so CSS keyframes never override scale transforms. */
+@keyframes studio-card-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .studio-card-fade {
+    animation: studio-card-fade 180ms ease-out both;
+  }
+}
+
 /* Template switch: short, compositor-friendly fade instead of a hard swap. */
 @keyframes card-enter {
   from {

@@ -27,9 +27,9 @@ export const InteractiveCanvas: React.FC = () => {
   const isSlowFetching = useDelayedLoading(isFetchingRepo, 150);
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const [autoScale, setAutoScale] = useState(0.72);
+  const [autoScale, setAutoScale] = useState<number | null>(null);
 
-  // Synchronously calculate ideal scale before first browser paint to prevent initial size jump
+  // Synchronously calculate ideal scale before first browser paint to match CSS container fit
   useIsomorphicLayoutEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -47,7 +47,7 @@ export const InteractiveCanvas: React.FC = () => {
       const scaleH = availableH / 640;
       const bestScale = Math.min(scaleW, scaleH, 1.0);
 
-      setAutoScale(Number(bestScale.toFixed(3)));
+      setAutoScale(Number(bestScale.toFixed(4)));
     }
 
     calculateScale();
@@ -62,15 +62,17 @@ export const InteractiveCanvas: React.FC = () => {
     return () => window.removeEventListener('resize', calculateScale);
   }, []);
 
-  const effectiveScale = autoScale * zoom;
+  const effectiveScale = autoScale !== null ? autoScale * zoom : null;
   const repoIdentityKey = `${repo.owner.login}/${repo.name}`;
 
   return (
     <main
       ref={containerRef}
+      data-testid="studio-canvas"
       aria-busy={isFetchingRepo || isInitialStreamPending}
       className="flex-1 relative flex flex-col items-center justify-center overflow-hidden bg-zinc-950 select-none p-4"
       style={{
+        containerType: 'size',
         backgroundImage: `radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.05) 1px, transparent 0)`,
         backgroundSize: '24px 24px',
       }}
@@ -126,20 +128,26 @@ export const InteractiveCanvas: React.FC = () => {
             <div
               data-testid="studio-card-stage"
               className={`relative shadow-2xl rounded-2xl transition-[opacity,transform] duration-200 ease-out ${
-                isSlowFetching ? 'opacity-60 scale-[0.99]' : 'opacity-100 scale-100'
-              }`}
-              style={{
-                width: 1280 * effectiveScale,
-                height: 640 * effectiveScale,
-              }}
+                effectiveScale === null ? 'studio-stage-fit' : ''
+              } ${isSlowFetching ? 'opacity-60 scale-[0.99]' : 'opacity-100 scale-100'}`}
+              style={
+                effectiveScale !== null
+                  ? {
+                      width: 1280 * effectiveScale,
+                      height: 640 * effectiveScale,
+                    }
+                  : undefined
+              }
             >
               <div
-                key={repoIdentityKey}
-                className="card-enter"
+                data-testid="studio-card-scaler"
+                className={
+                  effectiveScale === null ? 'card-scale absolute top-0 left-0 origin-top-left' : ''
+                }
                 style={{
                   width: 1280,
                   height: 640,
-                  transform: `scale(${effectiveScale})`,
+                  transform: effectiveScale !== null ? `scale(${effectiveScale})` : undefined,
                   transformOrigin: 'top left',
                   borderRadius: 16,
                   overflow: 'hidden',
@@ -147,7 +155,17 @@ export const InteractiveCanvas: React.FC = () => {
                     '0 25px 60px -15px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.08)',
                 }}
               >
-                <CardRenderer repo={repo} config={config} showSafeZoneGuides={showSafeZoneGuides} />
+                <div
+                  key={repoIdentityKey}
+                  className="studio-card-fade"
+                  style={{ width: 1280, height: 640 }}
+                >
+                  <CardRenderer
+                    repo={repo}
+                    config={config}
+                    showSafeZoneGuides={showSafeZoneGuides}
+                  />
+                </div>
               </div>
             </div>
           )}
