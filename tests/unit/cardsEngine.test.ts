@@ -73,17 +73,10 @@ const baseConfig: CardConfig = {
 };
 
 describe('Cards Engine & Satori Renderer', () => {
-  it('loads valid font buffers for all supported font pairings', async () => {
+  it('loads local bundled default font buffers with zero network dependency', async () => {
     const fonts = await getCardFonts();
-    expect(fonts.length).toBe(12);
-    const expectedFamilies = [
-      'Inter',
-      'Geist',
-      'Space Grotesk',
-      'Plus Jakarta Sans',
-      'JetBrains Mono',
-      'Fira Code',
-    ];
+    expect(fonts.length).toBe(4);
+    const expectedFamilies = ['Inter', 'JetBrains Mono'];
     for (const font of fonts) {
       expect(font.data.byteLength).toBeGreaterThan(10000);
       expect(expectedFamilies).toContain(font.name);

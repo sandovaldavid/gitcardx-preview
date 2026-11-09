@@ -17,6 +17,7 @@ export const AuthorSpotlightTemplate: React.FC<CardRenderProps> = ({
   const { palette, visibility, backgroundPattern } = config;
   const isCenter = config.contentAlign === 'center';
   const fontHeading = config.typography?.fontHeading || 'Inter';
+  const fontMono = config.typography?.fontMono || 'JetBrains Mono';
   const techStack = detectTechStack(repo.languages, repo.topics, 4);
   const isLight = ThemeEngine.isLightColor(palette.background);
 
@@ -75,7 +76,14 @@ export const AuthorSpotlightTemplate: React.FC<CardRenderProps> = ({
           />
 
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-            <span style={{ fontSize: 24, fontWeight: 700, color: palette.text }}>
+            <span
+              style={{
+                fontFamily: fontMono,
+                fontSize: 22,
+                fontWeight: 700,
+                color: palette.text,
+              }}
+            >
               @{repo.owner.login}
             </span>
             <span style={{ fontSize: 16, fontWeight: 500, color: palette.text, opacity: 0.88 }}>
@@ -95,6 +103,7 @@ export const AuthorSpotlightTemplate: React.FC<CardRenderProps> = ({
                 paddingBottom: 5,
                 borderRadius: 9999,
                 border: `1px solid ${palette.border}`,
+                fontFamily: fontMono,
                 fontSize: 13,
                 color: palette.text,
               }}
@@ -138,6 +147,7 @@ export const AuthorSpotlightTemplate: React.FC<CardRenderProps> = ({
               textColor={palette.text}
               borderColor={palette.border}
               accentColor={palette.accent}
+              fontFamily={fontMono}
             />
           )}
           {visibility.license && repo.license && (
@@ -147,6 +157,7 @@ export const AuthorSpotlightTemplate: React.FC<CardRenderProps> = ({
               textColor={palette.text}
               borderColor={palette.border}
               accentColor={palette.accent}
+              fontFamily={fontMono}
             />
           )}
         </div>
@@ -225,6 +236,7 @@ export const AuthorSpotlightTemplate: React.FC<CardRenderProps> = ({
                 textColor={palette.text}
                 borderColor={palette.border}
                 accentColor={palette.accent}
+                fontFamily={fontMono}
               />
             )}
             {visibility.forks && (
@@ -234,6 +246,7 @@ export const AuthorSpotlightTemplate: React.FC<CardRenderProps> = ({
                 textColor={palette.text}
                 borderColor={palette.border}
                 accentColor={palette.accent}
+                fontFamily={fontMono}
               />
             )}
             {visibility.issues && typeof repo.openIssuesCount === 'number' && (
@@ -244,6 +257,7 @@ export const AuthorSpotlightTemplate: React.FC<CardRenderProps> = ({
                 borderColor={palette.border}
                 accentColor={palette.accent}
                 label="issues"
+                fontFamily={fontMono}
               />
             )}
             {visibility.discussions && typeof repo.discussionsCount === 'number' && (
@@ -254,6 +268,7 @@ export const AuthorSpotlightTemplate: React.FC<CardRenderProps> = ({
                 borderColor={palette.border}
                 accentColor={palette.accent}
                 label="discussions"
+                fontFamily={fontMono}
               />
             )}
           </div>

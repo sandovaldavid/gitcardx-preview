@@ -153,15 +153,39 @@ export const ExportModal: React.FC = () => {
         ? `https://github.com/${owner}/${repoName}`
         : null;
 
+  const buildCardImageUrl = (extraParams?: Record<string, string>) => {
+    const params = new URLSearchParams();
+    if (config.templateId && config.templateId !== 'modern-minimal') {
+      params.set('template', config.templateId);
+    }
+    if (extraParams) {
+      for (const [k, v] of Object.entries(extraParams)) {
+        params.set(k, v);
+      }
+    }
+    if (config.typography?.fontHeading && config.typography.fontHeading !== 'Inter') {
+      params.set('font_heading', config.typography.fontHeading);
+    }
+    if (config.typography?.fontMono && config.typography.fontMono !== 'JetBrains Mono') {
+      params.set('font_mono', config.typography.fontMono);
+    }
+    const query = params.toString();
+    return `https://gitframe.dev/api/card/${owner}/${repoName}.png${query ? `?${query}` : ''}`;
+  };
+
+  const defaultCardUrl = buildCardImageUrl();
+  const darkCardUrl = buildCardImageUrl({ theme: 'dark' });
+  const lightCardUrl = buildCardImageUrl({ theme: 'light' });
+
   const markdownSnippet = targetUrl
-    ? `[![${config.title || repoName}](https://gitframe.dev/api/card/${owner}/${repoName}.png)](${targetUrl})`
-    : `![${config.title || repoName}](https://gitframe.dev/api/card/${owner}/${repoName}.png)`;
+    ? `[![${config.title || repoName}](${defaultCardUrl})](${targetUrl})`
+    : `![${config.title || repoName}](${defaultCardUrl})`;
 
   const pictureSnippet = targetUrl
-    ? `<a href="${targetUrl}">\n  <picture>\n    <source media="(prefers-color-scheme: dark)" srcset="https://gitframe.dev/api/card/${owner}/${repoName}.png?theme=dark" />\n    <source media="(prefers-color-scheme: light)" srcset="https://gitframe.dev/api/card/${owner}/${repoName}.png?theme=light" />\n    <img src="https://gitframe.dev/api/card/${owner}/${repoName}.png" alt="${config.title || repoName} Preview" width="100%" />\n  </picture>\n</a>`
-    : `<picture>\n  <source media="(prefers-color-scheme: dark)" srcset="https://gitframe.dev/api/card/${owner}/${repoName}.png?theme=dark" />\n  <source media="(prefers-color-scheme: light)" srcset="https://gitframe.dev/api/card/${owner}/${repoName}.png?theme=light" />\n  <img src="https://gitframe.dev/api/card/${owner}/${repoName}.png" alt="${config.title || repoName} Preview" width="100%" />\n</picture>`;
+    ? `<a href="${targetUrl}">\n  <picture>\n    <source media="(prefers-color-scheme: dark)" srcset="${darkCardUrl}" />\n    <source media="(prefers-color-scheme: light)" srcset="${lightCardUrl}" />\n    <img src="${defaultCardUrl}" alt="${config.title || repoName} Preview" width="100%" />\n  </picture>\n</a>`
+    : `<picture>\n  <source media="(prefers-color-scheme: dark)" srcset="${darkCardUrl}" />\n  <source media="(prefers-color-scheme: light)" srcset="${lightCardUrl}" />\n  <img src="${defaultCardUrl}" alt="${config.title || repoName} Preview" width="100%" />\n</picture>`;
 
-  const htmlMetaSnippet = `<meta property="og:title" content="${config.title || repoName}" />\n<meta property="og:description" content="${config.tagline || repo.description || ''}" />\n<meta property="og:image" content="https://gitframe.dev/api/card/${owner}/${repoName}.png" />\n<meta property="og:image:width" content="1280" />\n<meta property="og:image:height" content="640" />\n<meta name="twitter:card" content="summary_large_image" />\n<meta name="twitter:image" content="https://gitframe.dev/api/card/${owner}/${repoName}.png" />`;
+  const htmlMetaSnippet = `<meta property="og:title" content="${config.title || repoName}" />\n<meta property="og:description" content="${config.tagline || repo.description || ''}" />\n<meta property="og:image" content="${defaultCardUrl}" />\n<meta property="og:image:width" content="1280" />\n<meta property="og:image:height" content="640" />\n<meta name="twitter:card" content="summary_large_image" />\n<meta name="twitter:image" content="${defaultCardUrl}" />`;
 
   return (
     <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-150">

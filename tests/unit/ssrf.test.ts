@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { sanitizeImageUrl } from '@/core/security/ssrf';
+import { isAllowedFontUrl, sanitizeImageUrl } from '@/core/security/ssrf';
 
 describe('sanitizeImageUrl (Anti-SSRF defense)', () => {
   const fallback = 'https://avatars.githubusercontent.com/u/0';
@@ -48,5 +48,34 @@ describe('sanitizeImageUrl (Anti-SSRF defense)', () => {
     expect(sanitizeImageUrl(null, fallback)).toBe(fallback);
     expect(sanitizeImageUrl(undefined, fallback)).toBe(fallback);
     expect(sanitizeImageUrl('not a valid url', fallback)).toBe(fallback);
+  });
+});
+
+describe('isAllowedFontUrl (Fontsource API & CDN SSRF allowlist)', () => {
+  it('allows valid HTTPS Fontsource catalog and CDN font binary URLs', () => {
+    expect(isAllowedFontUrl('https://api.fontsource.org/v1/fonts')).toBe(true);
+    expect(isAllowedFontUrl('https://api.fontsource.org/v1/fonts/space-grotesk')).toBe(true);
+    expect(
+      isAllowedFontUrl(
+        'https://cdn.jsdelivr.net/fontsource/fonts/space-grotesk@latest/latin-700-normal.ttf'
+      )
+    ).toBe(true);
+    expect(
+      isAllowedFontUrl(
+        'https://cdn.jsdelivr.net/fontsource/fonts/fira-code@5.1.0/latin-400-normal.woff'
+      )
+    ).toBe(true);
+  });
+
+  it('rejects non-HTTPS, localhost/private hosts, path traversal, and non-Fontsource jsDelivr paths', () => {
+    expect(isAllowedFontUrl('http://api.fontsource.org/v1/fonts')).toBe(false);
+    expect(isAllowedFontUrl('https://127.0.0.1/v1/fonts')).toBe(false);
+    expect(isAllowedFontUrl('https://localhost/v1/fonts')).toBe(false);
+    expect(isAllowedFontUrl('https://cdn.jsdelivr.net/npm/evil-pkg@1.0.0/index.js')).toBe(false);
+    expect(
+      isAllowedFontUrl('https://cdn.jsdelivr.net/fontsource/fonts/../secret/latin-400-normal.ttf')
+    ).toBe(false);
+    expect(isAllowedFontUrl('https://user:pass@api.fontsource.org/v1/fonts')).toBe(false);
+    expect(isAllowedFontUrl('https://api.fontsource.org:8443/v1/fonts')).toBe(false);
   });
 });

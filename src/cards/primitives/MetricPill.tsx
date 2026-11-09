@@ -12,6 +12,7 @@ interface MetricPillProps {
   borderColor: string;
   accentColor: string;
   label?: string;
+  fontFamily?: string;
 }
 
 export const MetricPill: React.FC<MetricPillProps> = ({
@@ -21,6 +22,7 @@ export const MetricPill: React.FC<MetricPillProps> = ({
   borderColor,
   accentColor,
   label,
+  fontFamily,
 }) => {
   if (value === null || value === undefined || value === '') {
     return null;
@@ -47,6 +49,7 @@ export const MetricPill: React.FC<MetricPillProps> = ({
         fontWeight: 700,
         color: textColor,
         letterSpacing: '-0.01em',
+        ...(fontFamily ? { fontFamily } : {}),
       }}
     >
       <MetricIcon type={type} textColor={textColor} accentColor={accentColor} size={22} />

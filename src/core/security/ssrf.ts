@@ -6,6 +6,24 @@ const ALLOWED_IMAGE_HOSTS = new Set([
   'user-images.githubusercontent.com',
 ]);
 
+function isPrivateOrLocalHostname(rawHostname: string): boolean {
+  const hostname = rawHostname.toLowerCase();
+  return (
+    hostname === 'localhost' ||
+    hostname === '0.0.0.0' ||
+    hostname === '::1' ||
+    hostname === '[::1]' ||
+    hostname.endsWith('.localhost') ||
+    hostname.endsWith('.internal') ||
+    hostname.endsWith('.local') ||
+    /^127\./.test(hostname) ||
+    /^10\./.test(hostname) ||
+    /^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(hostname) ||
+    /^192\.168\./.test(hostname) ||
+    /^169\.254\./.test(hostname)
+  );
+}
+
 /**
  * Validates and sanitizes image URLs to prevent Server-Side Request Forgery (SSRF).
  * Allows only HTTPS GitHub asset domains or safe base64 data URIs.
@@ -28,34 +46,66 @@ export function sanitizeImageUrl(rawUrl?: string | null, fallbackUrl = ''): stri
   try {
     const parsed = new URL(trimmed);
 
-    // Reject non-HTTPS protocols
-    if (parsed.protocol !== 'https:') {
+    // Reject non-HTTPS protocols or custom ports
+    if (parsed.protocol !== 'https:' || (parsed.port && parsed.port !== '443')) {
       return fallbackUrl;
     }
 
-    // Reject private / localhost IP addresses or hostnames
-    const hostname = parsed.hostname.toLowerCase();
-    if (
-      hostname === 'localhost' ||
-      hostname.endsWith('.localhost') ||
-      hostname.endsWith('.internal') ||
-      hostname.endsWith('.local') ||
-      /^127\./.test(hostname) ||
-      /^10\./.test(hostname) ||
-      /^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(hostname) ||
-      /^192\.168\./.test(hostname) ||
-      /^169\.254\./.test(hostname)
-    ) {
+    if (isPrivateOrLocalHostname(parsed.hostname)) {
       return fallbackUrl;
     }
 
     // Verify against trusted GitHub domains whitelist
-    if (ALLOWED_IMAGE_HOSTS.has(hostname)) {
+    if (ALLOWED_IMAGE_HOSTS.has(parsed.hostname.toLowerCase())) {
       return trimmed;
     }
 
     return fallbackUrl;
   } catch {
     return fallbackUrl;
+  }
+}
+
+/**
+ * Validates server-side Fontsource metadata and binary asset URLs against SSRF.
+ * Restricts outbound requests strictly to HTTPS Fontsource API and jsDelivr Fontsource CDN paths.
+ */
+export function isAllowedFontUrl(rawUrl?: string | null): boolean {
+  if (!rawUrl) return false;
+
+  try {
+    const parsed = new URL(rawUrl.trim());
+    if (
+      parsed.protocol !== 'https:' ||
+      parsed.username ||
+      parsed.password ||
+      (parsed.port && parsed.port !== '443')
+    ) {
+      return false;
+    }
+
+    const hostname = parsed.hostname.toLowerCase();
+    if (isPrivateOrLocalHostname(hostname)) {
+      return false;
+    }
+
+    const pathname = parsed.pathname;
+    if (pathname.includes('..') || pathname.includes('//')) {
+      return false;
+    }
+
+    if (hostname === 'api.fontsource.org') {
+      return /^\/v1\/fonts(\/[a-z0-9-]+)?$/.test(pathname);
+    }
+
+    if (hostname === 'cdn.jsdelivr.net') {
+      return /^\/fontsource\/fonts\/[a-z0-9-]+@[a-z0-9.-]+\/[a-z0-9-]+-\d+-normal\.(ttf|woff|woff2)$/.test(
+        pathname
+      );
+    }
+
+    return false;
+  } catch {
+    return false;
   }
 }

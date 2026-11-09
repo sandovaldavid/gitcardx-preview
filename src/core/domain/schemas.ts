@@ -44,8 +44,8 @@ export const PaletteSchema = z.object({
 });
 
 export const TypographySchema = z.object({
-  fontHeading: z.string().min(1),
-  fontMono: z.string().min(1),
+  fontHeading: z.string().min(1).max(64),
+  fontMono: z.string().min(1).max(64),
 });
 
 export const BackgroundPatternConfigSchema = z.object({

@@ -7,9 +7,11 @@ import { LeftInspector } from './LeftInspector';
 import { InteractiveCanvas } from './InteractiveCanvas';
 import { RightInspector } from './RightInspector';
 import { ExportModal } from './ExportModal';
+import { StudioFontLoader } from './StudioFontLoader';
 import { deriveConfigForRepo, StudioHydrationContext, useCardStore } from '../state/useCardStore';
 import type { RepoMetadata } from '@/core/domain/schemas';
 import { normalizeTemplateId } from '@/core/domain/schemas';
+import { sanitizeFontFamily } from '@/cards/fonts/fontCatalog';
 
 const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
@@ -21,13 +23,35 @@ interface StudioLayoutProps {
 const TemplateQuerySync: React.FC = () => {
   const searchParams = useSearchParams();
   const templateParam = searchParams.get('template');
+  const fontHeadingParam = searchParams.get('font_heading') || searchParams.get('fontHeading');
+  const fontMonoParam = searchParams.get('font_mono') || searchParams.get('fontMono');
   const setTemplateId = useCardStore((state) => state.setTemplateId);
+  const updateConfig = useCardStore((state) => state.updateConfig);
 
   useIsomorphicLayoutEffect(() => {
     if (templateParam) {
       setTemplateId(normalizeTemplateId(templateParam));
     }
   }, [templateParam, setTemplateId]);
+
+  useIsomorphicLayoutEffect(() => {
+    if (!fontHeadingParam && !fontMonoParam) return;
+    const current = useCardStore.getState().config.typography;
+    const nextHeading = fontHeadingParam
+      ? sanitizeFontFamily(fontHeadingParam, current.fontHeading)
+      : current.fontHeading;
+    const nextMono = fontMonoParam
+      ? sanitizeFontFamily(fontMonoParam, current.fontMono)
+      : current.fontMono;
+    if (nextHeading !== current.fontHeading || nextMono !== current.fontMono) {
+      updateConfig({
+        typography: {
+          fontHeading: nextHeading,
+          fontMono: nextMono,
+        },
+      });
+    }
+  }, [fontHeadingParam, fontMonoParam, updateConfig]);
 
   return null;
 };
@@ -73,6 +97,7 @@ export const StudioLayout: React.FC<StudioLayoutProps> = ({
 
   return (
     <StudioHydrationContext.Provider value={hydrationValue}>
+      <StudioFontLoader />
       <Suspense fallback={null}>
         <TemplateQuerySync />
       </Suspense>

@@ -17,6 +17,7 @@ export const ModernMinimalTemplate: React.FC<CardRenderProps> = ({
   const { palette, visibility, backgroundPattern } = config;
   const isCenter = config.contentAlign === 'center';
   const fontHeading = config.typography?.fontHeading || 'Inter';
+  const fontMono = config.typography?.fontMono || 'JetBrains Mono';
   const techStack = detectTechStack(repo.languages, repo.topics, 5);
   const isLight = ThemeEngine.isLightColor(palette.background);
 
@@ -98,6 +99,7 @@ export const ModernMinimalTemplate: React.FC<CardRenderProps> = ({
               borderRadius: 9999,
               border: `1.5px solid ${palette.border}`,
               backgroundColor: 'rgba(255, 255, 255, 0.04)',
+              fontFamily: fontMono,
               fontSize: 16,
               fontWeight: 600,
               color: palette.text,
@@ -200,6 +202,7 @@ export const ModernMinimalTemplate: React.FC<CardRenderProps> = ({
               textColor={palette.text}
               borderColor={palette.border}
               accentColor={palette.accent}
+              fontFamily={fontMono}
             />
           )}
           {visibility.forks && (
@@ -209,6 +212,7 @@ export const ModernMinimalTemplate: React.FC<CardRenderProps> = ({
               textColor={palette.text}
               borderColor={palette.border}
               accentColor={palette.accent}
+              fontFamily={fontMono}
             />
           )}
           {visibility.issues && typeof repo.openIssuesCount === 'number' && (
@@ -219,6 +223,7 @@ export const ModernMinimalTemplate: React.FC<CardRenderProps> = ({
               borderColor={palette.border}
               accentColor={palette.accent}
               label="issues"
+              fontFamily={fontMono}
             />
           )}
           {visibility.discussions && typeof repo.discussionsCount === 'number' && (
@@ -229,6 +234,7 @@ export const ModernMinimalTemplate: React.FC<CardRenderProps> = ({
               borderColor={palette.border}
               accentColor={palette.accent}
               label="discussions"
+              fontFamily={fontMono}
             />
           )}
           {visibility.license && repo.license && (
@@ -238,6 +244,7 @@ export const ModernMinimalTemplate: React.FC<CardRenderProps> = ({
               textColor={palette.text}
               borderColor={palette.border}
               accentColor={palette.accent}
+              fontFamily={fontMono}
             />
           )}
         </div>

@@ -20,6 +20,7 @@ export const MetricShowcaseTemplate: React.FC<CardRenderProps> = ({
   const { palette, visibility, backgroundPattern } = config;
   const isCenter = config.contentAlign === 'center';
   const fontHeading = config.typography?.fontHeading || 'Inter';
+  const fontMono = config.typography?.fontMono || 'JetBrains Mono';
   const techStack = detectTechStack(repo.languages, repo.topics, 4);
   const isLight = ThemeEngine.isLightColor(palette.background);
   const statBoxBg = isLight ? 'rgba(0, 0, 0, 0.03)' : 'rgba(255, 255, 255, 0.04)';
@@ -91,6 +92,7 @@ export const MetricShowcaseTemplate: React.FC<CardRenderProps> = ({
               borderColor={palette.border}
               accentColor={palette.accent}
               label="issues"
+              fontFamily={fontMono}
             />
           )}
           {visibility.discussions && typeof repo.discussionsCount === 'number' && (
@@ -101,6 +103,7 @@ export const MetricShowcaseTemplate: React.FC<CardRenderProps> = ({
               borderColor={palette.border}
               accentColor={palette.accent}
               label="discussions"
+              fontFamily={fontMono}
             />
           )}
           {visibility.license && repo.license && (
@@ -110,6 +113,7 @@ export const MetricShowcaseTemplate: React.FC<CardRenderProps> = ({
               textColor={palette.text}
               borderColor={palette.border}
               accentColor={palette.accent}
+              fontFamily={fontMono}
             />
           )}
           {visibility.release && repo.latestRelease && (
@@ -119,6 +123,7 @@ export const MetricShowcaseTemplate: React.FC<CardRenderProps> = ({
               textColor={palette.text}
               borderColor={palette.border}
               accentColor={palette.accent}
+              fontFamily={fontMono}
             />
           )}
         </div>
@@ -227,6 +232,7 @@ export const MetricShowcaseTemplate: React.FC<CardRenderProps> = ({
                   <StarMetricIcon color={starAccentColor} size={32} />
                   <span
                     style={{
+                      fontFamily: fontMono,
                       fontSize: 46,
                       fontWeight: 800,
                       letterSpacing: '-0.02em',
@@ -273,6 +279,7 @@ export const MetricShowcaseTemplate: React.FC<CardRenderProps> = ({
                   <ForkMetricIcon color={palette.text} size={32} />
                   <span
                     style={{
+                      fontFamily: fontMono,
                       fontSize: 46,
                       fontWeight: 800,
                       letterSpacing: '-0.02em',
