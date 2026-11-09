@@ -7,6 +7,7 @@ import { FormattedText } from '../primitives/FormattedText';
 import { MetricPill } from '../primitives/MetricPill';
 import { detectTechStack, suggestInstallCommand } from '@/core/domain/stackMapper';
 import { SafeZoneGuides } from '../primitives/SafeZoneGuides';
+import { ThemeEngine } from '@/core/theme/ThemeEngine';
 
 export const SdkPackageTemplate: React.FC<CardRenderProps> = ({
   repo,
@@ -15,6 +16,7 @@ export const SdkPackageTemplate: React.FC<CardRenderProps> = ({
 }) => {
   const { palette, visibility, backgroundPattern } = config;
   const isCenter = config.contentAlign === 'center';
+  const isLight = ThemeEngine.isLightColor(palette.background);
   const fontHeading = config.typography?.fontHeading || 'Inter';
   const fontMono = config.typography?.fontMono || 'JetBrains Mono';
   const techStack = detectTechStack(repo.languages, repo.topics, 4);
@@ -75,7 +77,7 @@ export const SdkPackageTemplate: React.FC<CardRenderProps> = ({
                 height: 56,
                 borderRadius: 14,
                 border: `2px solid ${palette.border}`,
-                backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                backgroundColor: isLight ? 'rgba(0, 0, 0, 0.04)' : 'rgba(255, 255, 255, 0.05)',
               }}
             />
             <span style={{ fontSize: 24, fontWeight: 700, color: palette.text, opacity: 0.95 }}>
@@ -91,8 +93,8 @@ export const SdkPackageTemplate: React.FC<CardRenderProps> = ({
                 paddingTop: 4,
                 paddingBottom: 4,
                 borderRadius: 6,
-                backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                color: palette.accent,
+                backgroundColor: isLight ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.08)',
+                color: ThemeEngine.ensureReadableText(palette.background, palette.accent),
                 letterSpacing: '0.05em',
               }}
             >

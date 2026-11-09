@@ -6,6 +6,7 @@ import { StackBadgeRow } from '../primitives/StackBadgeRow';
 import { FormattedText } from '../primitives/FormattedText';
 import { detectTechStack } from '@/core/domain/stackMapper';
 import { SafeZoneGuides } from '../primitives/SafeZoneGuides';
+import { ThemeEngine } from '@/core/theme/ThemeEngine';
 
 export const BlueprintGridTemplate: React.FC<CardRenderProps> = ({
   repo,
@@ -17,6 +18,7 @@ export const BlueprintGridTemplate: React.FC<CardRenderProps> = ({
   const fontHeading = config.typography?.fontHeading || 'Inter';
   const fontMono = config.typography?.fontMono || 'JetBrains Mono';
   const techStack = detectTechStack(repo.languages, repo.topics, 5);
+  const badgeTextColor = ThemeEngine.getContrastTextColor(palette.accent);
 
   return (
     <div
@@ -46,7 +48,7 @@ export const BlueprintGridTemplate: React.FC<CardRenderProps> = ({
         style={{
           display: 'flex',
           alignItems: 'center',
-          justifyContent: isCenter && !visibility.author ? 'center' : 'space-between',
+          justifyContent: 'space-between',
           zIndex: 1,
         }}
       >
@@ -60,7 +62,7 @@ export const BlueprintGridTemplate: React.FC<CardRenderProps> = ({
                 paddingBottom: 5,
                 borderRadius: 4,
                 backgroundColor: palette.accent,
-                color: '#000000',
+                color: badgeTextColor,
                 fontFamily: fontMono,
                 fontSize: 14,
                 fontWeight: 800,
@@ -78,7 +80,7 @@ export const BlueprintGridTemplate: React.FC<CardRenderProps> = ({
                 opacity: 0.95,
               }}
             >
-              {repo.owner.login} / {repo.name}
+              DEV // {repo.owner.login}
             </span>
           </div>
         ) : (
@@ -178,8 +180,7 @@ export const BlueprintGridTemplate: React.FC<CardRenderProps> = ({
         style={{
           display: 'flex',
           alignItems: 'center',
-          justifyContent: isCenter ? 'center' : 'space-between',
-          gap: isCenter ? 24 : 0,
+          justifyContent: 'space-between',
           zIndex: 1,
           borderTop: `1px solid ${palette.border}`,
           paddingTop: 20,

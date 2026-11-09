@@ -6,6 +6,7 @@ import { StackBadgeRow } from '../primitives/StackBadgeRow';
 import { FormattedText } from '../primitives/FormattedText';
 import { detectTechStack } from '@/core/domain/stackMapper';
 import { SafeZoneGuides } from '../primitives/SafeZoneGuides';
+import { ThemeEngine } from '@/core/theme/ThemeEngine';
 
 export const ReleaseSpotlightTemplate: React.FC<CardRenderProps> = ({
   repo,
@@ -19,6 +20,38 @@ export const ReleaseSpotlightTemplate: React.FC<CardRenderProps> = ({
   const techStack = detectTechStack(repo.languages, repo.topics, 5);
   const hasRealRelease = Boolean(repo.latestRelease?.tag);
   const releaseTag = repo.latestRelease?.tag || '-';
+  const isLight = ThemeEngine.isLightColor(palette.background);
+
+  const badgeBg = hasRealRelease
+    ? isLight
+      ? 'rgba(22, 163, 74, 0.12)'
+      : 'rgba(34, 197, 94, 0.12)'
+    : isLight
+      ? 'rgba(37, 99, 235, 0.12)'
+      : 'rgba(59, 130, 246, 0.12)';
+  const badgeBorder = hasRealRelease
+    ? isLight
+      ? 'rgba(22, 163, 74, 0.35)'
+      : 'rgba(34, 197, 94, 0.4)'
+    : isLight
+      ? 'rgba(37, 99, 235, 0.35)'
+      : 'rgba(59, 130, 246, 0.4)';
+  const badgeColor = hasRealRelease
+    ? isLight
+      ? '#15803d'
+      : '#22c55e'
+    : isLight
+      ? '#1d4ed8'
+      : '#60a5fa';
+
+  const spotlightTextColor = hasRealRelease
+    ? ThemeEngine.getContrastTextColor(palette.accent)
+    : palette.text;
+  const spotlightBg = hasRealRelease
+    ? palette.accent
+    : isLight
+      ? 'rgba(0, 0, 0, 0.06)'
+      : 'rgba(255, 255, 255, 0.1)';
 
   return (
     <div
@@ -48,7 +81,7 @@ export const ReleaseSpotlightTemplate: React.FC<CardRenderProps> = ({
         style={{
           display: 'flex',
           alignItems: 'center',
-          justifyContent: isCenter && !visibility.author ? 'center' : 'space-between',
+          justifyContent: 'space-between',
           zIndex: 1,
         }}
       >
@@ -65,7 +98,7 @@ export const ReleaseSpotlightTemplate: React.FC<CardRenderProps> = ({
                 height: 54,
                 borderRadius: 14,
                 border: `2px solid ${palette.border}`,
-                backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                backgroundColor: isLight ? 'rgba(0, 0, 0, 0.04)' : 'rgba(255, 255, 255, 0.05)',
               }}
             />
             <span style={{ fontSize: 24, fontWeight: 700, color: palette.text }}>
@@ -86,11 +119,9 @@ export const ReleaseSpotlightTemplate: React.FC<CardRenderProps> = ({
             paddingTop: 8,
             paddingBottom: 8,
             borderRadius: 9999,
-            backgroundColor: hasRealRelease
-              ? 'rgba(34, 197, 94, 0.12)'
-              : 'rgba(59, 130, 246, 0.12)',
-            border: `1px solid ${hasRealRelease ? 'rgba(34, 197, 94, 0.4)' : 'rgba(59, 130, 246, 0.4)'}`,
-            color: hasRealRelease ? '#22c55e' : '#60a5fa',
+            backgroundColor: badgeBg,
+            border: `1px solid ${badgeBorder}`,
+            color: badgeColor,
             fontSize: 16,
             fontWeight: 700,
           }}
@@ -100,7 +131,7 @@ export const ReleaseSpotlightTemplate: React.FC<CardRenderProps> = ({
               width: 10,
               height: 10,
               borderRadius: '50%',
-              backgroundColor: hasRealRelease ? '#22c55e' : '#60a5fa',
+              backgroundColor: badgeColor,
             }}
           />
           <span>{hasRealRelease ? 'NEW RELEASE' : 'ACTIVE REPO'}</span>
@@ -134,8 +165,8 @@ export const ReleaseSpotlightTemplate: React.FC<CardRenderProps> = ({
                 paddingTop: 8,
                 paddingBottom: 8,
                 borderRadius: 12,
-                backgroundColor: hasRealRelease ? palette.accent : 'rgba(255, 255, 255, 0.1)',
-                color: hasRealRelease ? '#000000' : palette.text,
+                backgroundColor: spotlightBg,
+                color: spotlightTextColor,
                 fontFamily: fontMono,
                 fontSize: 28,
                 fontWeight: 800,
@@ -209,8 +240,7 @@ export const ReleaseSpotlightTemplate: React.FC<CardRenderProps> = ({
         style={{
           display: 'flex',
           alignItems: 'center',
-          justifyContent: isCenter ? 'center' : 'space-between',
-          gap: isCenter ? 24 : 0,
+          justifyContent: 'space-between',
           zIndex: 1,
         }}
       >

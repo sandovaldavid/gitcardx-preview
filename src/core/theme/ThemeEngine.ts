@@ -52,6 +52,23 @@ export const PRESET_PALETTES: Record<string, Palette> = {
 
 export class ThemeEngine {
   /**
+   * Returns high-contrast foreground color (#ffffff or #090d16) for a given surface.
+   */
+  static getContrastTextColor(surfaceColor: string): string {
+    const c = colord(surfaceColor);
+    if (!c.isValid()) return '#ffffff';
+    return c.isDark() ? '#ffffff' : '#090d16';
+  }
+
+  /**
+   * Determines if a color represents a light surface.
+   */
+  static isLightColor(color: string): boolean {
+    const c = colord(color);
+    return c.isValid() ? c.isLight() : false;
+  }
+
+  /**
    * Calculates the exact WCAG contrast ratio between background and foreground.
    */
   static getContrastRatio(background: string, foreground: string): number {
