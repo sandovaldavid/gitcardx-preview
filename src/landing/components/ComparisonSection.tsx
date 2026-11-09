@@ -448,7 +448,7 @@ export const ComparisonSection: React.FC = () => {
                   <span className="text-blue-400">•</span>
                   <span>
                     High-impact OSS credibility: giant hero metric badges, compact numbers (
-                    {activeProject.repo.stars.toLocaleString()} stars), and maintainers.
+                    {activeProject.repo.stars.toLocaleString()} stars), and contributors.
                   </span>
                 </li>
                 <li className="flex items-start gap-2">

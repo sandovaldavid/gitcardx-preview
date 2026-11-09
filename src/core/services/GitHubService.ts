@@ -226,8 +226,8 @@ export const KNOWN_REPO_FALLBACKS: Record<string, RepoMetadata> = {
       { login: 'reinink', avatarUrl: 'https://avatars.githubusercontent.com/u/882133' },
       { login: 'RobinMalfait', avatarUrl: 'https://avatars.githubusercontent.com/u/1834413' },
     ],
-    contributorsCount: 310,
-    openIssuesCount: 28,
+    contributorsCount: 390,
+    openIssuesCount: 116,
     discussionsCount: 520,
   },
   'facebook/react': {
@@ -252,7 +252,7 @@ export const KNOWN_REPO_FALLBACKS: Record<string, RepoMetadata> = {
     contributors: [
       { login: 'gaearon', avatarUrl: 'https://avatars.githubusercontent.com/u/810438' },
     ],
-    contributorsCount: 1650,
+    contributorsCount: 2030,
     openIssuesCount: 1150,
     discussionsCount: 940,
   },
@@ -282,7 +282,7 @@ export const KNOWN_REPO_FALLBACKS: Record<string, RepoMetadata> = {
       { login: 'leerob', avatarUrl: 'https://avatars.githubusercontent.com/u/9113740' },
       { login: 'pacocoursey', avatarUrl: 'https://avatars.githubusercontent.com/u/34928425' },
     ],
-    contributorsCount: 1240,
+    contributorsCount: 635,
     openIssuesCount: 42,
     discussionsCount: 180,
   },
@@ -310,7 +310,7 @@ export const KNOWN_REPO_FALLBACKS: Record<string, RepoMetadata> = {
       { login: 'konstin', avatarUrl: 'https://avatars.githubusercontent.com/u/10510431' },
       { login: 'alwx', avatarUrl: 'https://avatars.githubusercontent.com/u/597097' },
     ],
-    contributorsCount: 145,
+    contributorsCount: 610,
     openIssuesCount: 95,
     discussionsCount: 88,
   },
@@ -426,6 +426,7 @@ export class GitHubService {
         avatarUrl: raw.owner.avatar_url,
       },
     ];
+    let contributorsCount = 1;
 
     try {
       const authHeaders = this.authToken
@@ -442,7 +443,7 @@ export class GitHubService {
           { headers: authHeaders }
         ),
         fetch(
-          `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/contributors?per_page=5`,
+          `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/contributors?per_page=5&anon=true`,
           { headers: authHeaders }
         ),
       ]);
@@ -493,7 +494,7 @@ export class GitHubService {
         }
       }
 
-      // 3. Process top contributors
+      // 3. Process top contributors & total count
       if (contribsRes.status === 'fulfilled' && contribsRes.value.ok) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const contribsData = (await contribsRes.value.json()) as any[];
@@ -502,6 +503,17 @@ export class GitHubService {
             login: c.login,
             avatarUrl: c.avatar_url,
           }));
+          contributorsCount = contribsData.length;
+
+          // Parse Link header for total pagination count (rel="last")
+          const linkHeader = contribsRes.value.headers.get('link') || '';
+          const matchLast = linkHeader.match(/page=(\d+)>;\s*rel="last"/);
+          if (matchLast && matchLast[1]) {
+            const lastPage = parseInt(matchLast[1], 10);
+            if (!isNaN(lastPage) && lastPage > 0) {
+              contributorsCount = (lastPage - 1) * 5 + contribsData.length;
+            }
+          }
         }
       }
     } catch {
@@ -530,7 +542,7 @@ export class GitHubService {
       license: raw.license?.spdx_id || raw.license?.name || null,
       latestRelease,
       contributors: contributorsList,
-      contributorsCount: contributorsList.length > 0 ? contributorsList.length : 1,
+      contributorsCount,
       openIssuesCount: typeof raw.open_issues_count === 'number' ? raw.open_issues_count : 0,
       discussionsCount: 0,
     };
@@ -746,6 +758,33 @@ export class GitHubService {
         openIssuesCount: raw.issues?.totalCount ?? 0,
         discussionsCount: raw.discussions?.totalCount ?? 0,
       };
+
+      // Enrich with exact public contributors count if available via REST pagination header
+      try {
+        const baseHeaders: Record<string, string> = {
+          'User-Agent': 'Gitframe',
+          Accept: 'application/vnd.github.v3+json',
+        };
+        if (this.authToken) {
+          baseHeaders.Authorization = `token ${this.authToken}`;
+        }
+        const contribsCountRes = await fetch(
+          `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/contributors?per_page=1&anon=true`,
+          { headers: baseHeaders }
+        );
+        if (contribsCountRes.ok) {
+          const link = contribsCountRes.headers.get('link') || '';
+          const matchLast = link.match(/page=(\d+)>;\s*rel="last"/);
+          if (matchLast && matchLast[1]) {
+            const parsedCount = parseInt(matchLast[1], 10);
+            if (!isNaN(parsedCount) && parsedCount > 0) {
+              metadata.contributorsCount = parsedCount;
+            }
+          }
+        }
+      } catch {
+        // Graceful fallback to mentionableUsers
+      }
 
       const parsed = RepoMetadataSchema.parse(metadata);
       repoCache.set(cacheKey, {
