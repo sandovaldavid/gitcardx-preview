@@ -50,6 +50,12 @@ export const LandingNavbar: React.FC = () => {
           className="hidden items-center gap-7 text-sm font-medium text-zinc-400 md:flex"
         >
           <SectionLink
+            sectionId="comparison"
+            className="whitespace-nowrap transition-colors duration-200 hover:text-zinc-100"
+          >
+            Compare
+          </SectionLink>
+          <SectionLink
             sectionId="templates"
             className="whitespace-nowrap transition-colors duration-200 hover:text-zinc-100"
           >

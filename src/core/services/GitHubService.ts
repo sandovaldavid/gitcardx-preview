@@ -282,6 +282,29 @@ export const KNOWN_REPO_FALLBACKS: Record<string, RepoMetadata> = {
       { login: 'shadcn', avatarUrl: 'https://avatars.githubusercontent.com/u/124599' },
     ],
   },
+  'astral-sh/uv': {
+    owner: {
+      login: 'astral-sh',
+      avatarUrl: 'https://avatars.githubusercontent.com/u/115962809',
+      isOrg: true,
+    },
+    name: 'uv',
+    description: 'An extremely fast Python package and project manager, written in Rust.',
+    homepageUrl: 'https://docs.astral.sh/uv',
+    stars: 48000,
+    forks: 1600,
+    primaryLanguage: { name: 'Rust', color: '#DEA584' },
+    languages: [
+      { name: 'Rust', color: '#DEA584', size: 92000 },
+      { name: 'Python', color: '#3776AB', size: 8000 },
+    ],
+    topics: ['python', 'rust', 'package-manager', 'pip', 'virtualenv'],
+    license: 'MIT',
+    latestRelease: { tag: '0.5.0', publishedAt: '2026-02-01T12:00:00Z' },
+    contributors: [
+      { login: 'charliermarsh', avatarUrl: 'https://avatars.githubusercontent.com/u/1309177' },
+    ],
+  },
 };
 
 export class GitHubService {
