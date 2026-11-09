@@ -82,7 +82,7 @@ export const CardVisibilitySchema = z.object({
 export const CardConfigSchema = z.object({
   templateId: z.preprocess((val) => normalizeTemplateId(val as string), TemplateIdSchema),
   title: z.string().min(1).max(100),
-  tagline: z.string().max(300),
+  tagline: z.string().max(500),
   installCommand: z.string().max(120).optional(),
   customLogoUrl: z.string().url().or(z.string().startsWith('data:')).optional(),
   customBackgroundUrl: z.string().url().or(z.string().startsWith('data:')).optional(),
