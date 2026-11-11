@@ -9,15 +9,22 @@ concurrency:
   group: release-${{ github.ref }}
   cancel-in-progress: false
 
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
 jobs:
   release-please:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
+    timeout-minutes: 15
     outputs:
       releases_created: ${{ steps.release.outputs.releases_created }}
       tag_name: ${{ steps.release.outputs.tag_name }}
     steps:
       - uses: googleapis/release-please-action@v4
         id: release
+        with:
+          # A PAT/GitHub App token is required so release:published can trigger deploy-production.yml.
+          # See docs/production-runbook.md. Falls back to the workflow token when unset.
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN || github.token }}

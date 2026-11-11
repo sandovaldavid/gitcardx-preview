@@ -134,6 +134,12 @@ bun run dev
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
 
+### Environment variables
+
+Copy `.env.example` to `.env.local`. `GITHUB_TOKEN` is optional locally but required in production
+for a reliable GitHub API quota; use a fine-grained token restricted to **public repositories only**.
+`NEXT_PUBLIC_APP_URL` sets the canonical origin used by metadata, sitemap and robots.
+
 ---
 
 ## Deterministic Quality Commands
@@ -163,8 +169,8 @@ bun run test:e2e
 ## Deployment Architecture
 
 - **Single Branch (`main`)**: The `main` branch serves as the integration environment.
-- **Automated Releases**: [Google Release Please](https://github.com/googleapis/release-please) detects Conventional Commits, creates automated release PRs, generates `CHANGELOG.md`, and tags semver versions (`v1.x.x`).
-- **Zero-Downtime Vercel CD**: When a GitHub Release is published on `main`, the `deploy-production.yml` workflow verifies all quality checks (`format`, `lint`, `typecheck`, `test`, `build`) before triggering production deployment on Vercel.
+- **Automated Releases**: [Google Release Please](https://github.com/googleapis/release-please) detects Conventional Commits, creates automated release PRs, generates `CHANGELOG.md`, and tags semver versions.
+- **Zero-Downtime Vercel CD**: When a GitHub Release is published on `main`, the `deploy-production.yml` workflow verifies all quality checks (`format`, `lint`, `typecheck`, `test`, `build`) before triggering production deployment on Vercel. See [docs/production-runbook.md](docs/production-runbook.md) for the required secrets, domain, branch protection and rollback steps.
 
 ---
 
