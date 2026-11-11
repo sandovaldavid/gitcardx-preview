@@ -1,3 +1,6 @@
+const MAX_IMAGE_URL_LENGTH = 2048;
+const MAX_IMAGE_DATA_URI_LENGTH = 200_000;
+
 const ALLOWED_IMAGE_HOSTS = new Set([
   'avatars.githubusercontent.com',
   'raw.githubusercontent.com',
@@ -40,8 +43,10 @@ export function sanitizeImageUrl(rawUrl?: string | null, fallbackUrl = ''): stri
     trimmed.startsWith('data:image/webp;base64,') ||
     trimmed.startsWith('data:image/svg+xml;base64,')
   ) {
-    return trimmed;
+    return trimmed.length <= MAX_IMAGE_DATA_URI_LENGTH ? trimmed : fallbackUrl;
   }
+
+  if (trimmed.length > MAX_IMAGE_URL_LENGTH) return fallbackUrl;
 
   try {
     const parsed = new URL(trimmed);

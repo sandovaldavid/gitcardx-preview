@@ -1,6 +1,7 @@
 import { Octokit } from 'octokit';
 import { RepoMetadataSchema, type RepoMetadata } from '../domain/schemas';
 import { getLanguageColor } from '../domain/languageColors';
+import { TtlCache } from './TtlCache';
 
 export interface RepoAutocompleteItem {
   name: string;
@@ -13,6 +14,15 @@ export interface RepoAutocompleteItem {
   updatedAt: string;
 }
 
+interface RestRepoItem {
+  name: string;
+  description: string | null;
+  stargazers_count?: number;
+  language?: string | null;
+  updated_at: string;
+  private?: boolean;
+}
+
 const GET_REPO_QUERY = `
   query GetRepoCardMetadata($owner: String!, $name: String!) {
     repository(owner: $owner, name: $name) {
@@ -22,6 +32,7 @@ const GET_REPO_QUERY = `
       stargazerCount
       forkCount
       isArchived
+      isPrivate
       hasIssuesEnabled
       hasDiscussionsEnabled
       owner {
@@ -106,14 +117,18 @@ const GET_USER_REPOS_QUERY = `
   }
 `;
 
-interface CacheEntry<T> {
-  data: T;
-  expiresAt: number;
-}
+const GITHUB_FETCH_TIMEOUT_MS = 3500;
+const CACHE_TTL_MS = 10 * 60 * 1000;
 
 // In-memory process cache to avoid redundant network round-trips and preserve rate-limit quotas
-const repoCache = new Map<string, CacheEntry<RepoMetadata>>();
-const userReposCache = new Map<string, CacheEntry<RepoAutocompleteItem[]>>();
+const repoCache = new TtlCache<string, RepoMetadata>(1000);
+const userReposCache = new TtlCache<string, RepoAutocompleteItem[]>(500);
+const repoInflight = new Map<string, Promise<RepoMetadata>>();
+const userReposInflight = new Map<string, Promise<RepoAutocompleteItem[]>>();
+
+function githubFetch(input: string, init: RequestInit = {}): Promise<Response> {
+  return fetch(input, { ...init, signal: AbortSignal.timeout(GITHUB_FETCH_TIMEOUT_MS) });
+}
 
 // Circuit breaker timestamp: when GraphQL quota is exhausted, disable GraphQL for 15 minutes
 let graphQlDisabledUntil = 0;
@@ -330,6 +345,8 @@ export class GitHubService {
   static clearCache(): void {
     repoCache.clear();
     userReposCache.clear();
+    repoInflight.clear();
+    userReposInflight.clear();
     graphQlDisabledUntil = 0;
   }
 
@@ -366,16 +383,18 @@ export class GitHubService {
     };
 
     let res: Response | null = null;
+    let usedAuthenticatedRequest = false;
 
     // 1. First attempt with auth token if provided
     if (this.authToken) {
       try {
-        res = await fetch(url, {
+        res = await githubFetch(url, {
           headers: {
             ...baseHeaders,
             Authorization: `token ${this.authToken}`,
           },
         });
+        usedAuthenticatedRequest = res.ok;
       } catch {
         res = null;
       }
@@ -387,15 +406,13 @@ export class GitHubService {
       const isTokenIssue = !res || res.status === 401 || res.status === 403 || res.status === 429;
       if (this.authToken && isTokenIssue) {
         try {
-          const unauthRes = await fetch(url, { headers: baseHeaders });
-          if (unauthRes.ok || unauthRes.status === 404) {
-            res = unauthRes;
-          }
+          res = await githubFetch(url, { headers: baseHeaders });
+          usedAuthenticatedRequest = false;
         } catch {
           // Keep previous response
         }
       } else if (!this.authToken && !res) {
-        res = await fetch(url, { headers: baseHeaders });
+        res = await githubFetch(url, { headers: baseHeaders });
       }
     }
 
@@ -416,32 +433,35 @@ export class GitHubService {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const raw = (await res.json()) as any;
+    if (raw.private === true) {
+      throw new Error(`Repository '${owner}/${repo}' was not found or is private.`);
+    }
+
     const langName: string | null = raw.language || null;
     const langColor = langName ? getLanguageColor(langName) : null;
 
     // Concurrently enrich repository with real release, multi-language breakdown, and contributors
     let latestRelease: { tag: string; publishedAt: string } | null = null;
-    let languagesList: Array<{ name: string; color: string; size: number }> = langName
-      ? [{ name: langName, color: langColor || '#3178C6', size: raw.size || 1000 }]
-      : [];
+    let languagesList: Array<{ name: string; color: string; size: number }> = [];
     let contributorsList: Array<{ login: string; avatarUrl: string }> = [];
     let contributorsCount: number | undefined = undefined;
 
     try {
-      const authHeaders = this.authToken
-        ? { ...baseHeaders, Authorization: `token ${this.authToken}` }
-        : baseHeaders;
+      const authHeaders =
+        usedAuthenticatedRequest && this.authToken
+          ? { ...baseHeaders, Authorization: `token ${this.authToken}` }
+          : baseHeaders;
 
       const [releaseRes, langsRes, contribsRes] = await Promise.allSettled([
-        fetch(
+        githubFetch(
           `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/releases/latest`,
           { headers: authHeaders }
         ),
-        fetch(
+        githubFetch(
           `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/languages`,
           { headers: authHeaders }
         ),
-        fetch(
+        githubFetch(
           `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/contributors?per_page=5&anon=true`,
           { headers: authHeaders }
         ),
@@ -459,7 +479,7 @@ export class GitHubService {
         }
       } else if (releaseRes.status === 'fulfilled' && releaseRes.value.status === 404) {
         try {
-          const tagsRes = await fetch(
+          const tagsRes = await githubFetch(
             `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/tags?per_page=1`,
             { headers: authHeaders }
           );
@@ -507,16 +527,29 @@ export class GitHubService {
               login: c.login,
               avatarUrl: c.avatar_url,
             }));
-          contributorsCount = contribsData.length;
-
           // Parse Link header for total pagination count (rel="last")
           const linkHeader = contribsRes.value.headers.get('link') || '';
           const matchLast = linkHeader.match(/page=(\d+)>;\s*rel="last"/);
-          if (matchLast && matchLast[1]) {
-            const lastPage = parseInt(matchLast[1], 10);
-            if (!isNaN(lastPage) && lastPage > 0) {
-              contributorsCount = (lastPage - 1) * 5 + contribsData.length;
+          const lastPage = matchLast?.[1] ? parseInt(matchLast[1], 10) : 1;
+
+          if (!isNaN(lastPage) && lastPage > 1) {
+            try {
+              const lastPageRes = await githubFetch(
+                `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/contributors?per_page=5&anon=true&page=${lastPage}`,
+                { headers: authHeaders }
+              );
+              if (lastPageRes.ok) {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const lastPageData = (await lastPageRes.json()) as any[];
+                if (Array.isArray(lastPageData)) {
+                  contributorsCount = (lastPage - 1) * 5 + lastPageData.length;
+                }
+              }
+            } catch {
+              // Leave contributorsCount undefined rather than reporting an inflated count
             }
+          } else {
+            contributorsCount = contribsData.length;
           }
         }
       }
@@ -558,10 +591,7 @@ export class GitHubService {
 
     const parsed = RepoMetadataSchema.parse(metadata);
     // Cache successful repository in memory for 10 minutes
-    repoCache.set(`${owner.toLowerCase()}/${repo.toLowerCase()}`, {
-      data: parsed,
-      expiresAt: Date.now() + 10 * 60 * 1000,
-    });
+    repoCache.set(`${owner.toLowerCase()}/${repo.toLowerCase()}`, parsed, CACHE_TTL_MS);
     return parsed;
   }
 
@@ -579,7 +609,7 @@ export class GitHubService {
         headers.Authorization = `token ${this.authToken}`;
       }
 
-      let res = await fetch(
+      let res = await githubFetch(
         `https://api.github.com/users/${encodeURIComponent(login)}/repos?sort=updated&per_page=15`,
         { headers }
       );
@@ -590,15 +620,15 @@ export class GitHubService {
         (res.status === 401 || res.status === 403 || res.status === 429) &&
         this.authToken
       ) {
-        res = await fetch(
+        res = await githubFetch(
           `https://api.github.com/users/${encodeURIComponent(login)}/repos?sort=updated&per_page=15`,
           { headers: baseHeaders }
         );
       }
 
       if (!res.ok && res.status === 404) {
-        res = await fetch(
-          `https://api.github.com/orgs/${encodeURIComponent(login)}/repos?sort=updated&per_page=15`,
+        res = await githubFetch(
+          `https://api.github.com/orgs/${encodeURIComponent(login)}/repos?type=public&sort=updated&per_page=15`,
           { headers: this.authToken ? headers : baseHeaders }
         );
         if (
@@ -606,36 +636,33 @@ export class GitHubService {
           (res.status === 401 || res.status === 403 || res.status === 429) &&
           this.authToken
         ) {
-          res = await fetch(
-            `https://api.github.com/orgs/${encodeURIComponent(login)}/repos?sort=updated&per_page=15`,
+          res = await githubFetch(
+            `https://api.github.com/orgs/${encodeURIComponent(login)}/repos?type=public&sort=updated&per_page=15`,
             { headers: baseHeaders }
           );
         }
       }
       if (!res.ok) return [];
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const data = (await res.json()) as any;
+      const data = (await res.json()) as RestRepoItem[];
       if (!Array.isArray(data)) return [];
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const items: RepoAutocompleteItem[] = data.map((item: any) => ({
-        name: item.name,
-        description: item.description,
-        stars: item.stargazers_count ?? 0,
-        primaryLanguage: item.language
-          ? {
-              name: item.language,
-              color: getLanguageColor(item.language),
-            }
-          : null,
-        updatedAt: item.updated_at,
-      }));
+      const items: RepoAutocompleteItem[] = data
+        .filter((item) => item && item.private === false)
+        .map((item) => ({
+          name: item.name,
+          description: item.description,
+          stars: item.stargazers_count ?? 0,
+          primaryLanguage: item.language
+            ? {
+                name: item.language,
+                color: getLanguageColor(item.language),
+              }
+            : null,
+          updatedAt: item.updated_at,
+        }));
 
-      userReposCache.set(login.toLowerCase(), {
-        data: items,
-        expiresAt: Date.now() + 10 * 60 * 1000,
-      });
+      userReposCache.set(login.toLowerCase(), items, CACHE_TTL_MS);
 
       return items;
     } catch {
@@ -652,9 +679,21 @@ export class GitHubService {
 
     // 1. Check in-memory process cache first
     const cached = repoCache.get(cacheKey);
-    if (cached && Date.now() < cached.expiresAt) {
-      return cached.data;
-    }
+    if (cached) return cached;
+
+    // Coalesce concurrent misses for the same repository within this process
+    const inflight = repoInflight.get(cacheKey);
+    if (inflight) return inflight;
+
+    const promise = this.getRepositoryUncached(owner, repo).finally(() => {
+      repoInflight.delete(cacheKey);
+    });
+    repoInflight.set(cacheKey, promise);
+    return promise;
+  }
+
+  private async getRepositoryUncached(owner: string, repo: string): Promise<RepoMetadata> {
+    const cacheKey = `${owner.toLowerCase()}/${repo.toLowerCase()}`;
 
     // 2. Check circuit breaker: if no token or GraphQL quota was exhausted recently, go straight to REST
     const canUseGraphQl = Boolean(this.authToken) && Date.now() >= graphQlDisabledUntil;
@@ -671,6 +710,7 @@ export class GitHubService {
           stargazerCount: number;
           forkCount: number;
           isArchived: boolean;
+          isPrivate: boolean;
           hasIssuesEnabled: boolean;
           hasDiscussionsEnabled: boolean;
           owner: {
@@ -729,6 +769,9 @@ export class GitHubService {
       }
 
       const raw = response.repository;
+      if (raw.isPrivate) {
+        throw new Error(`Repository '${owner}/${repo}' was not found or is private.`);
+      }
 
       const metadata: RepoMetadata = {
         owner: {
@@ -782,7 +825,7 @@ export class GitHubService {
         if (this.authToken) {
           baseHeaders.Authorization = `token ${this.authToken}`;
         }
-        const contribsCountRes = await fetch(
+        const contribsCountRes = await githubFetch(
           `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/contributors?per_page=1&anon=true`,
           { headers: baseHeaders }
         );
@@ -801,10 +844,7 @@ export class GitHubService {
       }
 
       const parsed = RepoMetadataSchema.parse(metadata);
-      repoCache.set(cacheKey, {
-        data: parsed,
-        expiresAt: Date.now() + 10 * 60 * 1000,
-      });
+      repoCache.set(cacheKey, parsed, CACHE_TTL_MS);
       return parsed;
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : String(error);
@@ -857,9 +897,21 @@ export class GitHubService {
 
     // 1. Check in-memory process cache first
     const cached = userReposCache.get(cacheKey);
-    if (cached && Date.now() < cached.expiresAt) {
-      return cached.data;
-    }
+    if (cached !== undefined) return cached;
+
+    // Coalesce concurrent misses for the same owner within this process
+    const inflight = userReposInflight.get(cacheKey);
+    if (inflight) return inflight;
+
+    const promise = this.getUserRepositoriesUncached(login).finally(() => {
+      userReposInflight.delete(cacheKey);
+    });
+    userReposInflight.set(cacheKey, promise);
+    return promise;
+  }
+
+  private async getUserRepositoriesUncached(login: string): Promise<RepoAutocompleteItem[]> {
+    const cacheKey = login.toLowerCase();
 
     const canUseGraphQl = Boolean(this.authToken) && Date.now() >= graphQlDisabledUntil;
     if (!canUseGraphQl) {
@@ -904,10 +956,7 @@ export class GitHubService {
           updatedAt: n.updatedAt,
         }));
 
-        userReposCache.set(cacheKey, {
-          data: items,
-          expiresAt: Date.now() + 10 * 60 * 1000,
-        });
+        userReposCache.set(cacheKey, items, CACHE_TTL_MS);
 
         return items;
       }

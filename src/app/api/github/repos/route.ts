@@ -1,10 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { parseGitHubInput } from '@/core/domain/parser';
 import { GitHubService } from '@/core/services/GitHubService';
+import { checkRateLimit, getClientIp, rateLimitHeaders } from '@/lib/rateLimit';
+
+export const maxDuration = 10;
 
 const githubService = new GitHubService();
 
 export async function GET(request: NextRequest) {
+  const ip = getClientIp(request);
+  const limit = checkRateLimit(`github-repos:${ip}`, 60, 60_000);
+  if (!limit.allowed) {
+    return NextResponse.json(
+      { error: 'Too many requests. Please retry shortly.' },
+      { status: 429, headers: rateLimitHeaders(limit) }
+    );
+  }
+
   const { searchParams } = new URL(request.url);
   const input = searchParams.get('input');
   let owner = searchParams.get('owner') || searchParams.get('user');
@@ -19,7 +31,10 @@ export async function GET(request: NextRequest) {
   }
 
   if (!owner) {
-    return NextResponse.json({ error: 'Missing owner or input query parameter' }, { status: 400 });
+    return NextResponse.json(
+      { error: 'Missing owner or input query parameter' },
+      { status: 400, headers: rateLimitHeaders(limit) }
+    );
   }
 
   try {
@@ -28,10 +43,14 @@ export async function GET(request: NextRequest) {
       status: 200,
       headers: {
         'Cache-Control': 'public, s-maxage=1800, stale-while-revalidate=3600',
+        ...rateLimitHeaders(limit),
       },
     });
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Failed to fetch user repositories';
-    return NextResponse.json({ error: message }, { status: 500 });
+    console.error('Failed to fetch user repositories:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch user repositories.' },
+      { status: 502, headers: rateLimitHeaders(limit) }
+    );
   }
 }

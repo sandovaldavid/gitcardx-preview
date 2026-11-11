@@ -134,6 +134,8 @@ describe('Dynamic Card Route (/api/card/[owner]/[repo])', () => {
 
     expect(res.status).toBe(200);
     expect(res.headers.get('Content-Type')).toContain('image/svg+xml');
+    expect(res.headers.get('X-Gitframe-Degraded')).toBe('1');
+    expect(res.headers.get('Cache-Control')).toContain('s-maxage=60');
     const text = await res.text();
     expect(text.startsWith('<svg')).toBe(true);
   });

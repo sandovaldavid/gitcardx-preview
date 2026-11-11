@@ -125,6 +125,30 @@ describe('GitHubService', () => {
       );
     });
 
+    it('rejects private repositories returned by GraphQL', async () => {
+      mockGraphql.mockResolvedValueOnce({ repository: { isPrivate: true } });
+
+      await expect(service.getRepository('acme', 'secret')).rejects.toThrow(
+        "Repository 'acme/secret' was not found or is private."
+      );
+    });
+
+    it('rejects private repositories returned by the REST fallback', async () => {
+      mockGraphql.mockRejectedValueOnce(
+        new Error('Request quota exhausted for request POST /graphql')
+      );
+      const mockFetch = vi.fn().mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({ private: true }),
+      });
+      vi.stubGlobal('fetch', mockFetch);
+
+      await expect(service.getRepository('acme', 'secret')).rejects.toThrow(
+        "Repository 'acme/secret' was not found or is private."
+      );
+    });
+
     it('throws friendly error when rate limit is exceeded on both GraphQL and REST', async () => {
       mockGraphql.mockRejectedValueOnce(new Error('API rate limit exceeded for user ID 12345.'));
       const mockFetch = vi.fn().mockResolvedValue({ ok: false, status: 403 });
@@ -336,6 +360,15 @@ describe('GitHubService', () => {
             stargazers_count: 15,
             language: 'Python',
             updated_at: '2026-11-07T12:00:00Z',
+            private: false,
+          },
+          {
+            name: 'private-repo',
+            description: 'Must not leak',
+            stargazers_count: 1,
+            language: 'TypeScript',
+            updated_at: '2026-11-07T12:00:00Z',
+            private: true,
           },
         ],
       });
