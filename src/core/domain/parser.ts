@@ -16,8 +16,16 @@ export type GitHubInputResult =
       original: string;
     };
 
-const GITHUB_USERNAME_REGEX = /^[a-zA-Z0-9](?:[a-zA-Z0-9]|-(?=[a-zA-Z0-9])){0,38}$/;
-const GITHUB_REPO_REGEX = /^[a-zA-Z0-9_.-]+$/;
+export const GITHUB_USERNAME_REGEX = /^[a-zA-Z0-9](?:[a-zA-Z0-9]|-(?=[a-zA-Z0-9])){0,38}$/;
+export const GITHUB_REPO_REGEX = /^[a-zA-Z0-9_.-]+$/;
+
+export function isValidGitHubOwner(owner: string): boolean {
+  return GITHUB_USERNAME_REGEX.test(owner);
+}
+
+export function isValidGitHubRepo(repo: string): boolean {
+  return GITHUB_REPO_REGEX.test(repo);
+}
 
 export function parseGitHubInput(rawInput: string): GitHubInputResult {
   const original = rawInput;
@@ -41,7 +49,7 @@ export function parseGitHubInput(rawInput: string): GitHubInputResult {
       const urlString = input.startsWith('http') ? input : `https://${input}`;
       const url = new URL(urlString);
 
-      if (!url.hostname.includes('github.com')) {
+      if (url.hostname !== 'github.com' && url.hostname !== 'www.github.com') {
         return {
           type: 'invalid',
           error: 'Only github.com URLs are supported',

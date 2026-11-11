@@ -137,4 +137,34 @@ describe('Dynamic Card Route (/api/card/[owner]/[repo])', () => {
     const text = await res.text();
     expect(text.startsWith('<svg')).toBe(true);
   });
+
+  it('rejects invalid GitHub owner and repository path segments', async () => {
+    const req = new NextRequest('https://gitframe.dev/api/card/%3Cscript%3E/evil.svg');
+    const res = await GET(req, {
+      params: Promise.resolve({ owner: '<script>', repo: 'evil.svg' }),
+    });
+
+    expect(res.status).toBe(400);
+    expect(res.headers.get('X-Content-Type-Options')).toBe('nosniff');
+    expect(await res.text()).toContain('Invalid GitHub owner');
+  });
+
+  it('hardens the render fallback with no-store, CSP and nosniff', async () => {
+    const req = new NextRequest(
+      'https://gitframe.dev/api/card/sandovaldavid/gitframe.svg?logo_url=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CAAAA'
+    );
+    const res = await GET(req, {
+      params: Promise.resolve({ owner: 'sandovaldavid', repo: 'gitframe.svg' }),
+    });
+
+    expect(res.status).toBe(200);
+    expect(res.headers.get('Cache-Control')).toBe('no-store');
+    expect(res.headers.get('X-Content-Type-Options')).toBe('nosniff');
+    expect(res.headers.get('Content-Security-Policy')).toContain("default-src 'none'");
+    expect(res.headers.get('X-Gitframe-Degraded')).toBe('1');
+
+    const text = await res.text();
+    expect(text).toContain('sandovaldavid/gitframe');
+    expect(text).not.toContain('<script');
+  });
 });
