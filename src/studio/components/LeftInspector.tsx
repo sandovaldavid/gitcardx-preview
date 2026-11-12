@@ -28,7 +28,8 @@ import { useCardStore } from '../state/useCardStore';
 import type { CardVisibility } from '@/core/domain/schemas';
 
 export const LeftInspector: React.FC = () => {
-  const { config, updateConfig, setContentAlign, toggleVisibility, repo, setRepo } = useCardStore();
+  const { config, updateConfig, setContentAlign, toggleVisibility, repo, updateRepo } =
+    useCardStore();
   const [isManualModeOpen, setIsManualModeOpen] = useState(false);
 
   const elementLayers: Array<{
@@ -326,7 +327,7 @@ export const LeftInspector: React.FC = () => {
                     min="0"
                     value={repo.stars}
                     onChange={(e) =>
-                      setRepo({ ...repo, stars: Math.max(0, parseInt(e.target.value) || 0) }, false)
+                      updateRepo({ stars: Math.max(0, parseInt(e.target.value) || 0) })
                     }
                     className="w-full h-8 px-2 rounded bg-zinc-950 border border-zinc-800 text-xs text-zinc-200"
                   />
@@ -341,7 +342,7 @@ export const LeftInspector: React.FC = () => {
                     min="0"
                     value={repo.forks}
                     onChange={(e) =>
-                      setRepo({ ...repo, forks: Math.max(0, parseInt(e.target.value) || 0) }, false)
+                      updateRepo({ forks: Math.max(0, parseInt(e.target.value) || 0) })
                     }
                     className="w-full h-8 px-2 rounded bg-zinc-950 border border-zinc-800 text-xs text-zinc-200"
                   />
@@ -360,16 +361,12 @@ export const LeftInspector: React.FC = () => {
                     value={repo.openIssuesCount ?? ''}
                     placeholder="-"
                     onChange={(e) =>
-                      setRepo(
-                        {
-                          ...repo,
-                          openIssuesCount:
-                            e.target.value === ''
-                              ? undefined
-                              : Math.max(0, parseInt(e.target.value, 10)),
-                        },
-                        false
-                      )
+                      updateRepo({
+                        openIssuesCount:
+                          e.target.value === ''
+                            ? undefined
+                            : Math.max(0, parseInt(e.target.value, 10)),
+                      })
                     }
                     className="w-full h-8 px-2 rounded bg-zinc-950 border border-zinc-800 text-xs text-zinc-200"
                   />
@@ -385,16 +382,12 @@ export const LeftInspector: React.FC = () => {
                     value={repo.discussionsCount ?? ''}
                     placeholder="-"
                     onChange={(e) =>
-                      setRepo(
-                        {
-                          ...repo,
-                          discussionsCount:
-                            e.target.value === ''
-                              ? undefined
-                              : Math.max(0, parseInt(e.target.value, 10)),
-                        },
-                        false
-                      )
+                      updateRepo({
+                        discussionsCount:
+                          e.target.value === ''
+                            ? undefined
+                            : Math.max(0, parseInt(e.target.value, 10)),
+                      })
                     }
                     className="w-full h-8 px-2 rounded bg-zinc-950 border border-zinc-800 text-xs text-zinc-200"
                   />
@@ -410,13 +403,9 @@ export const LeftInspector: React.FC = () => {
                   type="text"
                   value={repo.owner.login}
                   onChange={(e) =>
-                    setRepo(
-                      {
-                        ...repo,
-                        owner: { ...repo.owner, login: e.target.value },
-                      },
-                      false
-                    )
+                    updateRepo({
+                      owner: { ...repo.owner, login: e.target.value },
+                    })
                   }
                   className="w-full h-8 px-2 rounded bg-zinc-950 border border-zinc-800 text-xs text-zinc-200"
                 />
@@ -431,18 +420,14 @@ export const LeftInspector: React.FC = () => {
                   type="text"
                   value={repo.primaryLanguage?.name || ''}
                   onChange={(e) =>
-                    setRepo(
-                      {
-                        ...repo,
-                        primaryLanguage: e.target.value
-                          ? {
-                              name: e.target.value,
-                              color: repo.primaryLanguage?.color || '#3b82f6',
-                            }
-                          : null,
-                      },
-                      false
-                    )
+                    updateRepo({
+                      primaryLanguage: e.target.value
+                        ? {
+                            name: e.target.value,
+                            color: repo.primaryLanguage?.color || '#3b82f6',
+                          }
+                        : null,
+                    })
                   }
                   placeholder="e.g. Rust, Go, Python"
                   className="w-full h-8 px-2 rounded bg-zinc-950 border border-zinc-800 text-xs text-zinc-200"
@@ -459,19 +444,15 @@ export const LeftInspector: React.FC = () => {
                     type="text"
                     value={repo.latestRelease?.tag || ''}
                     onChange={(e) =>
-                      setRepo(
-                        {
-                          ...repo,
-                          latestRelease: e.target.value
-                            ? {
-                                tag: e.target.value,
-                                publishedAt:
-                                  repo.latestRelease?.publishedAt || new Date().toISOString(),
-                              }
-                            : null,
-                        },
-                        false
-                      )
+                      updateRepo({
+                        latestRelease: e.target.value
+                          ? {
+                              tag: e.target.value,
+                              publishedAt:
+                                repo.latestRelease?.publishedAt || new Date().toISOString(),
+                            }
+                          : null,
+                      })
                     }
                     placeholder="e.g. v2.0.1"
                     className="w-full h-8 px-2 rounded bg-zinc-950 border border-zinc-800 text-xs text-zinc-200"
@@ -486,13 +467,9 @@ export const LeftInspector: React.FC = () => {
                     type="text"
                     value={repo.license || ''}
                     onChange={(e) =>
-                      setRepo(
-                        {
-                          ...repo,
-                          license: e.target.value ? e.target.value.toUpperCase() : null,
-                        },
-                        false
-                      )
+                      updateRepo({
+                        license: e.target.value ? e.target.value.toUpperCase() : null,
+                      })
                     }
                     placeholder="e.g. MIT, Apache-2.0"
                     className="w-full h-8 px-2 rounded bg-zinc-950 border border-zinc-800 text-xs text-zinc-200"

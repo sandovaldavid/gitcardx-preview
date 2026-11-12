@@ -167,6 +167,7 @@ interface CardStoreState {
 
   // Actions
   setRepo: (repo: RepoMetadata, autoTheme?: boolean) => void;
+  updateRepo: (partial: Partial<RepoMetadata>) => void;
   hydrateRepo: (repo: RepoMetadata, options?: HydrateRepoOptions) => void;
   updateConfig: (partial: Partial<CardConfig>) => void;
   setTemplateId: (templateId: TemplateId) => void;
@@ -220,6 +221,13 @@ const useBaseCardStore = create<CardStoreState>((set, get) => ({
       isFetchingRepo: false,
       fetchingRepoName: null,
       fetchError: null,
+    }));
+  },
+
+  updateRepo: (partial) => {
+    set((state) => ({
+      repo: { ...state.repo, ...partial },
+      hasCustomRepo: true,
     }));
   },
 

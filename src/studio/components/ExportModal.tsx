@@ -15,6 +15,18 @@ import {
 } from 'lucide-react';
 import { useCardStore } from '../state/useCardStore';
 
+function escapeHtmlAttr(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+function escapeMarkdownAlt(str: string): string {
+  return str.replace(/\[/g, '\\[').replace(/\]/g, '\\]');
+}
+
 export const ExportModal: React.FC = () => {
   const { isExportModalOpen, setIsExportModalOpen, repo, config } = useCardStore();
   const [activeTab, setActiveTab] = useState<'download' | 'readme' | 'meta'>('download');
@@ -193,15 +205,21 @@ export const ExportModal: React.FC = () => {
   const darkCardUrl = buildCardImageUrl({ theme: 'dark' });
   const lightCardUrl = buildCardImageUrl({ theme: 'light' });
 
+  const rawTitle = config.title || repoName;
+  const rawTagline = config.tagline || repo.description || '';
+  const escapedMdTitle = escapeMarkdownAlt(rawTitle);
+  const escapedHtmlTitle = escapeHtmlAttr(rawTitle);
+  const escapedHtmlTagline = escapeHtmlAttr(rawTagline);
+
   const markdownSnippet = targetUrl
-    ? `[![${config.title || repoName}](${defaultCardUrl})](${targetUrl})`
-    : `![${config.title || repoName}](${defaultCardUrl})`;
+    ? `[![${escapedMdTitle}](${defaultCardUrl})](${targetUrl})`
+    : `![${escapedMdTitle}](${defaultCardUrl})`;
 
   const pictureSnippet = targetUrl
-    ? `<a href="${targetUrl}">\n  <picture>\n    <source media="(prefers-color-scheme: dark)" srcset="${darkCardUrl}" />\n    <source media="(prefers-color-scheme: light)" srcset="${lightCardUrl}" />\n    <img src="${defaultCardUrl}" alt="${config.title || repoName} Preview" width="100%" />\n  </picture>\n</a>`
-    : `<picture>\n  <source media="(prefers-color-scheme: dark)" srcset="${darkCardUrl}" />\n  <source media="(prefers-color-scheme: light)" srcset="${lightCardUrl}" />\n  <img src="${defaultCardUrl}" alt="${config.title || repoName} Preview" width="100%" />\n</picture>`;
+    ? `<a href="${targetUrl}">\n  <picture>\n    <source media="(prefers-color-scheme: dark)" srcset="${darkCardUrl}" />\n    <source media="(prefers-color-scheme: light)" srcset="${lightCardUrl}" />\n    <img src="${defaultCardUrl}" alt="${escapedHtmlTitle} Preview" width="100%" />\n  </picture>\n</a>`
+    : `<picture>\n  <source media="(prefers-color-scheme: dark)" srcset="${darkCardUrl}" />\n  <source media="(prefers-color-scheme: light)" srcset="${lightCardUrl}" />\n  <img src="${defaultCardUrl}" alt="${escapedHtmlTitle} Preview" width="100%" />\n</picture>`;
 
-  const htmlMetaSnippet = `<meta property="og:title" content="${config.title || repoName}" />\n<meta property="og:description" content="${config.tagline || repo.description || ''}" />\n<meta property="og:image" content="${defaultCardUrl}" />\n<meta property="og:image:width" content="1280" />\n<meta property="og:image:height" content="640" />\n<meta name="twitter:card" content="summary_large_image" />\n<meta name="twitter:image" content="${defaultCardUrl}" />`;
+  const htmlMetaSnippet = `<meta property="og:title" content="${escapedHtmlTitle}" />\n<meta property="og:description" content="${escapedHtmlTagline}" />\n<meta property="og:image" content="${defaultCardUrl}" />\n<meta property="og:image:width" content="1280" />\n<meta property="og:image:height" content="640" />\n<meta name="twitter:card" content="summary_large_image" />\n<meta name="twitter:image" content="${defaultCardUrl}" />`;
 
   return (
     <dialog
