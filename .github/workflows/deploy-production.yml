@@ -9,20 +9,31 @@ concurrency:
   group: deploy-production
   cancel-in-progress: false
 
+permissions:
+  contents: read
+
+env:
+  VERCEL_CLI_VERSION: 65.14.0
+
 jobs:
   deploy-production:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: production
     env:
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name || github.ref }}
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
-          bun-version: latest
+          bun-version: 1.4.4
 
       - name: Install dependencies
         run: bun install --frozen-lockfile
@@ -36,10 +47,20 @@ jobs:
           bun run build
 
       - name: Pull Vercel environment
-        run: bun x vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+        run: bun x "vercel@${VERCEL_CLI_VERSION}" pull --yes --environment=production
 
       - name: Build artifacts
-        run: bun x vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+        run: bun x "vercel@${VERCEL_CLI_VERSION}" build --prod
 
       - name: Deploy prebuilt
-        run: bun x vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+        run: bun x "vercel@${VERCEL_CLI_VERSION}" deploy --prebuilt --prod
+
+      - name: Smoke test production
+        if: ${{ vars.PRODUCTION_URL != '' }}
+        run: |
+          curl -fsS "${PRODUCTION_URL}/" > /dev/null
+          curl -fsS "${PRODUCTION_URL}/studio" > /dev/null
+          curl -fsS "${PRODUCTION_URL}/api/card/facebook/react.png" -o /tmp/gitframe-smoke.png
+          test "$(head -c 8 /tmp/gitframe-smoke.png | od -An -tx1 | tr -d ' \n')" = "89504e470d0a1a0a"
+        env:
+          PRODUCTION_URL: ${{ vars.PRODUCTION_URL }}

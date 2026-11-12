@@ -4,3 +4,4 @@ dist
 out
 bun.lock
 public/fonts
+CHANGELOG.md

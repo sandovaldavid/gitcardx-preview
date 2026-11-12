@@ -10,16 +10,22 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   verify:
     name: Verify
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.4
 
       - name: Cache Bun dependencies
         uses: actions/cache@v4
@@ -43,6 +49,10 @@ jobs:
 
       - name: Run unit tests
         run: bun run test
+
+      - name: Audit production dependencies
+        run: bun audit --production
+        continue-on-error: true
 
       - name: Build Next.js application
         run: bun run build
