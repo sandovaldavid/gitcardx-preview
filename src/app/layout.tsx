@@ -16,6 +16,9 @@ const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://gitframe.dev';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
+  alternates: {
+    canonical: '/',
+  },
   title: {
     default: 'Gitframe — Instant GitHub Social Preview & Open Graph Card Studio',
     template: '%s | Gitframe',

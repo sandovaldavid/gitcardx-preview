@@ -13,6 +13,7 @@ import { deriveConfigForRepo, StudioHydrationContext, useCardStore } from '../st
 import type { RepoMetadata } from '@/core/domain/schemas';
 import { normalizeTemplateId } from '@/core/domain/schemas';
 import { sanitizeFontFamily } from '@/cards/fonts/fontCatalog';
+import { parseGitHubInput } from '@/core/domain/parser';
 
 const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
@@ -24,16 +25,62 @@ interface StudioLayoutProps {
 const TemplateQuerySync: React.FC = () => {
   const searchParams = useSearchParams();
   const templateParam = searchParams.get('template');
+  const repoParam = searchParams.get('repo');
   const fontHeadingParam = searchParams.get('font_heading') || searchParams.get('fontHeading');
   const fontMonoParam = searchParams.get('font_mono') || searchParams.get('fontMono');
   const setTemplateId = useCardStore((state) => state.setTemplateId);
   const updateConfig = useCardStore((state) => state.updateConfig);
+  const setRepo = useCardStore((state) => state.setRepo);
+  const setIsFetchingRepo = useCardStore((state) => state.setIsFetchingRepo);
+  const setFetchError = useCardStore((state) => state.setFetchError);
 
   useIsomorphicLayoutEffect(() => {
     if (templateParam) {
       setTemplateId(normalizeTemplateId(templateParam));
     }
   }, [templateParam, setTemplateId]);
+
+  useEffect(() => {
+    if (!repoParam) return;
+    const parsed = parseGitHubInput(repoParam);
+    if (parsed.type !== 'repo') return;
+
+    const currentRepo = useCardStore.getState().repo;
+    const currentKey = `${currentRepo.owner.login.toLowerCase()}/${currentRepo.name.toLowerCase()}`;
+    const targetKey = `${parsed.owner.toLowerCase()}/${parsed.repo.toLowerCase()}`;
+    if (currentKey === targetKey) return;
+
+    let aborted = false;
+    const fetchRepo = async () => {
+      setIsFetchingRepo(true, `${parsed.owner}/${parsed.repo}`);
+      try {
+        const res = await fetch(
+          `/api/github/repo?owner=${encodeURIComponent(parsed.owner)}&repo=${encodeURIComponent(parsed.repo)}`
+        );
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.error || 'Repository not found');
+        }
+        const data = await res.json();
+        if (!aborted) {
+          setRepo(data, true);
+        }
+      } catch (err) {
+        if (!aborted) {
+          setFetchError(err instanceof Error ? err.message : 'Failed to load repository');
+        }
+      } finally {
+        if (!aborted) {
+          setIsFetchingRepo(false);
+        }
+      }
+    };
+
+    fetchRepo();
+    return () => {
+      aborted = true;
+    };
+  }, [repoParam, setIsFetchingRepo, setRepo, setFetchError]);
 
   useIsomorphicLayoutEffect(() => {
     if (!fontHeadingParam && !fontMonoParam) return;

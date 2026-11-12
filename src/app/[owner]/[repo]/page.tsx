@@ -18,14 +18,20 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { owner, repo } = await params;
   const title = `${owner}/${repo} — Gitframe`;
   const description = `Create an instant GitHub Social Preview card for ${owner}/${repo}`;
-  const cardOgUrl = `https://gitframe.dev/api/card/${owner}/${repo}`;
+  const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://gitframe.dev';
+  const cardOgUrl = `${siteUrl}/api/card/${owner}/${repo}`;
+  const pageUrl = `${siteUrl}/${owner}/${repo}`;
 
   return {
     title,
     description,
+    alternates: {
+      canonical: `/${owner}/${repo}`,
+    },
     openGraph: {
       title,
       description,
+      url: pageUrl,
       images: [
         {
           url: cardOgUrl,

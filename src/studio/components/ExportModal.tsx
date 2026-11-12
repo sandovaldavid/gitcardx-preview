@@ -157,10 +157,14 @@ export const ExportModal: React.FC = () => {
     }
   };
 
+  const appBaseUrl =
+    process.env.NEXT_PUBLIC_APP_URL ||
+    (typeof window !== 'undefined' ? window.location.origin : 'https://gitframe.dev');
+
   // Determine target link for README snippet
   const targetUrl =
     linkTarget === 'gitframe'
-      ? `https://gitframe.dev/${owner}/${repoName}?ref=readme`
+      ? `${appBaseUrl}/${owner}/${repoName}?ref=readme`
       : linkTarget === 'github'
         ? `https://github.com/${owner}/${repoName}`
         : null;
@@ -182,7 +186,7 @@ export const ExportModal: React.FC = () => {
       params.set('font_mono', config.typography.fontMono);
     }
     const query = params.toString();
-    return `https://gitframe.dev/api/card/${owner}/${repoName}.png${query ? `?${query}` : ''}`;
+    return `${appBaseUrl}/api/card/${owner}/${repoName}.png${query ? `?${query}` : ''}`;
   };
 
   const defaultCardUrl = buildCardImageUrl();
