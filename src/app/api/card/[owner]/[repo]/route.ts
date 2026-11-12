@@ -17,6 +17,9 @@ import {
   DEFAULT_MONO_FONT,
   sanitizeFontFamily,
 } from '@/cards/fonts/fontCatalog';
+import { checkRateLimit, getClientIp, rateLimitHeaders } from '@/lib/rateLimit';
+
+export const maxDuration = 30;
 
 const githubService = new GitHubService();
 
@@ -28,6 +31,21 @@ interface RouteContext {
 }
 
 export async function GET(request: NextRequest, { params }: RouteContext) {
+  const ip = getClientIp(request);
+  const limit = checkRateLimit(`card-get:${ip}`, 120, 60_000);
+  const rlHeaders = rateLimitHeaders(limit);
+  if (!limit.allowed) {
+    return new Response('Too many requests. Please retry shortly.', {
+      status: 429,
+      headers: {
+        'Content-Type': 'text/plain; charset=utf-8',
+        'Cache-Control': 'no-store',
+        'X-Content-Type-Options': 'nosniff',
+        ...rlHeaders,
+      },
+    });
+  }
+
   const { owner, repo: rawRepo } = await params;
 
   // Support extensions in repo name like /api/card/owner/repo.png or repo.svg
@@ -48,6 +66,7 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
         'Content-Type': 'text/plain; charset=utf-8',
         'Cache-Control': 'no-store',
         'X-Content-Type-Options': 'nosniff',
+        ...rlHeaders,
       },
     });
   }
@@ -111,6 +130,7 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
 
   // Fetch or create fallback RepoMetadata
   let repoMetadata: RepoMetadata;
+  let degraded = false;
   try {
     const fetched = await githubService.getRepository(owner, repo);
     // Sanitize image URLs with anti-SSRF defense
@@ -132,6 +152,7 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
       })),
     };
   } catch (error) {
+    degraded = true;
     console.warn(`Fallback card rendered for ${owner}/${repo}:`, error);
     repoMetadata = {
       owner: {
@@ -181,15 +202,17 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
     DEFAULT_MONO_FONT
   );
 
-  // Build CardConfig from query params with smart defaults
+  // Build CardConfig from query params with smart defaults. Clamp every free-form
+  // value before it reaches Satori/Resvg; query strings are attacker-controlled.
   const cardConfig: CardConfig = {
     templateId,
-    title: searchParams.get('title') || repoMetadata.name,
-    tagline:
+    title: (searchParams.get('title') || repoMetadata.name).slice(0, 100),
+    tagline: (
       searchParams.get('tagline') ||
       repoMetadata.description ||
-      'GitHub repository visual identity',
-    installCommand: searchParams.get('command') || undefined,
+      'GitHub repository visual identity'
+    ).slice(0, 500),
+    installCommand: (searchParams.get('command') || undefined)?.slice(0, 120),
     contentAlign: searchParams.get('align') === 'center' ? 'center' : 'left',
     palette,
     customLogoUrl: sanitizedLogoUrl,
@@ -222,9 +245,13 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
   };
 
   const headers = {
-    'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=604800',
+    'Cache-Control': degraded
+      ? 'public, s-maxage=60, stale-while-revalidate=300'
+      : 'public, s-maxage=86400, stale-while-revalidate=604800',
     'Content-Type': format === 'svg' ? 'image/svg+xml; charset=utf-8' : 'image/png',
     'X-Content-Type-Options': 'nosniff',
+    ...(degraded ? { 'X-Gitframe-Degraded': '1' } : {}),
+    ...rlHeaders,
   };
 
   try {
@@ -252,6 +279,7 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
         'Content-Security-Policy': "default-src 'none'; style-src 'unsafe-inline'; sandbox",
         'X-Content-Type-Options': 'nosniff',
         'X-Gitframe-Degraded': '1',
+        ...rlHeaders,
       },
     });
   }

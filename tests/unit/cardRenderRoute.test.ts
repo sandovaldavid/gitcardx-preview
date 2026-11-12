@@ -138,6 +138,22 @@ describe('On-Demand Card Render Route (/api/card/render)', () => {
     expect(svg).toContain(validPng);
   });
 
+  it('rejects non-JSON content types and malformed JSON with client errors', async () => {
+    const textReq = new NextRequest('https://gitframe.dev/api/card/render', {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: 'not json',
+    });
+    expect((await POST(textReq)).status).toBe(415);
+
+    const malformedReq = new NextRequest('https://gitframe.dev/api/card/render', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: '{bad',
+    });
+    expect((await POST(malformedReq)).status).toBe(400);
+  });
+
   it('embeds description emojis in downloaded SVG and PNG exports via /api/card/render', async () => {
     const emojiDescription = '🚀 Instant GitHub cards ✨ built for developers ❤️';
     const svgReq = new NextRequest('https://gitframe.dev/api/card/render', {

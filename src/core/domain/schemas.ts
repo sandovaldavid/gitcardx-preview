@@ -84,8 +84,18 @@ export const CardConfigSchema = z.object({
   title: z.string().min(1).max(100),
   tagline: z.string().max(500),
   installCommand: z.string().max(120).optional(),
-  customLogoUrl: z.string().url().or(z.string().startsWith('data:')).optional(),
-  customBackgroundUrl: z.string().url().or(z.string().startsWith('data:')).optional(),
+  customLogoUrl: z
+    .string()
+    .max(200_000)
+    .url()
+    .or(z.string().startsWith('data:').max(200_000))
+    .optional(),
+  customBackgroundUrl: z
+    .string()
+    .max(200_000)
+    .url()
+    .or(z.string().startsWith('data:').max(200_000))
+    .optional(),
   contentAlign: ContentAlignSchema,
   palette: PaletteSchema,
   typography: TypographySchema,
@@ -94,43 +104,43 @@ export const CardConfigSchema = z.object({
 });
 
 export const RepoLanguageSchema = z.object({
-  name: z.string(),
-  color: z.string(),
+  name: z.string().max(50),
+  color: z.string().max(50),
   size: z.number(),
 });
 
 export const RepoContributorSchema = z.object({
-  login: z.string(),
-  avatarUrl: z.string().url(),
+  login: z.string().max(39),
+  avatarUrl: z.string().max(2048).url(),
 });
 
 export const RepoMetadataSchema = z.object({
   owner: z.object({
-    login: z.string().min(1),
-    avatarUrl: z.string().url(),
+    login: z.string().min(1).max(39),
+    avatarUrl: z.string().max(2048).url(),
     isOrg: z.boolean(),
   }),
-  name: z.string().min(1),
-  description: z.string().nullable(),
-  homepageUrl: z.string().nullable(),
+  name: z.string().min(1).max(100),
+  description: z.string().max(2000).nullable(),
+  homepageUrl: z.string().max(2048).nullable(),
   stars: z.number().int().nonnegative(),
   forks: z.number().int().nonnegative(),
   primaryLanguage: z
     .object({
-      name: z.string(),
-      color: z.string(),
+      name: z.string().max(50),
+      color: z.string().max(50),
     })
     .nullable(),
-  languages: z.array(RepoLanguageSchema),
-  topics: z.array(z.string()),
-  license: z.string().nullable(),
+  languages: z.array(RepoLanguageSchema).max(10),
+  topics: z.array(z.string().max(50)).max(20),
+  license: z.string().max(50).nullable(),
   latestRelease: z
     .object({
-      tag: z.string(),
-      publishedAt: z.string(),
+      tag: z.string().max(100),
+      publishedAt: z.string().max(40),
     })
     .nullable(),
-  contributors: z.array(RepoContributorSchema),
+  contributors: z.array(RepoContributorSchema).max(20),
   contributorsCount: z.number().int().nonnegative().optional(),
   openIssuesCount: z.number().int().nonnegative().optional(),
   discussionsCount: z.number().int().nonnegative().optional(),

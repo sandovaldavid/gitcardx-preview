@@ -2,10 +2,49 @@ import { NextRequest, NextResponse } from 'next/server';
 import { renderCardToPng, renderCardToSvg } from '@/cards/engine/satoriRenderer';
 import { RepoMetadataSchema, CardConfigSchema, type CardConfig } from '@/core/domain/schemas';
 import { sanitizeImageUrl } from '@/core/security/ssrf';
+import { checkRateLimit, getClientIp, rateLimitHeaders } from '@/lib/rateLimit';
+
+export const maxDuration = 30;
+
+const MAX_BODY_BYTES = 512_000;
 
 export async function POST(request: NextRequest) {
+  const ip = getClientIp(request);
+  const limit = checkRateLimit(`card-render:${ip}`, 10, 60_000);
+  if (!limit.allowed) {
+    return NextResponse.json(
+      { error: 'Too many requests. Please retry shortly.' },
+      { status: 429, headers: rateLimitHeaders(limit) }
+    );
+  }
+
+  const contentType = request.headers.get('content-type') || '';
+  if (!contentType.includes('application/json')) {
+    return NextResponse.json(
+      { error: 'Content-Type must be application/json' },
+      { status: 415, headers: rateLimitHeaders(limit) }
+    );
+  }
+
+  const contentLength = Number(request.headers.get('content-length') || 0);
+  if (contentLength > MAX_BODY_BYTES) {
+    return NextResponse.json(
+      { error: 'Payload too large' },
+      { status: 413, headers: rateLimitHeaders(limit) }
+    );
+  }
+
+  let body: Record<string, unknown>;
   try {
-    const body = await request.json();
+    body = (await request.json()) as Record<string, unknown>;
+  } catch {
+    return NextResponse.json(
+      { error: 'Invalid JSON body' },
+      { status: 400, headers: rateLimitHeaders(limit) }
+    );
+  }
+
+  try {
     const { repo, config, format = 'png', scale = 1 } = body;
 
     const parsedRepo = RepoMetadataSchema.safeParse(repo);
@@ -20,7 +59,7 @@ export async function POST(request: NextRequest) {
             configErrors: parsedConfig.error?.issues,
           },
         },
-        { status: 400 }
+        { status: 400, headers: rateLimitHeaders(limit) }
       );
     }
 
@@ -55,7 +94,7 @@ export async function POST(request: NextRequest) {
       customBackgroundUrl: sanitizedBg,
     };
     const isSvg = format === 'svg';
-    const numericScale = Math.min(Math.max(Number(scale) || 1, 1), 3);
+    const numericScale = Math.min(Math.max(Number(scale) || 1, 1), 2);
 
     if (isSvg) {
       const svg = await renderCardToSvg(safeRepo, safeConfig);
@@ -63,6 +102,8 @@ export async function POST(request: NextRequest) {
         headers: {
           'Content-Type': 'image/svg+xml; charset=utf-8',
           'Cache-Control': 'no-store, max-age=0',
+          'X-Content-Type-Options': 'nosniff',
+          ...rateLimitHeaders(limit),
         },
       });
     }
@@ -72,11 +113,15 @@ export async function POST(request: NextRequest) {
       headers: {
         'Content-Type': 'image/png',
         'Cache-Control': 'no-store, max-age=0',
+        'X-Content-Type-Options': 'nosniff',
+        ...rateLimitHeaders(limit),
       },
     });
   } catch (error: unknown) {
     console.error('Failed to render card on-demand:', error);
-    const message = error instanceof Error ? error.message : 'Unknown render error';
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Render failed' },
+      { status: 500, headers: rateLimitHeaders(limit) }
+    );
   }
 }
