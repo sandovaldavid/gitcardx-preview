@@ -199,7 +199,9 @@ export const FontPicker: React.FC<FontPickerProps> = ({ label, role, value, onCh
   return (
     <div ref={containerRef} className="relative flex flex-col gap-1.5" onKeyDown={handleKeyDown}>
       <div className="flex items-center justify-between">
-        <label className="text-xs font-medium text-zinc-300">{label}</label>
+        <label htmlFor={`${listboxId}-trigger`} className="text-xs font-medium text-zinc-300">
+          {label}
+        </label>
         {activeFontMeta?.bundled ? (
           <span className="text-[10px] font-mono text-emerald-400/90">Bundled local</span>
         ) : (
@@ -209,6 +211,7 @@ export const FontPicker: React.FC<FontPickerProps> = ({ label, role, value, onCh
 
       <button
         ref={triggerRef}
+        id={`${listboxId}-trigger`}
         type="button"
         data-testid={`font-picker-trigger-${role}`}
         aria-expanded={isOpen}
@@ -258,6 +261,7 @@ export const FontPicker: React.FC<FontPickerProps> = ({ label, role, value, onCh
               ref={searchInputRef}
               type="text"
               role="combobox"
+              aria-label={`Search ${label} fonts`}
               aria-expanded={isOpen}
               aria-controls={listboxId}
               aria-autocomplete="list"

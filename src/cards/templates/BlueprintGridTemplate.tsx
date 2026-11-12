@@ -135,7 +135,7 @@ export const BlueprintGridTemplate: React.FC<CardRenderProps> = ({
         >
           [ SPECIFICATION MODULE ]
         </span>
-        <h1
+        <div
           style={{
             fontSize: 64,
             fontWeight: 800,
@@ -150,7 +150,7 @@ export const BlueprintGridTemplate: React.FC<CardRenderProps> = ({
             accentColor={palette.accent}
             textColor={palette.text}
           />
-        </h1>
+        </div>
         {visibility.tagline && (
           <p
             style={{

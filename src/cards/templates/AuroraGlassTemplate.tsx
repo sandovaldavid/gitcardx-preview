@@ -114,7 +114,7 @@ export const AuroraGlassTemplate: React.FC<CardRenderProps> = ({
             gap: 16,
           }}
         >
-          <h1
+          <div
             style={{
               fontSize: 64,
               fontWeight: 800,
@@ -125,7 +125,7 @@ export const AuroraGlassTemplate: React.FC<CardRenderProps> = ({
             }}
           >
             {config.title || repo.name}
-          </h1>
+          </div>
           {visibility.tagline && (
             <p
               style={{

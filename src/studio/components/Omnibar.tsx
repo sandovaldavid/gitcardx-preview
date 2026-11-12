@@ -147,6 +147,7 @@ export const Omnibar: React.FC = () => {
           value={inputValue}
           onChange={(e) => handleInputChange(e.target.value)}
           placeholder="Search any repository (e.g. vercel/next.js or URL)..."
+          aria-label="Search GitHub repository"
           className="w-full h-10 pl-10 pr-24 rounded-full bg-zinc-900/90 border border-zinc-800 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm text-zinc-100 placeholder-zinc-500 outline-none transition-all shadow-inner"
         />
 
@@ -160,6 +161,7 @@ export const Omnibar: React.FC = () => {
                 setIsDropdownOpen(false);
                 inputRef.current?.focus();
               }}
+              aria-label="Clear repository search"
               className="p-1 text-zinc-500 hover:text-zinc-300 rounded-full hover:bg-zinc-800 transition-colors"
             >
               <X className="w-3.5 h-3.5" />

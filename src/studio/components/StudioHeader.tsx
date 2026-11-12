@@ -54,34 +54,35 @@ export const StudioHeader: React.FC = () => {
   }, [canUndo, canRedo, undo, redo]);
 
   return (
-    <header className="relative h-14 border-b border-zinc-800/80 bg-zinc-950/80 backdrop-blur-md px-4 flex items-center justify-between gap-4 z-40 shrink-0">
+    <header className="relative h-14 border-b border-zinc-800/80 bg-zinc-950/80 backdrop-blur-md px-3 sm:px-4 flex items-center justify-between gap-2 sm:gap-4 z-40 shrink-0">
       {/* Brand & Logo */}
-      <div className="flex items-center gap-3">
-        <Link href="/" className="flex items-center gap-2.5">
-          <GitframeLogo className="w-7 h-7" />
-          <div className="flex items-center gap-1.5">
-            <span className="font-bold text-base tracking-tight text-white">Gitframe</span>
-            <span className="text-[10px] uppercase font-mono font-semibold px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20 tracking-wider">
+      <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+        <Link href="/" className="flex items-center gap-2 sm:gap-2.5">
+          <GitframeLogo className="w-7 h-7 shrink-0" />
+          <h1 className="flex items-center gap-1.5 font-bold text-base tracking-tight text-white m-0">
+            <span>Gitframe</span>
+            <span className="hidden sm:inline text-[10px] uppercase font-mono font-semibold px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20 tracking-wider">
               {APP_VERSION_TAG}
             </span>
-          </div>
+          </h1>
         </Link>
       </div>
 
       {/* Omnibar Center */}
-      <div className="flex-1 flex justify-center max-w-2xl px-2">
+      <div className="flex-1 flex justify-center max-w-2xl px-1 sm:px-2 min-w-0">
         <Omnibar />
       </div>
 
       {/* Toolbar Right */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1 sm:gap-2 shrink-0">
         {/* Undo / Redo */}
-        <div className="flex items-center bg-zinc-900 border border-zinc-800 rounded-lg p-0.5">
+        <div className="hidden md:flex items-center bg-zinc-900 border border-zinc-800 rounded-lg p-0.5">
           <button
             type="button"
             onClick={undo}
             disabled={!canUndo()}
             title="Undo (⌘Z)"
+            aria-label="Undo"
             className="p-1.5 text-zinc-400 hover:text-white disabled:text-zinc-600 disabled:hover:text-zinc-600 rounded transition-colors"
           >
             <Undo2 className="w-4 h-4" />
@@ -91,6 +92,7 @@ export const StudioHeader: React.FC = () => {
             onClick={redo}
             disabled={!canRedo()}
             title="Redo (⇧⌘Z)"
+            aria-label="Redo"
             className="p-1.5 text-zinc-400 hover:text-white disabled:text-zinc-600 disabled:hover:text-zinc-600 rounded transition-colors"
           >
             <Redo2 className="w-4 h-4" />
@@ -102,7 +104,9 @@ export const StudioHeader: React.FC = () => {
           type="button"
           onClick={toggleSafeZoneGuides}
           title="Toggle 40px Safe Zone Guides"
-          className={`p-2 rounded-lg border text-xs font-medium transition-colors flex items-center gap-1.5 ${
+          aria-label="Toggle 40px safe zone guides"
+          aria-pressed={showSafeZoneGuides}
+          className={`hidden sm:flex p-2 rounded-lg border text-xs font-medium transition-colors items-center gap-1.5 ${
             showSafeZoneGuides
               ? 'bg-blue-600/10 border-blue-500/40 text-blue-400'
               : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white'
@@ -117,7 +121,8 @@ export const StudioHeader: React.FC = () => {
           type="button"
           onClick={resetConfig}
           title="Reset to defaults"
-          className="p-2 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white transition-colors"
+          aria-label="Reset card configuration to defaults"
+          className="hidden sm:flex p-2 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white transition-colors"
         >
           <RotateCcw className="w-4 h-4" />
         </button>
@@ -126,7 +131,8 @@ export const StudioHeader: React.FC = () => {
         <button
           type="button"
           onClick={() => setIsExportModalOpen(true)}
-          className="h-9 px-4 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold tracking-wide flex items-center gap-2 transition-all shadow-md shadow-blue-600/20 active:scale-95 cursor-pointer"
+          aria-label="Export card"
+          className="h-9 px-3 sm:px-4 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold tracking-wide flex items-center gap-1.5 sm:gap-2 transition-all shadow-md shadow-blue-600/20 active:scale-95 cursor-pointer shrink-0"
         >
           <Download className="w-4 h-4" />
           <span>Export Card</span>

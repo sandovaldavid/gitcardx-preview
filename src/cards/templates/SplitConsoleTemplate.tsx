@@ -114,7 +114,7 @@ export const SplitConsoleTemplate: React.FC<CardRenderProps> = ({
             gap: 14,
           }}
         >
-          <h1
+          <div
             style={{
               fontSize: 62,
               fontWeight: 800,
@@ -129,7 +129,7 @@ export const SplitConsoleTemplate: React.FC<CardRenderProps> = ({
               accentColor={palette.accent}
               textColor={palette.text}
             />
-          </h1>
+          </div>
           {visibility.tagline && (
             <p
               style={{

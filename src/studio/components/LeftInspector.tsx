@@ -51,7 +51,7 @@ export const LeftInspector: React.FC = () => {
   ];
 
   return (
-    <aside className="w-80 lg:w-88 border-r border-zinc-800/80 bg-zinc-950/70 backdrop-blur-md flex flex-col h-[calc(100vh-3.5rem)] overflow-y-auto z-20 shrink-0">
+    <aside className="w-full lg:w-80 xl:w-88 border-r border-zinc-800/80 bg-zinc-950/70 backdrop-blur-md flex flex-col h-full lg:h-[calc(100vh-3.5rem)] overflow-y-auto z-20 shrink-0">
       <div className="p-4 border-b border-zinc-800/80 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Sliders className="w-4 h-4 text-blue-400" />
@@ -77,6 +77,7 @@ export const LeftInspector: React.FC = () => {
             <button
               type="button"
               onClick={() => setContentAlign('left')}
+              aria-pressed={config.contentAlign === 'left'}
               className={`h-8 px-3 rounded-md text-xs font-medium flex items-center justify-center gap-2 transition-all ${
                 config.contentAlign === 'left'
                   ? 'bg-blue-600/10 border border-blue-500/40 text-blue-300 shadow-sm'
@@ -89,6 +90,7 @@ export const LeftInspector: React.FC = () => {
             <button
               type="button"
               onClick={() => setContentAlign('center')}
+              aria-pressed={config.contentAlign === 'center'}
               className={`h-8 px-3 rounded-md text-xs font-medium flex items-center justify-center gap-2 transition-all ${
                 config.contentAlign === 'center'
                   ? 'bg-blue-600/10 border border-blue-500/40 text-blue-300 shadow-sm'
@@ -103,11 +105,15 @@ export const LeftInspector: React.FC = () => {
 
         {/* Title Input */}
         <div className="flex flex-col gap-1.5">
-          <label className="text-xs font-medium text-zinc-400 flex items-center justify-between">
+          <label
+            htmlFor="card-title-input"
+            className="text-xs font-medium text-zinc-300 flex items-center justify-between"
+          >
             <span>Card Title</span>
-            <span className="text-[10px] font-mono text-zinc-600">{config.title.length}/100</span>
+            <span className="text-[10px] font-mono text-zinc-400">{config.title.length}/100</span>
           </label>
           <input
+            id="card-title-input"
             type="text"
             value={config.title}
             maxLength={100}
@@ -115,7 +121,7 @@ export const LeftInspector: React.FC = () => {
             placeholder="e.g. Next.js"
             className="w-full h-9 px-3 rounded-lg bg-zinc-900 border border-zinc-800 text-sm text-zinc-100 placeholder-zinc-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
           />
-          <span className="text-[10px] text-zinc-500 flex items-center gap-1">
+          <span className="text-[10px] text-zinc-400 flex items-center gap-1">
             <span className="text-blue-400 font-mono">*keyword*</span>
             <span>wraps with accent color</span>
           </span>
@@ -123,16 +129,22 @@ export const LeftInspector: React.FC = () => {
 
         {/* Tagline Textarea */}
         <div className="flex flex-col gap-1.5">
-          <label className="text-xs font-medium text-zinc-400 flex items-center justify-between">
+          <label
+            htmlFor="card-tagline-input"
+            className="text-xs font-medium text-zinc-300 flex items-center justify-between"
+          >
             <span className="flex items-center gap-1.5">
               <span>Tagline / Description</span>
-              <span className="text-[10px] font-mono text-zinc-600">
+              <span className="text-[10px] font-mono text-zinc-400">
                 {config.tagline.length}/300
               </span>
             </span>
             <button
               type="button"
               onClick={() => toggleVisibility('tagline')}
+              aria-label={
+                config.visibility.tagline ? 'Hide tagline on card' : 'Show tagline on card'
+              }
               title={config.visibility.tagline ? 'Hide tagline on card' : 'Show tagline on card'}
               className="p-1 rounded hover:bg-zinc-800/80 transition-colors"
             >
@@ -144,6 +156,7 @@ export const LeftInspector: React.FC = () => {
             </button>
           </label>
           <textarea
+            id="card-tagline-input"
             value={config.tagline}
             maxLength={300}
             rows={3}
@@ -157,7 +170,10 @@ export const LeftInspector: React.FC = () => {
 
         {/* Install Command Input */}
         <div className="flex flex-col gap-1.5">
-          <label className="text-xs font-medium text-zinc-400 flex items-center justify-between">
+          <label
+            htmlFor="card-install-input"
+            className="text-xs font-medium text-zinc-300 flex items-center justify-between"
+          >
             <span className="flex items-center gap-1.5">
               <Terminal className="w-3.5 h-3.5 text-blue-400" />
               <span>Install Command / Snippet</span>
@@ -165,6 +181,11 @@ export const LeftInspector: React.FC = () => {
             <button
               type="button"
               onClick={() => toggleVisibility('installCommand')}
+              aria-label={
+                config.visibility.installCommand
+                  ? 'Hide install command on card'
+                  : 'Show install command on card'
+              }
               title={
                 config.visibility.installCommand
                   ? 'Hide install command on card'
@@ -180,6 +201,7 @@ export const LeftInspector: React.FC = () => {
             </button>
           </label>
           <input
+            id="card-install-input"
             type="text"
             value={config.installCommand || ''}
             onChange={(e) => updateConfig({ installCommand: e.target.value })}
@@ -192,11 +214,15 @@ export const LeftInspector: React.FC = () => {
 
         {/* Custom Logo URL */}
         <div className="flex flex-col gap-1.5">
-          <label className="text-xs font-medium text-zinc-400 flex items-center gap-1.5">
+          <label
+            htmlFor="card-logo-url-input"
+            className="text-xs font-medium text-zinc-300 flex items-center gap-1.5"
+          >
             <ImageIcon className="w-3.5 h-3.5 text-blue-400" />
             <span>Custom Logo URL (optional)</span>
           </label>
           <input
+            id="card-logo-url-input"
             type="url"
             value={config.customLogoUrl || ''}
             onChange={(e) => updateConfig({ customLogoUrl: e.target.value })}
@@ -234,12 +260,12 @@ export const LeftInspector: React.FC = () => {
                   <div className="flex items-center gap-2.5 min-w-0">
                     <Icon
                       className={`w-3.5 h-3.5 shrink-0 transition-colors ${
-                        active ? 'text-blue-400' : 'text-zinc-600'
+                        active ? 'text-blue-400' : 'text-zinc-500'
                       }`}
                     />
                     <span
                       className={`truncate font-medium transition-colors ${
-                        active ? 'text-zinc-200' : 'line-through text-zinc-600'
+                        active ? 'text-zinc-200' : 'line-through text-zinc-400'
                       }`}
                     >
                       {label}
@@ -252,11 +278,13 @@ export const LeftInspector: React.FC = () => {
                       e.stopPropagation();
                       toggleVisibility(key);
                     }}
+                    aria-label={active ? `Hide ${label} on card` : `Show ${label} on card`}
+                    aria-pressed={active}
                     title={active ? `Hide ${label} on card` : `Show ${label} on card`}
                     className={`p-1 rounded-md transition-colors ${
                       active
                         ? 'text-blue-400 hover:text-blue-300 hover:bg-blue-500/10'
-                        : 'text-zinc-600 hover:text-zinc-400 hover:bg-zinc-800/60'
+                        : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/60'
                     }`}
                   >
                     {active ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
@@ -289,8 +317,11 @@ export const LeftInspector: React.FC = () => {
             <div className="mt-3 flex flex-col gap-3 p-3 rounded-xl bg-zinc-900/60 border border-zinc-800 animate-in fade-in duration-150">
               <div className="flex items-center gap-2">
                 <div className="flex-1">
-                  <label className="text-[11px] text-zinc-500">Stars</label>
+                  <label htmlFor="manual-stars-input" className="text-[11px] text-zinc-400">
+                    Stars
+                  </label>
                   <input
+                    id="manual-stars-input"
                     type="number"
                     min="0"
                     value={repo.stars}
@@ -301,8 +332,11 @@ export const LeftInspector: React.FC = () => {
                   />
                 </div>
                 <div className="flex-1">
-                  <label className="text-[11px] text-zinc-500">Forks</label>
+                  <label htmlFor="manual-forks-input" className="text-[11px] text-zinc-400">
+                    Forks
+                  </label>
                   <input
+                    id="manual-forks-input"
                     type="number"
                     min="0"
                     value={repo.forks}
@@ -316,8 +350,11 @@ export const LeftInspector: React.FC = () => {
 
               <div className="flex items-center gap-2">
                 <div className="flex-1">
-                  <label className="text-[11px] text-zinc-500">Open Issues</label>
+                  <label htmlFor="manual-issues-input" className="text-[11px] text-zinc-400">
+                    Open Issues
+                  </label>
                   <input
+                    id="manual-issues-input"
                     type="number"
                     min="0"
                     value={repo.openIssuesCount ?? ''}
@@ -338,8 +375,11 @@ export const LeftInspector: React.FC = () => {
                   />
                 </div>
                 <div className="flex-1">
-                  <label className="text-[11px] text-zinc-500">Discussions</label>
+                  <label htmlFor="manual-discussions-input" className="text-[11px] text-zinc-400">
+                    Discussions
+                  </label>
                   <input
+                    id="manual-discussions-input"
                     type="number"
                     min="0"
                     value={repo.discussionsCount ?? ''}
@@ -362,8 +402,11 @@ export const LeftInspector: React.FC = () => {
               </div>
 
               <div>
-                <label className="text-[11px] text-zinc-500">Owner Handle</label>
+                <label htmlFor="manual-owner-input" className="text-[11px] text-zinc-400">
+                  Owner Handle
+                </label>
                 <input
+                  id="manual-owner-input"
                   type="text"
                   value={repo.owner.login}
                   onChange={(e) =>
@@ -380,8 +423,11 @@ export const LeftInspector: React.FC = () => {
               </div>
 
               <div>
-                <label className="text-[11px] text-zinc-500">Primary Language</label>
+                <label htmlFor="manual-lang-input" className="text-[11px] text-zinc-400">
+                  Primary Language
+                </label>
                 <input
+                  id="manual-lang-input"
                   type="text"
                   value={repo.primaryLanguage?.name || ''}
                   onChange={(e) =>
@@ -405,8 +451,11 @@ export const LeftInspector: React.FC = () => {
 
               <div className="flex items-center gap-2">
                 <div className="flex-1">
-                  <label className="text-[11px] text-zinc-500">Release Version</label>
+                  <label htmlFor="manual-release-input" className="text-[11px] text-zinc-400">
+                    Release Version
+                  </label>
                   <input
+                    id="manual-release-input"
                     type="text"
                     value={repo.latestRelease?.tag || ''}
                     onChange={(e) =>
@@ -429,8 +478,11 @@ export const LeftInspector: React.FC = () => {
                   />
                 </div>
                 <div className="flex-1">
-                  <label className="text-[11px] text-zinc-500">License</label>
+                  <label htmlFor="manual-license-input" className="text-[11px] text-zinc-400">
+                    License
+                  </label>
                   <input
+                    id="manual-license-input"
                     type="text"
                     value={repo.license || ''}
                     onChange={(e) =>

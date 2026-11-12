@@ -194,7 +194,7 @@ export const VersionHeroTemplate: React.FC<CardRenderProps> = ({
           </div>
         )}
 
-        <h1
+        <div
           style={{
             fontSize: 64,
             fontWeight: 800,
@@ -209,7 +209,7 @@ export const VersionHeroTemplate: React.FC<CardRenderProps> = ({
             accentColor={palette.accent}
             textColor={palette.text}
           />
-        </h1>
+        </div>
 
         {visibility.tagline && (
           <p

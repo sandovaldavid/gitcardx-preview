@@ -151,7 +151,7 @@ export const MetricShowcaseTemplate: React.FC<CardRenderProps> = ({
             minWidth: 0,
           }}
         >
-          <h1
+          <div
             style={{
               fontSize: 64,
               fontWeight: 800,
@@ -166,7 +166,7 @@ export const MetricShowcaseTemplate: React.FC<CardRenderProps> = ({
               accentColor={palette.accent}
               textColor={palette.text}
             />
-          </h1>
+          </div>
           {visibility.tagline && (
             <p
               style={{

@@ -100,12 +100,13 @@ export const RightInspector: React.FC = () => {
   const wcagRating = ThemeEngine.checkWcag(config.palette.background, config.palette.text);
 
   return (
-    <aside className="w-80 lg:w-92 border-l border-zinc-800/80 bg-zinc-950/70 backdrop-blur-md flex flex-col h-[calc(100vh-3.5rem)] overflow-y-auto z-20 shrink-0">
+    <aside className="w-full lg:w-80 xl:w-92 border-l border-zinc-800/80 bg-zinc-950/70 backdrop-blur-md flex flex-col h-full lg:h-[calc(100vh-3.5rem)] overflow-y-auto z-20 shrink-0">
       {/* Tab Switcher Header */}
       <div className="p-2 border-b border-zinc-800/80 grid grid-cols-5 gap-1">
         <button
           type="button"
           onClick={() => setActiveRightTab('templates')}
+          aria-pressed={activeRightTab === 'templates'}
           title="Templates"
           className={`flex flex-col items-center justify-center py-2 rounded-lg text-[10px] font-medium transition-all ${
             activeRightTab === 'templates'
@@ -120,6 +121,7 @@ export const RightInspector: React.FC = () => {
         <button
           type="button"
           onClick={() => setActiveRightTab('theme')}
+          aria-pressed={activeRightTab === 'theme'}
           title="Theme & Colors"
           className={`flex flex-col items-center justify-center py-2 rounded-lg text-[10px] font-medium transition-all ${
             activeRightTab === 'theme'
@@ -134,6 +136,7 @@ export const RightInspector: React.FC = () => {
         <button
           type="button"
           onClick={() => setActiveRightTab('background')}
+          aria-pressed={activeRightTab === 'background'}
           title="Backgrounds"
           className={`flex flex-col items-center justify-center py-2 rounded-lg text-[10px] font-medium transition-all ${
             activeRightTab === 'background'
@@ -148,6 +151,7 @@ export const RightInspector: React.FC = () => {
         <button
           type="button"
           onClick={() => setActiveRightTab('typography')}
+          aria-pressed={activeRightTab === 'typography'}
           title="Typography"
           className={`flex flex-col items-center justify-center py-2 rounded-lg text-[10px] font-medium transition-all ${
             activeRightTab === 'typography'
@@ -162,6 +166,7 @@ export const RightInspector: React.FC = () => {
         <button
           type="button"
           onClick={() => setActiveRightTab('vault')}
+          aria-pressed={activeRightTab === 'vault'}
           title="Brand Vault"
           className={`flex flex-col items-center justify-center py-2 rounded-lg text-[10px] font-medium transition-all ${
             activeRightTab === 'vault'
@@ -326,11 +331,12 @@ export const RightInspector: React.FC = () => {
               <div className="flex items-center justify-between">
                 <span className="text-xs text-zinc-400">Background</span>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-mono text-zinc-500">
+                  <span className="text-xs font-mono text-zinc-400">
                     {config.palette.background}
                   </span>
                   <input
                     type="color"
+                    aria-label="Background color"
                     value={config.palette.background}
                     onChange={(e) => setPalette({ ...config.palette, background: e.target.value })}
                     className="w-7 h-7 rounded cursor-pointer bg-transparent border-0"
@@ -341,9 +347,10 @@ export const RightInspector: React.FC = () => {
               <div className="flex items-center justify-between">
                 <span className="text-xs text-zinc-400">Primary Text</span>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-mono text-zinc-500">{config.palette.text}</span>
+                  <span className="text-xs font-mono text-zinc-400">{config.palette.text}</span>
                   <input
                     type="color"
+                    aria-label="Primary text color"
                     value={config.palette.text}
                     onChange={(e) => setPalette({ ...config.palette, text: e.target.value })}
                     className="w-7 h-7 rounded cursor-pointer bg-transparent border-0"
@@ -354,9 +361,10 @@ export const RightInspector: React.FC = () => {
               <div className="flex items-center justify-between">
                 <span className="text-xs text-zinc-400">Accent Color</span>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-mono text-zinc-500">{config.palette.accent}</span>
+                  <span className="text-xs font-mono text-zinc-400">{config.palette.accent}</span>
                   <input
                     type="color"
+                    aria-label="Accent color"
                     value={config.palette.accent}
                     onChange={(e) => setPalette({ ...config.palette, accent: e.target.value })}
                     className="w-7 h-7 rounded cursor-pointer bg-transparent border-0"
@@ -367,9 +375,10 @@ export const RightInspector: React.FC = () => {
               <div className="flex items-center justify-between">
                 <span className="text-xs text-zinc-400">Border Color</span>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-mono text-zinc-500">{config.palette.border}</span>
+                  <span className="text-xs font-mono text-zinc-400">{config.palette.border}</span>
                   <input
                     type="color"
+                    aria-label="Border color"
                     value={config.palette.border}
                     onChange={(e) => setPalette({ ...config.palette, border: e.target.value })}
                     className="w-7 h-7 rounded cursor-pointer bg-transparent border-0"
@@ -424,6 +433,7 @@ export const RightInspector: React.FC = () => {
                     <span>Upload Texture (Max 500 KB)</span>
                     <input
                       type="file"
+                      aria-label="Upload texture file"
                       accept="image/png,image/jpeg,image/webp,image/svg+xml"
                       className="hidden"
                       onChange={handleCustomImageUpload}
@@ -439,6 +449,7 @@ export const RightInspector: React.FC = () => {
                   <div className="flex gap-1.5">
                     <input
                       type="url"
+                      aria-label="Custom background texture URL"
                       value={config.customBackgroundUrl || ''}
                       onChange={(e) => updateConfig({ customBackgroundUrl: e.target.value })}
                       placeholder="https://... or data:image/..."
@@ -450,6 +461,7 @@ export const RightInspector: React.FC = () => {
                         onClick={() => updateConfig({ customBackgroundUrl: undefined })}
                         className="p-1.5 rounded-lg bg-zinc-900 border border-zinc-800 hover:border-red-500/50 text-zinc-400 hover:text-red-400 transition-colors cursor-pointer"
                         title="Clear backdrop image"
+                        aria-label="Clear backdrop image"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -469,6 +481,7 @@ export const RightInspector: React.FC = () => {
               </div>
               <input
                 type="range"
+                aria-label="Pattern opacity"
                 min="0"
                 max="100"
                 value={Math.round((config.backgroundPattern.opacity ?? 0.4) * 100)}
@@ -487,6 +500,7 @@ export const RightInspector: React.FC = () => {
               </div>
               <input
                 type="range"
+                aria-label="Pattern scale"
                 min="25"
                 max="300"
                 step="5"
@@ -513,12 +527,14 @@ export const RightInspector: React.FC = () => {
               <div className="flex items-center gap-2">
                 <input
                   type="color"
+                  aria-label="Pattern color override picker"
                   value={config.backgroundPattern.color || config.palette.accent}
                   onChange={(e) => setBackgroundPattern({ color: e.target.value })}
                   className="w-7 h-7 rounded border border-zinc-800 bg-transparent cursor-pointer"
                 />
                 <input
                   type="text"
+                  aria-label="Pattern color override hex code"
                   maxLength={7}
                   value={config.backgroundPattern.color || ''}
                   onChange={(e) => {
