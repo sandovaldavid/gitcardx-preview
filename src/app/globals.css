@@ -37,6 +37,8 @@
 }
 
 :root {
+  color-scheme: dark;
+
   /* Neutral surfaces (prevent color spill onto the canvas) */
   --bg-canvas: #09090b;
   --bg-surface: #121215;
@@ -75,6 +77,37 @@ body {
   background-color: var(--bg-canvas);
   color: var(--text-primary);
   font-family: var(--font-sans);
+}
+
+/* Dialog overscroll containment as per Modern Web Guidance */
+dialog:modal {
+  overscroll-behavior: contain;
+}
+
+dialog::backdrop {
+  overflow: hidden;
+  overscroll-behavior: contain;
+}
+
+.skip-link {
+  position: absolute;
+  top: -9999px;
+  left: -9999px;
+  z-index: 100;
+  padding: 0.75rem 1.25rem;
+  background-color: var(--brand-cobalt);
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.875rem;
+  border-radius: 0.5rem;
+  text-decoration: none;
+}
+
+.skip-link:focus {
+  top: 1rem;
+  left: 1rem;
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
 }
 
 /* Scroll-driven reveal: content stays visible when the feature is unsupported. */

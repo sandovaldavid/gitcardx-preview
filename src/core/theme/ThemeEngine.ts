@@ -57,7 +57,9 @@ export class ThemeEngine {
   static getContrastTextColor(surfaceColor: string): string {
     const c = colord(surfaceColor);
     if (!c.isValid()) return '#ffffff';
-    return c.isDark() ? '#ffffff' : '#090d16';
+    const contrastWhite = c.contrast('#ffffff');
+    const contrastBlack = c.contrast('#090d16');
+    return contrastWhite >= contrastBlack ? '#ffffff' : '#090d16';
   }
 
   /**
@@ -149,10 +151,10 @@ export class ThemeEngine {
         l: 7,
       }).toHex();
 
-      // Ensure accent has at least 3.5:1 contrast against dark background
+      // Ensure accent has at least 4.5:1 contrast against dark background for WCAG AA
       let accent = baseColor;
-      if (colord(background).contrast(accent) < 3.5) {
-        accent = accent.lighten(0.2);
+      for (let i = 0; i < 10 && colord(background).contrast(accent) < 4.5; i++) {
+        accent = accent.lighten(0.08);
       }
 
       // Border with subtle language tint
@@ -173,10 +175,10 @@ export class ThemeEngine {
     // Light mode
     const background = '#ffffff';
 
-    // Ensure accent has at least 3.5:1 contrast against white
+    // Ensure accent has at least 4.5:1 contrast against white for WCAG AA
     let accent = baseColor;
-    if (colord(background).contrast(accent) < 3.5) {
-      accent = accent.darken(0.2);
+    for (let i = 0; i < 10 && colord(background).contrast(accent) < 4.5; i++) {
+      accent = accent.darken(0.08);
     }
 
     const border = colord({

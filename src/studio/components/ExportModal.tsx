@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   X,
   Download,
@@ -20,8 +20,18 @@ export const ExportModal: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'download' | 'readme' | 'meta'>('download');
   const [copiedType, setCopiedType] = useState<string | null>(null);
   const [isExporting, setIsExporting] = useState(false);
+  const [exportError, setExportError] = useState<string | null>(null);
   const [linkTarget, setLinkTarget] = useState<'gitframe' | 'github' | 'none'>('gitframe');
   const [readmeSnippetFormat, setReadmeSnippetFormat] = useState<'markdown' | 'picture'>('picture');
+  const dialogRef = useRef<HTMLDialogElement>(null);
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    if (isExportModalOpen && !dialog.open) {
+      dialog.showModal();
+    }
+  }, [isExportModalOpen]);
 
   if (!isExportModalOpen) return null;
 
@@ -88,7 +98,8 @@ export const ExportModal: React.FC = () => {
         setCopiedType('image');
         setTimeout(() => setCopiedType(null), 2000);
       } else {
-        // Fallback: If browser restricts direct image clipboard write, trigger immediate download
+        // Fallback: if the browser restricts image clipboard writes, download instead and
+        // report what actually happened instead of claiming the image was copied.
         const blobUrl = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = blobUrl;
@@ -96,13 +107,13 @@ export const ExportModal: React.FC = () => {
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
-        URL.revokeObjectURL(blobUrl);
-        setCopiedType('image');
-        setTimeout(() => setCopiedType(null), 2000);
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+        setCopiedType('image-download');
+        setTimeout(() => setCopiedType(null), 3000);
       }
     } catch (err) {
       console.error('Failed to copy image to clipboard:', err);
-      handleDownload('png');
+      setExportError('Clipboard is unavailable. Use Download Standard PNG instead.');
     } finally {
       setIsExporting(false);
     }
@@ -136,10 +147,11 @@ export const ExportModal: React.FC = () => {
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-      URL.revokeObjectURL(blobUrl);
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+      setExportError(null);
     } catch (err) {
       console.error('Export download error:', err);
-      alert('Failed to download card file.');
+      setExportError('Failed to download the card. Please try again.');
     } finally {
       setIsExporting(false);
     }
@@ -188,32 +200,62 @@ export const ExportModal: React.FC = () => {
   const htmlMetaSnippet = `<meta property="og:title" content="${config.title || repoName}" />\n<meta property="og:description" content="${config.tagline || repo.description || ''}" />\n<meta property="og:image" content="${defaultCardUrl}" />\n<meta property="og:image:width" content="1280" />\n<meta property="og:image:height" content="640" />\n<meta name="twitter:card" content="summary_large_image" />\n<meta name="twitter:image" content="${defaultCardUrl}" />`;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-150">
-      <div className="w-full max-w-2xl bg-zinc-900 border border-zinc-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col">
+    <dialog
+      ref={dialogRef}
+      id="export-dialog"
+      aria-labelledby="export-dialog-title"
+      onClose={() => setIsExportModalOpen(false)}
+      onClick={(event) => {
+        if (event.target === event.currentTarget) setIsExportModalOpen(false);
+      }}
+      className="m-auto w-[min(42rem,calc(100vw-2rem))] max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-2xl border border-zinc-800 bg-zinc-900 p-0 text-zinc-100 shadow-2xl backdrop:bg-black/75 backdrop:backdrop-blur-md"
+    >
+      <div className="w-full bg-zinc-900 flex flex-col">
+        <span className="sr-only" role="status" aria-live="polite">
+          {copiedType
+            ? copiedType === 'image-download'
+              ? 'PNG downloaded because clipboard access is unavailable'
+              : `Copied ${copiedType}`
+            : ''}
+        </span>
+
         {/* Header */}
         <div className="px-6 py-4 border-b border-zinc-800 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-blue-400" />
-            <h3 className="text-base font-semibold text-zinc-100">Export & Integrate Card</h3>
+            <h2 id="export-dialog-title" className="text-base font-semibold text-zinc-100">
+              Export & Integrate Card
+            </h2>
           </div>
           <button
             type="button"
             onClick={() => setIsExportModalOpen(false)}
-            className="p-1 text-zinc-500 hover:text-zinc-300 rounded-lg transition-colors cursor-pointer"
+            aria-label="Close export dialog"
+            className="p-1 min-h-6 min-w-6 text-zinc-400 hover:text-zinc-200 rounded-lg transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
+
+        {exportError && (
+          <div
+            role="alert"
+            className="mx-6 mt-4 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-xs text-red-300"
+          >
+            {exportError}
+          </div>
+        )}
 
         {/* Tabs */}
         <div className="px-6 pt-3 border-b border-zinc-800 flex gap-4">
           <button
             type="button"
             onClick={() => setActiveTab('download')}
+            aria-pressed={activeTab === 'download'}
             className={`pb-3 text-xs font-semibold border-b-2 transition-all flex items-center gap-2 cursor-pointer ${
               activeTab === 'download'
                 ? 'border-blue-500 text-blue-400'
-                : 'border-transparent text-zinc-400 hover:text-zinc-200'
+                : 'border-transparent text-zinc-300 hover:text-white'
             }`}
           >
             <FileImage className="w-4 h-4" />
@@ -223,10 +265,11 @@ export const ExportModal: React.FC = () => {
           <button
             type="button"
             onClick={() => setActiveTab('readme')}
+            aria-pressed={activeTab === 'readme'}
             className={`pb-3 text-xs font-semibold border-b-2 transition-all flex items-center gap-2 cursor-pointer ${
               activeTab === 'readme'
                 ? 'border-blue-500 text-blue-400'
-                : 'border-transparent text-zinc-400 hover:text-zinc-200'
+                : 'border-transparent text-zinc-300 hover:text-white'
             }`}
           >
             <Code2 className="w-4 h-4" />
@@ -236,10 +279,11 @@ export const ExportModal: React.FC = () => {
           <button
             type="button"
             onClick={() => setActiveTab('meta')}
+            aria-pressed={activeTab === 'meta'}
             className={`pb-3 text-xs font-semibold border-b-2 transition-all flex items-center gap-2 cursor-pointer ${
               activeTab === 'meta'
                 ? 'border-blue-500 text-blue-400'
-                : 'border-transparent text-zinc-400 hover:text-zinc-200'
+                : 'border-transparent text-zinc-300 hover:text-white'
             }`}
           >
             <ExternalLink className="w-4 h-4" />
@@ -295,6 +339,11 @@ export const ExportModal: React.FC = () => {
                     <Check className="w-3.5 h-3.5 text-emerald-400" />
                     <span className="text-emerald-400">Copied PNG to Clipboard!</span>
                   </>
+                ) : copiedType === 'image-download' ? (
+                  <>
+                    <Check className="w-3.5 h-3.5 text-emerald-400" />
+                    <span className="text-emerald-400">Downloaded PNG (clipboard unavailable)</span>
+                  </>
                 ) : (
                   <>
                     <ClipboardCheck className="w-3.5 h-3.5 text-blue-400" />
@@ -314,7 +363,7 @@ export const ExportModal: React.FC = () => {
             </div>
 
             <div className="pt-3 border-t border-zinc-800 flex items-center justify-between text-xs">
-              <span className="text-zinc-500">Need to upload to GitHub?</span>
+              <span className="text-zinc-400">Need to upload to GitHub?</span>
               <a
                 href={`https://github.com/${owner}/${repoName}/settings`}
                 target="_blank"
@@ -346,7 +395,8 @@ export const ExportModal: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setReadmeSnippetFormat('picture')}
-                  className={`px-2 py-1 rounded font-semibold transition-colors ${
+                  aria-pressed={readmeSnippetFormat === 'picture'}
+                  className={`px-2 py-1 rounded font-semibold transition-colors cursor-pointer ${
                     readmeSnippetFormat === 'picture'
                       ? 'bg-blue-600 text-white'
                       : 'text-zinc-400 hover:text-zinc-200'
@@ -358,7 +408,8 @@ export const ExportModal: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setReadmeSnippetFormat('markdown')}
-                  className={`px-2 py-1 rounded font-semibold transition-colors ${
+                  aria-pressed={readmeSnippetFormat === 'markdown'}
+                  className={`px-2 py-1 rounded font-semibold transition-colors cursor-pointer ${
                     readmeSnippetFormat === 'markdown'
                       ? 'bg-blue-600 text-white'
                       : 'text-zinc-400 hover:text-zinc-200'
@@ -369,11 +420,14 @@ export const ExportModal: React.FC = () => {
               </div>
 
               <div className="flex items-center gap-2">
-                <span className="text-zinc-400">Click target:</span>
+                <label htmlFor="export-link-target" className="text-zinc-300">
+                  Click target:
+                </label>
                 <select
+                  id="export-link-target"
                   value={linkTarget}
                   onChange={(e) => setLinkTarget(e.target.value as 'gitframe' | 'github' | 'none')}
-                  className="bg-zinc-900 border border-zinc-800 rounded px-2 py-0.5 text-zinc-200 outline-none"
+                  className="bg-zinc-900 border border-zinc-600 rounded px-2 py-0.5 text-zinc-200 focus-visible:outline-2 focus-visible:outline-blue-400"
                 >
                   <option value="gitframe">Gitframe Studio Page</option>
                   <option value="github">GitHub Repo</option>
@@ -447,6 +501,6 @@ export const ExportModal: React.FC = () => {
           </div>
         )}
       </div>
-    </div>
+    </dialog>
   );
 };

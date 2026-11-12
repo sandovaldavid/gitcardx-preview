@@ -110,6 +110,7 @@ export const SocialSimulator: React.FC = () => {
               key={p.id}
               type="button"
               onClick={() => setPlatform(p.id)}
+              aria-pressed={platform === p.id}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                 platform === p.id
                   ? 'bg-blue-600 text-white shadow-sm'
@@ -126,6 +127,8 @@ export const SocialSimulator: React.FC = () => {
           <button
             type="button"
             onClick={() => setIsDark(false)}
+            aria-label="Simulate light mode"
+            aria-pressed={!isDark}
             title="Light Mode Simulation"
             className={`p-1.5 rounded transition-colors ${
               !isDark ? 'bg-zinc-800 text-amber-400' : 'text-zinc-500 hover:text-zinc-300'
@@ -136,6 +139,8 @@ export const SocialSimulator: React.FC = () => {
           <button
             type="button"
             onClick={() => setIsDark(true)}
+            aria-label="Simulate dark mode"
+            aria-pressed={isDark}
             title="Dark Mode Simulation"
             className={`p-1.5 rounded transition-colors ${
               isDark ? 'bg-zinc-800 text-blue-400' : 'text-zinc-500 hover:text-zinc-300'
@@ -323,13 +328,13 @@ export const SocialSimulator: React.FC = () => {
                 >
                   gitframe.dev
                 </span>
-                <h4
+                <div
                   className={`font-bold text-sm truncate mt-0.5 ${
                     isDark ? 'text-white' : 'text-zinc-900'
                   }`}
                 >
                   {config.title || repo.name}
-                </h4>
+                </div>
                 <p
                   className={`text-xs line-clamp-1 mt-0.5 ${
                     isDark ? 'text-zinc-300' : 'text-zinc-600'

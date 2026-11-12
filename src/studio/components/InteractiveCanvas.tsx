@@ -82,6 +82,7 @@ export const InteractiveCanvas: React.FC = () => {
         <button
           type="button"
           onClick={() => setViewMode('canvas')}
+          aria-pressed={viewMode === 'canvas'}
           className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold transition-all ${
             viewMode === 'canvas'
               ? 'bg-blue-600 text-white shadow'
@@ -95,6 +96,7 @@ export const InteractiveCanvas: React.FC = () => {
         <button
           type="button"
           onClick={() => setViewMode('social')}
+          aria-pressed={viewMode === 'social'}
           className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold transition-all ${
             viewMode === 'social'
               ? 'bg-blue-600 text-white shadow'
@@ -108,12 +110,16 @@ export const InteractiveCanvas: React.FC = () => {
 
       {/* Error Notification Toast */}
       {fetchError && (
-        <div className="absolute top-14 z-50 px-4 py-2.5 rounded-xl bg-red-950/90 border border-red-800 text-red-200 text-xs flex items-center gap-2.5 shadow-xl animate-in fade-in slide-in-from-top-2">
+        <div
+          role="alert"
+          className="absolute top-14 z-50 px-4 py-2.5 rounded-xl bg-red-950/90 border border-red-800 text-red-200 text-xs flex items-center gap-2.5 shadow-xl animate-in fade-in slide-in-from-top-2"
+        >
           <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
           <span>{fetchError}</span>
           <button
             type="button"
             onClick={() => setFetchError(null)}
+            aria-label="Dismiss error notification"
             className="p-1 hover:bg-red-900/50 rounded-full text-red-400 hover:text-red-100"
           >
             <X className="w-3.5 h-3.5" />
@@ -176,12 +182,16 @@ export const InteractiveCanvas: React.FC = () => {
               type="button"
               onClick={() => setZoom(zoom - 0.1)}
               title="Zoom Out"
+              aria-label="Zoom out"
               className="p-1.5 hover:text-white hover:bg-zinc-800 rounded-full transition-colors"
             >
               <ZoomOut className="w-3.5 h-3.5" />
             </button>
 
-            <span className="text-xs font-mono px-2 font-medium min-w-12 text-center">
+            <span
+              className="text-xs font-mono px-2 font-medium min-w-12 text-center"
+              aria-label={`Current zoom: ${Math.round(zoom * 100)} percent`}
+            >
               {Math.round(zoom * 100)}%
             </span>
 
@@ -189,6 +199,7 @@ export const InteractiveCanvas: React.FC = () => {
               type="button"
               onClick={() => setZoom(zoom + 0.1)}
               title="Zoom In"
+              aria-label="Zoom in"
               className="p-1.5 hover:text-white hover:bg-zinc-800 rounded-full transition-colors"
             >
               <ZoomIn className="w-3.5 h-3.5" />
@@ -200,6 +211,7 @@ export const InteractiveCanvas: React.FC = () => {
               type="button"
               onClick={() => setZoom(1.0)}
               title="Fit to Screen (100%)"
+              aria-label="Fit to screen"
               className="p-1.5 hover:text-white hover:bg-zinc-800 rounded-full transition-colors text-xs"
             >
               <Maximize2 className="w-3.5 h-3.5" />

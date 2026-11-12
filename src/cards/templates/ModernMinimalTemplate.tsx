@@ -129,7 +129,7 @@ export const ModernMinimalTemplate: React.FC<CardRenderProps> = ({
           margin: isCenter ? '0 auto' : undefined,
         }}
       >
-        <h1
+        <div
           style={{
             fontSize: 64,
             fontWeight: 800,
@@ -144,7 +144,7 @@ export const ModernMinimalTemplate: React.FC<CardRenderProps> = ({
             accentColor={palette.accent}
             textColor={palette.text}
           />
-        </h1>
+        </div>
 
         {visibility.tagline && (
           <p

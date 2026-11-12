@@ -5,3 +5,4 @@ out
 bun.lock
 public/fonts
 CHANGELOG.md
+session-*.md

@@ -18,7 +18,7 @@ export default function HomePage() {
   return (
     <div className="flex min-h-screen flex-col bg-zinc-950 text-zinc-100">
       <LandingNavbar />
-      <main className="flex-1">
+      <main id="main-content" tabIndex={-1} className="flex-1 outline-none">
         <HeroGenerator />
         <ComparisonSection />
         <ShowcaseSection />
