@@ -102,6 +102,11 @@ describe('parseGitHubInput', () => {
     }
   });
 
+  it('rejects look-alike GitHub hostnames', () => {
+    expect(parseGitHubInput('https://github.com.evil.com/a/b').type).toBe('invalid');
+    expect(parseGitHubInput('https://evilgithub.com/a/b').type).toBe('invalid');
+  });
+
   it('rejects invalid inputs with special forbidden characters', () => {
     const res = parseGitHubInput('invalid$name/repo!');
     expect(res.type).toBe('invalid');

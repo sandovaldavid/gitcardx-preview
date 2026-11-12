@@ -8,8 +8,10 @@ import {
   type CardConfig,
   type RepoMetadata,
 } from '@/core/domain/schemas';
+import { isValidGitHubOwner, isValidGitHubRepo } from '@/core/domain/parser';
 import { PRESET_PALETTES, ThemeEngine } from '@/core/theme/ThemeEngine';
 import { sanitizeImageUrl } from '@/core/security/ssrf';
+import { escapeXml } from '@/core/security/xml';
 import {
   DEFAULT_HEADING_FONT,
   DEFAULT_MONO_FONT,
@@ -37,6 +39,17 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
   } else if (repo.endsWith('.svg')) {
     repo = repo.slice(0, -4);
     inferredFormat = 'svg';
+  }
+
+  if (!isValidGitHubOwner(owner) || !isValidGitHubRepo(repo)) {
+    return new Response('Invalid GitHub owner or repository name.', {
+      status: 400,
+      headers: {
+        'Content-Type': 'text/plain; charset=utf-8',
+        'Cache-Control': 'no-store',
+        'X-Content-Type-Options': 'nosniff',
+      },
+    });
   }
 
   const { searchParams } = new URL(request.url);
@@ -89,7 +102,11 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
   const rawAccent = searchParams.get('accent');
   let customAccent: string | null = null;
   if (rawAccent) {
-    customAccent = rawAccent.startsWith('#') ? rawAccent : `#${rawAccent}`;
+    const formattedAccent = rawAccent.startsWith('#') ? rawAccent : `#${rawAccent}`;
+    const parsedAccent = ColorSchema.safeParse(formattedAccent);
+    if (parsedAccent.success) {
+      customAccent = parsedAccent.data;
+    }
   }
 
   // Fetch or create fallback RepoMetadata
@@ -207,6 +224,7 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
   const headers = {
     'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=604800',
     'Content-Type': format === 'svg' ? 'image/svg+xml; charset=utf-8' : 'image/png',
+    'X-Content-Type-Options': 'nosniff',
   };
 
   try {
@@ -219,16 +237,21 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
     return new Response(new Uint8Array(png), { status: 200, headers });
   } catch (renderError) {
     console.error('Failed to render card in /api/card:', renderError);
-    // Emergency inline SVG response if Satori/Resvg fails
+    // Emergency inline SVG response if Satori/Resvg fails. Keep it cache-free and
+    // script-free so a renderer failure cannot turn into a same-origin XSS.
+    const fallbackLabel = escapeXml(`${owner}/${repo}`);
     const fallbackSvg = `<svg width="1280" height="640" viewBox="0 0 1280 640" xmlns="http://www.w3.org/2000/svg">
       <rect width="1280" height="640" fill="#090d16"/>
-      <text x="640" y="320" font-family="sans-serif" font-size="48" font-weight="bold" fill="#ffffff" text-anchor="middle">${owner}/${repo}</text>
+      <text x="640" y="320" font-family="sans-serif" font-size="48" font-weight="bold" fill="#ffffff" text-anchor="middle">${fallbackLabel}</text>
     </svg>`;
     return new Response(fallbackSvg, {
       status: 200,
       headers: {
-        'Cache-Control': 'no-cache',
+        'Cache-Control': 'no-store',
         'Content-Type': 'image/svg+xml; charset=utf-8',
+        'Content-Security-Policy': "default-src 'none'; style-src 'unsafe-inline'; sandbox",
+        'X-Content-Type-Options': 'nosniff',
+        'X-Gitframe-Degraded': '1',
       },
     });
   }
