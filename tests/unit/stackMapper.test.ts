@@ -85,6 +85,16 @@ describe('stackMapper', () => {
       expect(suggestInstallCommand([], ['cli', 'terminal'], 'create-app')).toBe('npx create-app');
     });
 
+    it('does not suggest go get for non-Go projects that happen to have topics containing "go" as substring', () => {
+      expect(
+        suggestInstallCommand(
+          [{ name: 'TypeScript' }],
+          ['mongodb', 'django', 'argo', 'algorithms'],
+          'my-app'
+        )
+      ).toBe('bun add my-app');
+    });
+
     it('defaults to bun add for general JS/TS repositories', () => {
       expect(suggestInstallCommand([{ name: 'TypeScript' }], [], 'gitframe')).toBe(
         'bun add gitframe'

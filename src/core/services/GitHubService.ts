@@ -534,15 +534,28 @@ export class GitHubService {
 
           if (!isNaN(lastPage) && lastPage > 1) {
             try {
-              const lastPageRes = await githubFetch(
-                `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/contributors?per_page=5&anon=true&page=${lastPage}`,
+              let countRes = await githubFetch(
+                `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/contributors?per_page=1&anon=true`,
                 { headers: authHeaders }
               );
-              if (lastPageRes.ok) {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                const lastPageData = (await lastPageRes.json()) as any[];
-                if (Array.isArray(lastPageData)) {
-                  contributorsCount = (lastPage - 1) * 5 + lastPageData.length;
+              if (
+                !countRes.ok &&
+                (countRes.status === 401 || countRes.status === 403 || countRes.status === 429) &&
+                this.authToken
+              ) {
+                countRes = await githubFetch(
+                  `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/contributors?per_page=1&anon=true`,
+                  { headers: baseHeaders }
+                );
+              }
+              if (countRes.ok) {
+                const countLink = countRes.headers.get('link') || '';
+                const countMatch = countLink.match(/page=(\d+)>;\s*rel="last"/);
+                if (countMatch && countMatch[1]) {
+                  const exactCount = parseInt(countMatch[1], 10);
+                  if (!isNaN(exactCount) && exactCount > 0) {
+                    contributorsCount = exactCount;
+                  }
                 }
               }
             } catch {
@@ -822,13 +835,25 @@ export class GitHubService {
           'User-Agent': 'Gitframe',
           Accept: 'application/vnd.github.v3+json',
         };
-        if (this.authToken) {
-          baseHeaders.Authorization = `token ${this.authToken}`;
-        }
-        const contribsCountRes = await githubFetch(
+        const headers: Record<string, string> = this.authToken
+          ? { ...baseHeaders, Authorization: `token ${this.authToken}` }
+          : baseHeaders;
+        let contribsCountRes = await githubFetch(
           `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/contributors?per_page=1&anon=true`,
-          { headers: baseHeaders }
+          { headers }
         );
+        if (
+          !contribsCountRes.ok &&
+          (contribsCountRes.status === 401 ||
+            contribsCountRes.status === 403 ||
+            contribsCountRes.status === 429) &&
+          this.authToken
+        ) {
+          contribsCountRes = await githubFetch(
+            `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/contributors?per_page=1&anon=true`,
+            { headers: baseHeaders }
+          );
+        }
         if (contribsCountRes.ok) {
           const link = contribsCountRes.headers.get('link') || '';
           const matchLast = link.match(/page=(\d+)>;\s*rel="last"/);
@@ -848,7 +873,11 @@ export class GitHubService {
       return parsed;
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : String(error);
-      if (message.includes('Could not resolve to a Repository') || message.includes('404')) {
+      if (
+        message.includes('Could not resolve to a Repository') ||
+        message.includes('404') ||
+        message.includes('was not found or is private')
+      ) {
         throw new Error(`Repository '${owner}/${repo}' was not found or is private.`);
       }
 

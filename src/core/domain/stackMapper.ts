@@ -156,7 +156,7 @@ export function suggestInstallCommand(
     return `pip install ${repoName}`;
   }
 
-  if (allTerms.some((t) => t.includes('go') || t === 'golang')) {
+  if (allTerms.some((t) => t === 'go' || t === 'golang')) {
     const qualified = owner ? `github.com/${owner}/${repoName}` : repoName;
     return `go get ${qualified}`;
   }

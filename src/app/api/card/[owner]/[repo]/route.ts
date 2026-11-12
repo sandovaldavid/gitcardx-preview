@@ -212,7 +212,10 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
       repoMetadata.description ||
       'GitHub repository visual identity'
     ).slice(0, 500),
-    installCommand: (searchParams.get('command') || undefined)?.slice(0, 120),
+    installCommand: (searchParams.get('command') || searchParams.get('cli') || undefined)?.slice(
+      0,
+      120
+    ),
     contentAlign: searchParams.get('align') === 'center' ? 'center' : 'left',
     palette,
     customLogoUrl: sanitizedLogoUrl,
