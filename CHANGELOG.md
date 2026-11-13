@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/sandovaldavid/gitframe/compare/v0.1.0...v0.1.1) (2026-11-13)
+
+
+### Bug Fixes
+
+* **release:** omit package component prefix from tags and releases ([#34](https://github.com/sandovaldavid/gitframe/issues/34)) ([514e90c](https://github.com/sandovaldavid/gitframe/commit/514e90c21e01c9e163ed70539d3a5fa6fd32cc37))
+
 ## 0.1.0 (2026-11-12)
 
 
