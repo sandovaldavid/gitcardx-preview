@@ -4,8 +4,8 @@
     ".": {
       "release-type": "node",
       "package-name": "gitframe",
-      "initial-version": "0.1.0",
-      "release-as": "0.1.0"
+      "include-component-in-tag": false,
+      "initial-version": "0.1.0"
     }
   }
 }
