@@ -3,8 +3,10 @@ import { NextRequest } from 'next/server';
 import { GET } from '@/app/api/card/[owner]/[repo]/route';
 
 // Mock GitHubService
-vi.mock('@/core/services/GitHubService', () => {
+vi.mock('@/core/services/GitHubService', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/core/services/GitHubService')>();
   return {
+    normalizeLicenseLabel: actual.normalizeLicenseLabel,
     GitHubService: class {
       getRepository = vi.fn().mockImplementation((owner: string, repo: string) => {
         if (owner === 'nonexistent') {
@@ -24,7 +26,7 @@ vi.mock('@/core/services/GitHubService', () => {
           primaryLanguage: { name: 'TypeScript', color: '#3178C6' },
           languages: [{ name: 'TypeScript', color: '#3178C6', size: 50000 }],
           topics: ['nextjs', 'vitest'],
-          license: 'MIT',
+          license: repo === 'noassertion-repo' ? 'NOASSERTION' : 'MIT',
           latestRelease: { tag: 'v1.0.0', publishedAt: '2026-11-01T00:00:00Z' },
           contributors: [
             { login: owner, avatarUrl: 'https://avatars.githubusercontent.com/u/12345' },
@@ -168,5 +170,34 @@ describe('Dynamic Card Route (/api/card/[owner]/[repo])', () => {
     const text = await res.text();
     expect(text).toContain('sandovaldavid/gitframe');
     expect(text).not.toContain('<script');
+  });
+
+  it('omits NOASSERTION placeholder licenses from rendered SVG cards', async () => {
+    const req = new NextRequest(
+      'https://gitframe.dev/api/card/sandovaldavid/noassertion-repo.svg?template=modern-minimal'
+    );
+    const res = await GET(req, {
+      params: Promise.resolve({ owner: 'sandovaldavid', repo: 'noassertion-repo.svg' }),
+    });
+
+    expect(res.status).toBe(200);
+    const svg = await res.text();
+    expect(svg.startsWith('<svg')).toBe(true);
+    expect(svg).not.toContain('NOASSERTION');
+  });
+
+  it('honors preset, custom palette colors (including rgb), text overrides, align, and visibility flags', async () => {
+    const req = new NextRequest(
+      'https://gitframe.dev/api/card/sandovaldavid/gitframe.svg?template=terminal-prompt&preset=nord&title=CustomTitle&tagline=HiddenNote&show_tagline=false&command=bunx+gitframe&align=center&stars=false&pbg=rgb(10,20,30)'
+    );
+    const res = await GET(req, {
+      params: Promise.resolve({ owner: 'sandovaldavid', repo: 'gitframe.svg' }),
+    });
+
+    expect(res.status).toBe(200);
+    expect(res.headers.get('Content-Type')).toContain('image/svg+xml');
+    const svg = await res.text();
+    expect(svg.startsWith('<svg')).toBe(true);
+    expect(svg).toContain('rgb(10,20,30)');
   });
 });

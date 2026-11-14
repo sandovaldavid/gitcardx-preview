@@ -1,22 +1,11 @@
 import { NextRequest } from 'next/server';
-import { GitHubService } from '@/core/services/GitHubService';
+import { GitHubService, normalizeLicenseLabel } from '@/core/services/GitHubService';
 import { renderCardToSvg, renderCardToPng } from '@/cards/engine/satoriRenderer';
-import {
-  normalizeTemplateId,
-  BackgroundPatternConfigSchema,
-  ColorSchema,
-  type CardConfig,
-  type RepoMetadata,
-} from '@/core/domain/schemas';
+import type { RepoMetadata } from '@/core/domain/schemas';
+import { parseCardConfigFromSearchParams } from '@/core/domain/cardUrl';
 import { isValidGitHubOwner, isValidGitHubRepo } from '@/core/domain/parser';
-import { PRESET_PALETTES, ThemeEngine } from '@/core/theme/ThemeEngine';
 import { sanitizeImageUrl } from '@/core/security/ssrf';
 import { escapeXml } from '@/core/security/xml';
-import {
-  DEFAULT_HEADING_FONT,
-  DEFAULT_MONO_FONT,
-  sanitizeFontFamily,
-} from '@/cards/fonts/fontCatalog';
 import { checkRateLimit, getClientIp, rateLimitHeaders } from '@/lib/rateLimit';
 
 export const maxDuration = 30;
@@ -75,67 +64,16 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
   const requestedFormat = searchParams.get('format');
   const format = inferredFormat || (requestedFormat === 'svg' ? 'svg' : 'png');
   const scale = searchParams.get('scale') === '2' ? 2 : 1;
-  const themeMode = searchParams.get('theme') === 'light' ? 'light' : 'dark';
-
-  // Parse template
-  const rawTemplate = searchParams.get('template');
-  const templateId = normalizeTemplateId(rawTemplate);
-
-  // Parse background pattern
-  const rawBg = searchParams.get('bg');
-  const bgResult = BackgroundPatternConfigSchema.shape.id.safeParse(rawBg);
-  const patternId = bgResult.success ? bgResult.data : 'architectural-grid';
-
-  // Parse background pattern options (opacity, scale, custom background URL)
-  const rawBgOpacity = searchParams.get('bg_opacity');
-  const parsedOpacity = rawBgOpacity !== null ? Number(rawBgOpacity) : undefined;
-  const bgOpacity =
-    parsedOpacity !== undefined && !Number.isNaN(parsedOpacity)
-      ? Math.min(Math.max(parsedOpacity, 0), 1)
-      : 0.45;
-
-  const rawBgScale = searchParams.get('bg_scale');
-  const parsedScale = rawBgScale !== null ? Number(rawBgScale) : undefined;
-  const bgScale =
-    parsedScale !== undefined && !Number.isNaN(parsedScale) && parsedScale > 0
-      ? Math.min(Math.max(parsedScale, 0.25), 4)
-      : undefined;
-
-  const rawBgUrl = searchParams.get('bg_url');
-  const sanitizedBgUrl = rawBgUrl ? sanitizeImageUrl(rawBgUrl) || undefined : undefined;
-
-  const rawBgColor = searchParams.get('bg_color');
-  let customBgColor: string | undefined = undefined;
-  if (rawBgColor) {
-    const formatted = rawBgColor.startsWith('#') ? rawBgColor : `#${rawBgColor}`;
-    const parsedColor = ColorSchema.safeParse(formatted);
-    if (parsedColor.success) {
-      customBgColor = parsedColor.data;
-    }
-  }
-
-  const rawLogoUrl = searchParams.get('logo_url');
-  const sanitizedLogoUrl = rawLogoUrl ? sanitizeImageUrl(rawLogoUrl) || undefined : undefined;
-
-  // Parse accent color
-  const rawAccent = searchParams.get('accent');
-  let customAccent: string | null = null;
-  if (rawAccent) {
-    const formattedAccent = rawAccent.startsWith('#') ? rawAccent : `#${rawAccent}`;
-    const parsedAccent = ColorSchema.safeParse(formattedAccent);
-    if (parsedAccent.success) {
-      customAccent = parsedAccent.data;
-    }
-  }
 
   // Fetch or create fallback RepoMetadata
   let repoMetadata: RepoMetadata;
   let degraded = false;
   try {
     const fetched = await githubService.getRepository(owner, repo);
-    // Sanitize image URLs with anti-SSRF defense
+    // Sanitize image URLs with anti-SSRF defense and drop placeholder license tokens
     repoMetadata = {
       ...fetched,
+      license: normalizeLicenseLabel({ spdxId: fetched.license }),
       owner: {
         ...fetched.owner,
         avatarUrl: sanitizeImageUrl(
@@ -177,75 +115,9 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
     };
   }
 
-  // Determine Palette
-  let palette =
-    themeMode === 'light' ? PRESET_PALETTES['light-paper'] : PRESET_PALETTES['slate-minimal'];
-
-  if (customAccent) {
-    palette = {
-      ...palette,
-      accent: customAccent,
-    };
-  } else if (repoMetadata.primaryLanguage?.color) {
-    palette = ThemeEngine.generatePaletteFromLanguageColor(
-      repoMetadata.primaryLanguage.color,
-      themeMode
-    );
-  }
-
-  const fontHeading = sanitizeFontFamily(
-    searchParams.get('font_heading') || searchParams.get('fontHeading'),
-    DEFAULT_HEADING_FONT
-  );
-  const fontMono = sanitizeFontFamily(
-    searchParams.get('font_mono') || searchParams.get('fontMono'),
-    DEFAULT_MONO_FONT
-  );
-
-  // Build CardConfig from query params with smart defaults. Clamp every free-form
-  // value before it reaches Satori/Resvg; query strings are attacker-controlled.
-  const cardConfig: CardConfig = {
-    templateId,
-    title: (searchParams.get('title') || repoMetadata.name).slice(0, 100),
-    tagline: (
-      searchParams.get('tagline') ||
-      repoMetadata.description ||
-      'GitHub repository visual identity'
-    ).slice(0, 500),
-    installCommand: (searchParams.get('command') || searchParams.get('cli') || undefined)?.slice(
-      0,
-      120
-    ),
-    contentAlign: searchParams.get('align') === 'center' ? 'center' : 'left',
-    palette,
-    customLogoUrl: sanitizedLogoUrl,
-    customBackgroundUrl: sanitizedBgUrl,
-    typography: {
-      fontHeading,
-      fontMono,
-    },
-    backgroundPattern: {
-      id: patternId,
-      opacity: bgOpacity,
-      ...(bgScale ? { scale: bgScale } : {}),
-      ...(customBgColor ? { color: customBgColor } : {}),
-    },
-    visibility: {
-      stars: searchParams.get('stars') !== 'false',
-      forks: searchParams.get('forks') !== 'false',
-      release: searchParams.get('release') !== 'false',
-      license: searchParams.get('license') !== 'false',
-      contributors: searchParams.get('contributors') !== 'false',
-      techStack: searchParams.get('stack') !== 'false',
-      languageLogos: searchParams.get('logos') !== 'false',
-      author: searchParams.get('author') !== 'false',
-      tagline: searchParams.get('tagline') !== 'false',
-      installCommand:
-        searchParams.get('install') !== 'false' && searchParams.get('installCommand') !== 'false',
-      issues: searchParams.get('issues') === 'true',
-      discussions: searchParams.get('discussions') === 'true',
-    },
-  };
+  // Build CardConfig from query params. Clamp and validate every free-form value
+  // inside parseCardConfigFromSearchParams before reaching Satori/Resvg.
+  const cardConfig = parseCardConfigFromSearchParams(searchParams, repoMetadata);
 
   const headers = {
     'Cache-Control': degraded

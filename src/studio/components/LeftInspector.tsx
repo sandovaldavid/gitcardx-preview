@@ -25,12 +25,51 @@ import {
   Code2,
 } from 'lucide-react';
 import { useCardStore } from '../state/useCardStore';
-import type { CardVisibility } from '@/core/domain/schemas';
+import { normalizeTemplateId, type CardVisibility } from '@/core/domain/schemas';
+import {
+  CARD_TEMPLATES,
+  getAllLayerVisibilityStates,
+  getLayerVisibilityState,
+  getTemplateCapabilities,
+  type LayerUnavailableReason,
+} from '@/cards/templates/CardTemplateRegistry';
+
+function getUnavailableLabel(
+  reason: LayerUnavailableReason | undefined,
+  stackHidden: boolean,
+  ownerHidden: boolean
+): string {
+  switch (reason) {
+    case 'not-in-template':
+      return 'Not in template';
+    case 'no-data':
+      return 'No data';
+    case 'parent-hidden':
+      if (ownerHidden && !stackHidden) return 'Owner off';
+      if (stackHidden) return 'Stack off';
+      return 'Parent off';
+    default:
+      return 'Unavailable';
+  }
+}
 
 export const LeftInspector: React.FC = () => {
   const { config, updateConfig, setContentAlign, toggleVisibility, repo, updateRepo } =
     useCardStore();
   const [isManualModeOpen, setIsManualModeOpen] = useState(false);
+
+  const templateId = normalizeTemplateId(config.templateId);
+  const templateDef = CARD_TEMPLATES[templateId];
+  const capabilities = getTemplateCapabilities(templateId);
+  const visibilityKeys = Object.keys(capabilities.visibility) as Array<keyof CardVisibility>;
+  const layerStates = getAllLayerVisibilityStates(visibilityKeys, templateId, repo, config);
+  const layerStateByKey = new Map(layerStates.map((state) => [state.key, state]));
+  const supportedLayerCount = layerStates.filter((state) => state.supportedByTemplate).length;
+  const activeLayerCount = layerStates.filter((state) => state.visibleOnCard).length;
+  const installSupported = capabilities.visibility.installCommand;
+  const installVisible = installSupported && config.visibility.installCommand;
+  const customLogoSupported = capabilities.supportsCustomLogo;
+  const customLogoHiddenByAuthor = customLogoSupported && !config.visibility.author;
 
   const elementLayers: Array<{
     key: keyof CardVisibility;
@@ -171,94 +210,175 @@ export const LeftInspector: React.FC = () => {
 
         {/* Install Command Input */}
         <div className="flex flex-col gap-1.5">
-          <label
-            htmlFor="card-install-input"
-            className="text-xs font-medium text-zinc-300 flex items-center justify-between"
-          >
-            <span className="flex items-center gap-1.5">
-              <Terminal className="w-3.5 h-3.5 text-blue-400" />
-              <span>Install Command / Snippet</span>
-            </span>
-            <button
-              type="button"
-              onClick={() => toggleVisibility('installCommand')}
-              aria-label={
-                config.visibility.installCommand
-                  ? 'Hide install command on card'
-                  : 'Show install command on card'
-              }
-              title={
-                config.visibility.installCommand
-                  ? 'Hide install command on card'
-                  : 'Show install command on card'
-              }
-              className="p-1 rounded hover:bg-zinc-800/80 transition-colors"
+          <div className="flex items-center justify-between gap-2">
+            <label
+              htmlFor="card-install-input"
+              className="text-xs font-medium text-zinc-300 flex items-center gap-1.5 min-w-0"
             >
-              {config.visibility.installCommand ? (
-                <Eye className="w-3.5 h-3.5 text-blue-400" />
-              ) : (
-                <EyeOff className="w-3.5 h-3.5 text-zinc-600" />
+              <Terminal
+                className={`w-3.5 h-3.5 shrink-0 ${
+                  installSupported ? 'text-blue-400' : 'text-zinc-500'
+                }`}
+              />
+              <span className="truncate">Install Command / Snippet</span>
+            </label>
+            <div className="flex items-center gap-1.5 shrink-0">
+              {!installSupported && (
+                <span className="text-[10px] font-medium text-zinc-400 bg-zinc-900 border border-zinc-800 px-1.5 py-0.5 rounded whitespace-nowrap">
+                  Not in template
+                </span>
               )}
-            </button>
-          </label>
+              <button
+                type="button"
+                disabled={!installSupported}
+                onClick={() => toggleVisibility('installCommand')}
+                aria-label={
+                  !installSupported
+                    ? `Install command snippet is not rendered in ${templateDef.name}`
+                    : installVisible
+                      ? 'Hide install command on card'
+                      : 'Show install command on card'
+                }
+                aria-pressed={installVisible}
+                title={
+                  !installSupported
+                    ? `Install command snippet is not rendered in ${templateDef.name}`
+                    : installVisible
+                      ? 'Hide install command on card'
+                      : 'Show install command on card'
+                }
+                className={`p-1 rounded transition-colors ${
+                  !installSupported ? 'text-zinc-600 cursor-not-allowed' : 'hover:bg-zinc-800/80'
+                }`}
+              >
+                {installVisible ? (
+                  <Eye className="w-3.5 h-3.5 text-blue-400" />
+                ) : (
+                  <EyeOff
+                    className={`w-3.5 h-3.5 ${installSupported ? 'text-zinc-400' : 'text-zinc-600'}`}
+                  />
+                )}
+              </button>
+            </div>
+          </div>
           <input
             id="card-install-input"
             type="text"
+            disabled={!installSupported}
             value={config.installCommand || ''}
             onChange={(e) => updateConfig({ installCommand: e.target.value })}
             placeholder="e.g. bun add my-package"
+            title={!installSupported ? `Not rendered in ${templateDef.name}` : undefined}
             className={`w-full h-9 px-3 rounded-lg bg-zinc-900 border border-zinc-800 text-xs font-mono text-zinc-100 placeholder-zinc-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all ${
-              !config.visibility.installCommand ? 'opacity-40' : ''
+              !installSupported
+                ? 'opacity-40 cursor-not-allowed'
+                : !installVisible
+                  ? 'opacity-40'
+                  : ''
             }`}
           />
         </div>
 
         {/* Custom Logo URL */}
         <div className="flex flex-col gap-1.5">
-          <label
-            htmlFor="card-logo-url-input"
-            className="text-xs font-medium text-zinc-300 flex items-center gap-1.5"
-          >
-            <ImageIcon className="w-3.5 h-3.5 text-blue-400" />
-            <span>Custom Logo URL (optional)</span>
-          </label>
+          <div className="flex items-center justify-between gap-2">
+            <label
+              htmlFor="card-logo-url-input"
+              className="text-xs font-medium text-zinc-300 flex items-center gap-1.5 min-w-0"
+            >
+              <ImageIcon
+                className={`w-3.5 h-3.5 shrink-0 ${
+                  customLogoSupported ? 'text-blue-400' : 'text-zinc-500'
+                }`}
+              />
+              <span className="truncate">Custom Logo URL (optional)</span>
+            </label>
+            {!customLogoSupported ? (
+              <span className="text-[10px] font-medium text-zinc-400 bg-zinc-900 border border-zinc-800 px-1.5 py-0.5 rounded shrink-0 whitespace-nowrap">
+                Not in template
+              </span>
+            ) : customLogoHiddenByAuthor ? (
+              <span className="text-[10px] font-medium text-amber-300 bg-amber-950/50 border border-amber-800/60 px-1.5 py-0.5 rounded shrink-0 whitespace-nowrap">
+                Owner hidden
+              </span>
+            ) : null}
+          </div>
           <input
             id="card-logo-url-input"
             type="url"
+            disabled={!customLogoSupported}
             value={config.customLogoUrl || ''}
             onChange={(e) => updateConfig({ customLogoUrl: e.target.value })}
             placeholder="https://... or data:image/png;base64,..."
-            className="w-full h-9 px-3 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-100 placeholder-zinc-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
+            title={
+              !customLogoSupported
+                ? `Custom logo is not rendered in ${templateDef.name}`
+                : customLogoHiddenByAuthor
+                  ? 'Enable Owner / Avatar to show custom logo on card'
+                  : undefined
+            }
+            className={`w-full h-9 px-3 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-100 placeholder-zinc-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all ${
+              !customLogoSupported
+                ? 'opacity-40 cursor-not-allowed'
+                : customLogoHiddenByAuthor
+                  ? 'opacity-60'
+                  : ''
+            }`}
           />
         </div>
 
         {/* Card Elements & Layers Visibility */}
         <div className="flex flex-col gap-2 pt-2 border-t border-zinc-800/80">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-2">
             <label className="text-xs font-medium text-zinc-400 flex items-center gap-1.5">
               <Eye className="w-3.5 h-3.5 text-blue-400" />
               <span>Visible Elements & Layers</span>
             </label>
-            <span className="text-[10px] font-mono text-zinc-500 bg-zinc-900 border border-zinc-800 px-1.5 py-0.5 rounded">
-              {Object.values(config.visibility).filter(Boolean).length}/{elementLayers.length}{' '}
-              active
+            <span className="text-[10px] font-mono text-zinc-400 bg-zinc-900 border border-zinc-800 px-1.5 py-0.5 rounded shrink-0">
+              {`${activeLayerCount}/${supportedLayerCount} active`}
             </span>
           </div>
 
           <div className="flex flex-col gap-1.5">
             {elementLayers.map(({ key, label, icon: Icon }) => {
-              const active = config.visibility[key];
+              const state =
+                layerStateByKey.get(key) ?? getLayerVisibilityState(key, templateId, repo, config);
+              const isInteractive = state.supportedByTemplate && state.available;
+              const active = state.visibleOnCard;
+              const userHidden = isInteractive && !state.enabled;
+              const unavailableLabel = isInteractive
+                ? null
+                : getUnavailableLabel(
+                    state.unavailableReason,
+                    !config.visibility.techStack,
+                    capabilities.primaryLanguageLogoMode === 'with-author' &&
+                      !config.visibility.author
+                  );
+              const buttonLabel = !state.supportedByTemplate
+                ? `${label} is not rendered in ${templateDef.name}`
+                : !state.available
+                  ? `${label} unavailable (${unavailableLabel})`
+                  : active
+                    ? `Hide ${label} on card`
+                    : `Show ${label} on card`;
+
               return (
                 <div
                   key={key}
-                  onClick={() => toggleVisibility(key)}
-                  className={`w-full flex items-center justify-between px-3 py-2 rounded-lg border text-xs cursor-pointer select-none transition-all ${
+                  data-layer-key={key}
+                  data-layer-status={
+                    active ? 'active' : userHidden ? 'hidden' : state.unavailableReason
+                  }
+                  onClick={isInteractive ? () => toggleVisibility(key) : undefined}
+                  className={`w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg border text-xs select-none transition-all ${
                     active
-                      ? 'bg-zinc-900/70 border-zinc-800/90 text-zinc-200 hover:border-zinc-700 hover:bg-zinc-900'
-                      : 'bg-zinc-950/40 border-zinc-900/80 text-zinc-500 hover:text-zinc-400 hover:border-zinc-800/50'
+                      ? 'bg-zinc-900/70 border-zinc-800/90 text-zinc-200 hover:border-zinc-700 hover:bg-zinc-900 cursor-pointer'
+                      : isInteractive
+                        ? 'bg-zinc-950/40 border-zinc-900/80 text-zinc-400 hover:text-zinc-300 hover:border-zinc-800/50 cursor-pointer'
+                        : 'bg-zinc-950/30 border-zinc-900/60 text-zinc-400 opacity-65 cursor-not-allowed'
                   }`}
                 >
-                  <div className="flex items-center gap-2.5 min-w-0">
+                  <div className="flex items-center gap-2 min-w-0 flex-1">
                     <Icon
                       className={`w-3.5 h-3.5 shrink-0 transition-colors ${
                         active ? 'text-blue-400' : 'text-zinc-500'
@@ -266,30 +386,48 @@ export const LeftInspector: React.FC = () => {
                     />
                     <span
                       className={`truncate font-medium transition-colors ${
-                        active ? 'text-zinc-200' : 'line-through text-zinc-400'
+                        active
+                          ? 'text-zinc-200'
+                          : userHidden
+                            ? 'line-through text-zinc-400'
+                            : 'text-zinc-400'
                       }`}
                     >
                       {label}
                     </span>
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleVisibility(key);
-                    }}
-                    aria-label={active ? `Hide ${label} on card` : `Show ${label} on card`}
-                    aria-pressed={active}
-                    title={active ? `Hide ${label} on card` : `Show ${label} on card`}
-                    className={`p-1 rounded-md transition-colors ${
-                      active
-                        ? 'text-blue-400 hover:text-blue-300 hover:bg-blue-500/10'
-                        : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/60'
-                    }`}
-                  >
-                    {active ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
-                  </button>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    {unavailableLabel && (
+                      <span className="text-[10px] font-medium text-zinc-400 bg-zinc-900/90 border border-zinc-800 px-1.5 py-0.5 rounded whitespace-nowrap">
+                        {unavailableLabel}
+                      </span>
+                    )}
+                    <button
+                      type="button"
+                      disabled={!isInteractive}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (isInteractive) toggleVisibility(key);
+                      }}
+                      aria-label={buttonLabel}
+                      aria-pressed={active}
+                      title={buttonLabel}
+                      className={`p-1 rounded-md transition-colors ${
+                        !isInteractive
+                          ? 'text-zinc-600 cursor-not-allowed'
+                          : active
+                            ? 'text-blue-400 hover:text-blue-300 hover:bg-blue-500/10'
+                            : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/60'
+                      }`}
+                    >
+                      {active ? (
+                        <Eye className="w-3.5 h-3.5" />
+                      ) : (
+                        <EyeOff className="w-3.5 h-3.5" />
+                      )}
+                    </button>
+                  </div>
                 </div>
               );
             })}

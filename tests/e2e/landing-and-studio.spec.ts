@@ -273,4 +273,155 @@ test.describe('Gitframe Landing Page & Studio E2E', () => {
     await darkBtn.click();
     await expect(page.locator('.text-zinc-100, .text-\\[\\#c9d1d9\\]').first()).toBeVisible();
   });
+
+  test('visible elements & layers accurately reflect selected template capabilities', async ({
+    page,
+  }) => {
+    await page.goto('/studio');
+
+    // Default Modern Minimal (9 supported layers; 7 active by default)
+    await expect(page.getByText('7/9 active')).toBeVisible();
+    await expect(page.locator('[data-layer-key="installCommand"]')).toHaveAttribute(
+      'data-layer-status',
+      'not-in-template'
+    );
+    await expect(page.locator('[data-layer-key="release"]')).toHaveAttribute(
+      'data-layer-status',
+      'not-in-template'
+    );
+    await expect(page.locator('[data-layer-key="contributors"]')).toHaveAttribute(
+      'data-layer-status',
+      'not-in-template'
+    );
+    await expect(page.locator('#card-install-input')).toBeDisabled();
+    await expect(
+      page.getByRole('button', {
+        name: 'Install command snippet is not rendered in Modern Minimal',
+      })
+    ).toBeDisabled();
+    await expect(
+      page
+        .locator('[data-layer-key="installCommand"]')
+        .getByRole('button', { name: 'Install Command is not rendered in Modern Minimal' })
+    ).toBeDisabled();
+
+    // Switch to Terminal Prompt: installCommand enabled, stack/logos/contributors & customLogo disabled
+    await page.getByRole('button', { name: /Terminal Prompt/i }).click();
+    await expect(page.getByText('6/9 active')).toBeVisible();
+    await expect(page.locator('[data-layer-key="installCommand"]')).toHaveAttribute(
+      'data-layer-status',
+      'active'
+    );
+    await expect(page.locator('#card-install-input')).toBeEnabled();
+    await expect(page.locator('#card-logo-url-input')).toBeDisabled();
+    await expect(page.locator('[data-layer-key="techStack"]')).toHaveAttribute(
+      'data-layer-status',
+      'not-in-template'
+    );
+    await expect(page.locator('[data-layer-key="languageLogos"]')).toHaveAttribute(
+      'data-layer-status',
+      'not-in-template'
+    );
+    await expect(page.locator('[data-layer-key="contributors"]')).toHaveAttribute(
+      'data-layer-status',
+      'not-in-template'
+    );
+
+    // Switch to Metric Showcase: contributors & stack enabled, hiding stack marks logos Stack off
+    await page.getByRole('button', { name: /Metric Showcase/i }).click();
+    await expect(page.getByText('8/11 active')).toBeVisible();
+    await expect(page.locator('[data-layer-key="contributors"]')).toHaveAttribute(
+      'data-layer-status',
+      'active'
+    );
+    await expect(page.locator('[data-layer-key="installCommand"]')).toHaveAttribute(
+      'data-layer-status',
+      'not-in-template'
+    );
+
+    await page.getByRole('button', { name: 'Hide Tech Stack Badges on card' }).click();
+    await expect(page.getByText('6/11 active')).toBeVisible();
+    await expect(page.locator('[data-layer-key="languageLogos"]')).toHaveAttribute(
+      'data-layer-status',
+      'parent-hidden'
+    );
+    await expect(page.locator('[data-layer-key="languageLogos"]')).toContainText('Stack off');
+    await expect(
+      page.getByRole('button', { name: 'Official Logos unavailable (Stack off)' })
+    ).toBeDisabled();
+  });
+
+  test('serves favicon.ico globally for API routes and maintains Studio -> Export -> API/Share URL parity', async ({
+    page,
+  }) => {
+    // 1. Root /favicon.ico returns valid ICO bytes for raw API tabs as well as HTML routes
+    const faviconRes = await page.request.get('/favicon.ico');
+    expect(faviconRes.status()).toBe(200);
+    expect(faviconRes.headers()['content-type']).toContain('icon');
+    const faviconBytes = await faviconRes.body();
+    expect(faviconBytes.subarray(0, 4)).toEqual(Buffer.from([0x00, 0x00, 0x01, 0x00]));
+
+    await page.goto('/');
+    await expect(page.locator('link[rel="icon"]').first()).toHaveAttribute('href', /icon/i);
+
+    // 2. Direct API card renders cleanly without NOASSERTION license leakage
+    const defaultApiSvgRes = await page.request.get('/api/card/sandovaldavid/gitframe.svg');
+    expect(defaultApiSvgRes.status()).toBe(200);
+    const defaultApiSvg = await defaultApiSvgRes.text();
+    expect(defaultApiSvg).not.toContain('NOASSERTION');
+
+    // 3. Customize composition in Studio
+    await page.goto('/studio');
+    await page.getByRole('button', { name: /Terminal Prompt/i }).click();
+    await page.locator('#card-tagline-input').fill('Custom CLI (Zero Config) card');
+    await page.locator('#card-install-input').fill('bunx gitframe@latest');
+    await page.getByRole('button', { name: 'Hide Forks Count on card' }).click();
+
+    await page.getByRole('button', { name: 'Theme' }).click();
+    await page.getByRole('button', { name: /Nord/i }).click();
+
+    await page.getByRole('button', { name: 'Pattern' }).click();
+    await page.getByRole('button', { name: /Dot Matrix/i }).click();
+
+    // 4. Open Export Modal -> Dynamic README Hero and inspect both Direct Image URL and Studio link
+    await page.getByRole('button', { name: 'Export card' }).click();
+    await page.getByRole('button', { name: /Dynamic README Hero/i }).click();
+
+    const directImageUrl = await page.locator('#export-direct-image-url').inputValue();
+    const parsedImgUrl = new URL(directImageUrl);
+    expect(parsedImgUrl.pathname).toBe('/api/card/sandovaldavid/gitframe.png');
+    expect(parsedImgUrl.searchParams.get('template')).toBe('terminal-prompt');
+    expect(parsedImgUrl.searchParams.get('preset')).toBe('nord');
+    expect(parsedImgUrl.searchParams.get('bg')).toBe('dot-matrix');
+    expect(parsedImgUrl.searchParams.get('tagline')).toBe('Custom CLI (Zero Config) card');
+    expect(parsedImgUrl.searchParams.get('command')).toBe('bunx gitframe@latest');
+    expect(parsedImgUrl.searchParams.get('forks')).toBe('false');
+    expect(directImageUrl).toContain('%28Zero+Config%29');
+
+    // Fetch exact generated README PNG URL to verify it renders 200 image/png without errors
+    const renderedPngRes = await page.request.get(parsedImgUrl.pathname + parsedImgUrl.search);
+    expect(renderedPngRes.status()).toBe(200);
+    expect(renderedPngRes.headers()['content-type']).toContain('image/png');
+    const renderedPng = await renderedPngRes.body();
+    expect(renderedPng.subarray(0, 4)).toEqual(Buffer.from([0x89, 0x50, 0x4e, 0x47]));
+
+    // 5. Follow the generated Studio link from the README snippet and confirm state is restored
+    const readmeSnippet = await page.locator('pre').first().textContent();
+    const hrefMatch = readmeSnippet?.match(/href="([^"]+)"/);
+    expect(hrefMatch?.[1]).toBeTruthy();
+
+    const shareUrl = new URL(hrefMatch![1]);
+    await page.goto(shareUrl.pathname + shareUrl.search);
+
+    // Wait for React Suspense streaming swap to remove the fallback StudioLayout
+    await expect(page.locator('#card-tagline-input')).toHaveCount(1);
+    await expect(page.getByTestId('studio-card-stage')).toContainText('Custom CLI (Zero Config)');
+    await expect(page.getByTestId('studio-card-stage')).toContainText('bunx gitframe@latest');
+    await expect(page.locator('#card-tagline-input')).toHaveValue('Custom CLI (Zero Config) card');
+    await expect(page.locator('#card-install-input')).toHaveValue('bunx gitframe@latest');
+    await expect(page.locator('[data-layer-key="forks"]')).toHaveAttribute(
+      'data-layer-status',
+      'hidden'
+    );
+  });
 });

@@ -3,6 +3,35 @@ import { RepoMetadataSchema, type RepoMetadata } from '../domain/schemas';
 import { getLanguageColor } from '../domain/languageColors';
 import { TtlCache } from './TtlCache';
 
+const UNRESOLVED_LICENSE_VALUES = new Set(['NOASSERTION', 'NONE', 'OTHER']);
+
+/**
+ * Strips placeholder license tokens (such as GitHub's `NOASSERTION` or `Other`)
+ * so unverified/custom license files never leak API sentinels onto cards.
+ */
+export function normalizeLicenseLabel(
+  candidates:
+    | {
+        spdxId?: string | null;
+        name?: string | null;
+        nickname?: string | null;
+      }
+    | null
+    | undefined
+): string | null {
+  if (!candidates) return null;
+
+  for (const raw of [candidates.spdxId, candidates.nickname, candidates.name]) {
+    if (typeof raw !== 'string') continue;
+    const trimmed = raw.trim();
+    if (!trimmed) continue;
+    if (UNRESOLVED_LICENSE_VALUES.has(trimmed.toUpperCase())) continue;
+    return trimmed;
+  }
+
+  return null;
+}
+
 export interface RepoAutocompleteItem {
   name: string;
   description: string | null;
@@ -62,6 +91,8 @@ const GET_REPO_QUERY = `
       }
       licenseInfo {
         spdxId
+        name
+        nickname
       }
       latestRelease {
         tagName
@@ -184,7 +215,7 @@ export const KNOWN_REPO_FALLBACKS: Record<string, RepoMetadata> = {
       { name: 'CSS', color: '#1572B6', size: 2573 },
     ],
     topics: ['nextjs', 'social-preview', 'developer-tools', 'typescript'],
-    license: 'MIT',
+    license: 'FSL-1.1-MIT',
     latestRelease: null,
     contributors: [
       { login: 'sandovaldavid', avatarUrl: 'https://avatars.githubusercontent.com/u/102970701' },
@@ -212,7 +243,7 @@ export const KNOWN_REPO_FALLBACKS: Record<string, RepoMetadata> = {
       { name: 'CSS', color: '#1572B6', size: 2573 },
     ],
     topics: ['nextjs', 'social-preview', 'developer-tools', 'typescript'],
-    license: 'MIT',
+    license: 'FSL-1.1-MIT',
     latestRelease: null,
     contributors: [
       { login: 'sandovaldavid', avatarUrl: 'https://avatars.githubusercontent.com/u/102970701' },
@@ -589,7 +620,10 @@ export class GitHubService {
         : null,
       languages: languagesList,
       topics: Array.isArray(raw.topics) ? raw.topics : [],
-      license: raw.license?.spdx_id || raw.license?.name || null,
+      license: normalizeLicenseLabel({
+        spdxId: raw.license?.spdx_id,
+        name: raw.license?.name,
+      }),
       latestRelease,
       contributors: contributorsList,
       contributorsCount,
@@ -752,7 +786,9 @@ export class GitHubService {
             }>;
           };
           licenseInfo: {
-            spdxId: string;
+            spdxId: string | null;
+            name?: string | null;
+            nickname?: string | null;
           } | null;
           latestRelease: {
             tagName: string;
@@ -809,7 +845,7 @@ export class GitHubService {
           size: e.size,
         })),
         topics: (raw.repositoryTopics?.nodes || []).map((n) => n.topic.name),
-        license: raw.licenseInfo?.spdxId || null,
+        license: normalizeLicenseLabel(raw.licenseInfo),
         latestRelease: raw.latestRelease
           ? {
               tag: raw.latestRelease.tagName,
