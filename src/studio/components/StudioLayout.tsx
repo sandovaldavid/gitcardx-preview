@@ -29,6 +29,7 @@ const TemplateQuerySync: React.FC<{ expectedRouteKey: string | null }> = ({ expe
   const currentRepo = useCardStore((state) => state.repo);
   const currentRepoKey = `${currentRepo.owner.login.toLowerCase()}/${currentRepo.name.toLowerCase()}`;
   const setRepo = useCardStore((state) => state.setRepo);
+  const syncDefaultRepoMetadata = useCardStore((state) => state.syncDefaultRepoMetadata);
   const setIsFetchingRepo = useCardStore((state) => state.setIsFetchingRepo);
   const setFetchError = useCardStore((state) => state.setFetchError);
   const lastAppliedSignatureRef = useRef<string | null>(null);
@@ -74,6 +75,31 @@ const TemplateQuerySync: React.FC<{ expectedRouteKey: string | null }> = ({ expe
       aborted = true;
     };
   }, [repoParam, setIsFetchingRepo, setRepo, setFetchError]);
+
+  useEffect(() => {
+    if (expectedRouteKey || repoParam) return;
+    const { hasCustomRepo, hydratedRouteKey: routeKey } = useCardStore.getState();
+    if (hasCustomRepo || routeKey) return;
+
+    let aborted = false;
+    const syncDefaultRepo = async () => {
+      try {
+        const res = await fetch('/api/github/repo?owner=sandovaldavid&repo=gitframe');
+        if (!res.ok) return;
+        const data = (await res.json()) as RepoMetadata;
+        if (!aborted) {
+          syncDefaultRepoMetadata(data);
+        }
+      } catch {
+        // Keep static DEFAULT_REPO fallback if network/GitHub API is unreachable.
+      }
+    };
+
+    syncDefaultRepo();
+    return () => {
+      aborted = true;
+    };
+  }, [expectedRouteKey, repoParam, syncDefaultRepoMetadata]);
 
   useIsomorphicLayoutEffect(() => {
     if (!searchString) {

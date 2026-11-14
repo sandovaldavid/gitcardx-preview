@@ -282,7 +282,7 @@ describe('LeftInspector template-aware layer UI', () => {
 
   it('renders Modern Minimal template capabilities accurately on SSR', () => {
     const minimalHtml = renderToString(<LeftInspector />);
-    expect(minimalHtml).toContain('7/9 active');
+    expect(minimalHtml).toContain('6/9 active');
     expect(minimalHtml).toContain(
       'data-layer-key="installCommand" data-layer-status="not-in-template"'
     );

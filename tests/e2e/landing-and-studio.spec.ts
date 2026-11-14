@@ -279,8 +279,8 @@ test.describe('Gitframe Landing Page & Studio E2E', () => {
   }) => {
     await page.goto('/studio');
 
-    // Default Modern Minimal (9 supported layers; 7 active by default)
-    await expect(page.getByText('7/9 active')).toBeVisible();
+    // Default Modern Minimal (9 supported layers; 6 active by default without a license)
+    await expect(page.getByText('6/9 active')).toBeVisible();
     await expect(page.locator('[data-layer-key="installCommand"]')).toHaveAttribute(
       'data-layer-status',
       'not-in-template'
