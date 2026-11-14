@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { GitHubService } from '@/core/services/GitHubService';
+import { GitHubService, normalizeLicenseLabel } from '@/core/services/GitHubService';
 
 const mockGraphql = vi.fn();
 
@@ -379,6 +379,85 @@ describe('GitHubService', () => {
       expect(repos[0].name).toBe('rest-repo');
       expect(repos[0].stars).toBe(15);
       expect(repos[0].primaryLanguage?.name).toBe('Python');
+
+      vi.unstubAllGlobals();
+    });
+  });
+
+  describe('normalizeLicenseLabel & NOASSERTION handling', () => {
+    it('drops NOASSERTION, NONE, and generic Other license placeholders', () => {
+      expect(
+        normalizeLicenseLabel({ spdxId: 'NOASSERTION', name: 'Other', nickname: null })
+      ).toBeNull();
+      expect(normalizeLicenseLabel({ spdxId: 'NONE', name: 'None' })).toBeNull();
+      expect(
+        normalizeLicenseLabel({ spdxId: 'FSL-1.1-MIT', name: 'Functional Source License' })
+      ).toBe('FSL-1.1-MIT');
+      expect(
+        normalizeLicenseLabel({
+          spdxId: 'NOASSERTION',
+          name: 'Apache License 1.0',
+          nickname: 'Apache-1.0',
+        })
+      ).toBe('Apache-1.0');
+    });
+
+    it('maps GitHub GraphQL licenseInfo NOASSERTION + Other to null on getRepository', async () => {
+      mockGraphql.mockResolvedValueOnce({
+        repository: {
+          name: 'gitframe',
+          description: 'FSL-licensed repository',
+          homepageUrl: null,
+          stargazerCount: 10,
+          forkCount: 1,
+          isArchived: false,
+          owner: {
+            __typename: 'User',
+            login: 'someone',
+            avatarUrl: 'https://avatars.githubusercontent.com/u/1',
+          },
+          primaryLanguage: null,
+          languages: { edges: [] },
+          repositoryTopics: { nodes: [] },
+          licenseInfo: {
+            spdxId: 'NOASSERTION',
+            name: 'Other',
+            nickname: null,
+          },
+          latestRelease: null,
+          mentionableUsers: { nodes: [] },
+        },
+      });
+
+      const repo = await service.getRepository('someone', 'gitframe');
+      expect(repo.license).toBeNull();
+    });
+
+    it('maps GitHub REST license NOASSERTION + Other to null on getRepository', async () => {
+      const unauthService = new GitHubService('');
+      const mockFetch = vi.fn().mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({
+          name: 'custom-license-repo',
+          owner: {
+            login: 'someone',
+            avatar_url: 'https://avatars.githubusercontent.com/u/1',
+            type: 'User',
+          },
+          description: 'Custom license',
+          homepage: null,
+          stargazers_count: 5,
+          forks_count: 0,
+          language: 'TypeScript',
+          topics: [],
+          license: { spdx_id: 'NOASSERTION', name: 'Other' },
+        }),
+      });
+      vi.stubGlobal('fetch', mockFetch);
+
+      const repo = await unauthService.getRepository('someone', 'custom-license-repo');
+      expect(repo.license).toBeNull();
 
       vi.unstubAllGlobals();
     });
