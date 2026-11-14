@@ -49,6 +49,9 @@
     "vitest": "^5.1.0"
   },
   "packageManager": "bun@1.4.4",
+  "overrides": {
+    "fflate": ">=0.7.5"
+  },
   "ignoreScripts": [
     "sharp",
     "unrs-resolver"
