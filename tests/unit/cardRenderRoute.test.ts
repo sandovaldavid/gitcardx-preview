@@ -41,6 +41,9 @@ describe('On-Demand Card Render Route (/api/card/render)', () => {
     const res = await POST(req);
     expect(res.status).toBe(200);
     expect(res.headers.get('Content-Type')).toContain('image/svg+xml');
+    expect(res.headers.get('Content-Security-Policy')).toBe(
+      "default-src 'none'; style-src 'unsafe-inline'; sandbox"
+    );
 
     const text = await res.text();
     expect(text).toContain('<svg');
