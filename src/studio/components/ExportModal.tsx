@@ -14,6 +14,11 @@ import {
   SunMoon,
 } from 'lucide-react';
 import { useCardStore } from '../state/useCardStore';
+import {
+  buildCardImageUrl,
+  buildStudioShareUrl,
+  getNonShareableCustomAssets,
+} from '@/core/domain/cardUrl';
 
 function escapeHtmlAttr(str: string): string {
   return str
@@ -170,40 +175,28 @@ export const ExportModal: React.FC = () => {
   };
 
   const appBaseUrl =
-    process.env.NEXT_PUBLIC_APP_URL ||
-    (typeof window !== 'undefined' ? window.location.origin : 'https://gitframe.dev');
+    typeof window !== 'undefined'
+      ? window.location.origin
+      : process.env.NEXT_PUBLIC_APP_URL || 'https://gitframe.dev';
 
-  // Determine target link for README snippet
+  // Determine target link for README snippet (preserve full composition for Gitframe Studio Page)
   const targetUrl =
     linkTarget === 'gitframe'
-      ? `${appBaseUrl}/${owner}/${repoName}?ref=readme`
+      ? buildStudioShareUrl(appBaseUrl, owner, repoName, config, repo, { ref: 'readme' })
       : linkTarget === 'github'
         ? `https://github.com/${owner}/${repoName}`
         : null;
 
-  const buildCardImageUrl = (extraParams?: Record<string, string>) => {
-    const params = new URLSearchParams();
-    if (config.templateId && config.templateId !== 'modern-minimal') {
-      params.set('template', config.templateId);
-    }
-    if (extraParams) {
-      for (const [k, v] of Object.entries(extraParams)) {
-        params.set(k, v);
-      }
-    }
-    if (config.typography?.fontHeading && config.typography.fontHeading !== 'Inter') {
-      params.set('font_heading', config.typography.fontHeading);
-    }
-    if (config.typography?.fontMono && config.typography.fontMono !== 'JetBrains Mono') {
-      params.set('font_mono', config.typography.fontMono);
-    }
-    const query = params.toString();
-    return `${appBaseUrl}/api/card/${owner}/${repoName}.png${query ? `?${query}` : ''}`;
-  };
-
-  const defaultCardUrl = buildCardImageUrl();
-  const darkCardUrl = buildCardImageUrl({ theme: 'dark' });
-  const lightCardUrl = buildCardImageUrl({ theme: 'light' });
+  const defaultCardUrl = buildCardImageUrl(appBaseUrl, owner, repoName, config, repo, {
+    variant: 'exact',
+  });
+  const darkCardUrl = buildCardImageUrl(appBaseUrl, owner, repoName, config, repo, {
+    variant: 'dark',
+  });
+  const lightCardUrl = buildCardImageUrl(appBaseUrl, owner, repoName, config, repo, {
+    variant: 'light',
+  });
+  const nonShareableAssets = getNonShareableCustomAssets(config);
 
   const rawTitle = config.title || repoName;
   const rawTagline = config.tagline || repo.description || '';
@@ -486,6 +479,48 @@ export const ExportModal: React.FC = () => {
                 )}
               </button>
             </div>
+
+            {/* Direct Card Image URL */}
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="export-direct-image-url" className="text-[11px] text-zinc-400">
+                Direct rendered image URL
+              </label>
+              <div className="flex items-center gap-2">
+                <input
+                  id="export-direct-image-url"
+                  type="text"
+                  readOnly
+                  value={defaultCardUrl}
+                  onFocus={(e) => e.currentTarget.select()}
+                  className="flex-1 h-8 px-2.5 rounded-lg bg-zinc-950 border border-zinc-800 text-[11px] font-mono text-zinc-300 outline-none focus:border-blue-500"
+                />
+                <button
+                  type="button"
+                  onClick={() => handleCopy(defaultCardUrl, 'image-url')}
+                  className="h-8 px-2.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs flex items-center gap-1.5 shrink-0 transition-colors cursor-pointer"
+                >
+                  {copiedType === 'image-url' ? (
+                    <>
+                      <Check className="w-3.5 h-3.5 text-emerald-400" />
+                      <span className="text-emerald-400">Copied</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-3.5 h-3.5" />
+                      <span>Copy URL</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {nonShareableAssets.length > 0 && (
+              <p className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-[11px] text-amber-200 leading-relaxed">
+                Local data-URI uploads or non-GitHub custom image URLs (
+                {nonShareableAssets.join(' & ')}) only render in downloaded PNG/SVG files. Dynamic
+                URL links only load HTTPS images hosted on GitHub domains.
+              </p>
+            )}
           </div>
         )}
 

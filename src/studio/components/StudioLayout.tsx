@@ -1,6 +1,6 @@
 'use client';
 
-import React, { Suspense, useEffect, useLayoutEffect, useMemo, useState } from 'react';
+import React, { Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Sliders, CreditCard, Palette } from 'lucide-react';
 import { StudioHeader } from './StudioHeader';
@@ -11,8 +11,7 @@ import { ExportModal } from './ExportModal';
 import { StudioFontLoader } from './StudioFontLoader';
 import { deriveConfigForRepo, StudioHydrationContext, useCardStore } from '../state/useCardStore';
 import type { RepoMetadata } from '@/core/domain/schemas';
-import { normalizeTemplateId } from '@/core/domain/schemas';
-import { sanitizeFontFamily } from '@/cards/fonts/fontCatalog';
+import { applyCardUrlParamsToConfig } from '@/core/domain/cardUrl';
 import { parseGitHubInput } from '@/core/domain/parser';
 
 const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
@@ -22,33 +21,27 @@ interface StudioLayoutProps {
   isPendingInitialRepo?: boolean;
 }
 
-const TemplateQuerySync: React.FC = () => {
+const TemplateQuerySync: React.FC<{ expectedRouteKey: string | null }> = ({ expectedRouteKey }) => {
   const searchParams = useSearchParams();
-  const templateParam = searchParams.get('template');
+  const searchString = searchParams.toString();
   const repoParam = searchParams.get('repo');
-  const fontHeadingParam = searchParams.get('font_heading') || searchParams.get('fontHeading');
-  const fontMonoParam = searchParams.get('font_mono') || searchParams.get('fontMono');
-  const setTemplateId = useCardStore((state) => state.setTemplateId);
-  const updateConfig = useCardStore((state) => state.updateConfig);
+  const hydratedRouteKey = useCardStore((state) => state.hydratedRouteKey);
+  const currentRepo = useCardStore((state) => state.repo);
+  const currentRepoKey = `${currentRepo.owner.login.toLowerCase()}/${currentRepo.name.toLowerCase()}`;
   const setRepo = useCardStore((state) => state.setRepo);
   const setIsFetchingRepo = useCardStore((state) => state.setIsFetchingRepo);
   const setFetchError = useCardStore((state) => state.setFetchError);
-
-  useIsomorphicLayoutEffect(() => {
-    if (templateParam) {
-      setTemplateId(normalizeTemplateId(templateParam));
-    }
-  }, [templateParam, setTemplateId]);
+  const lastAppliedSignatureRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (!repoParam) return;
     const parsed = parseGitHubInput(repoParam);
     if (parsed.type !== 'repo') return;
 
-    const currentRepo = useCardStore.getState().repo;
-    const currentKey = `${currentRepo.owner.login.toLowerCase()}/${currentRepo.name.toLowerCase()}`;
+    const latestRepo = useCardStore.getState().repo;
+    const latestKey = `${latestRepo.owner.login.toLowerCase()}/${latestRepo.name.toLowerCase()}`;
     const targetKey = `${parsed.owner.toLowerCase()}/${parsed.repo.toLowerCase()}`;
-    if (currentKey === targetKey) return;
+    if (latestKey === targetKey) return;
 
     let aborted = false;
     const fetchRepo = async () => {
@@ -83,23 +76,27 @@ const TemplateQuerySync: React.FC = () => {
   }, [repoParam, setIsFetchingRepo, setRepo, setFetchError]);
 
   useIsomorphicLayoutEffect(() => {
-    if (!fontHeadingParam && !fontMonoParam) return;
-    const current = useCardStore.getState().config.typography;
-    const nextHeading = fontHeadingParam
-      ? sanitizeFontFamily(fontHeadingParam, current.fontHeading)
-      : current.fontHeading;
-    const nextMono = fontMonoParam
-      ? sanitizeFontFamily(fontMonoParam, current.fontMono)
-      : current.fontMono;
-    if (nextHeading !== current.fontHeading || nextMono !== current.fontMono) {
-      updateConfig({
-        typography: {
-          fontHeading: nextHeading,
-          fontMono: nextMono,
-        },
-      });
+    if (!searchString) {
+      lastAppliedSignatureRef.current = null;
+      return;
     }
-  }, [fontHeadingParam, fontMonoParam, updateConfig]);
+
+    // Wait for initial route hydration so URL overrides layer on top of the hydrated repo config
+    if (expectedRouteKey && hydratedRouteKey !== expectedRouteKey) {
+      return;
+    }
+
+    const signature = `${hydratedRouteKey ?? 'studio'}::${currentRepoKey}::${searchString}`;
+    if (lastAppliedSignatureRef.current === signature) {
+      return;
+    }
+    lastAppliedSignatureRef.current = signature;
+
+    const params = new URLSearchParams(searchString);
+    const state = useCardStore.getState();
+    const nextConfig = applyCardUrlParamsToConfig(state.config, params, state.repo);
+    useCardStore.setState({ config: nextConfig });
+  }, [searchString, expectedRouteKey, hydratedRouteKey, currentRepoKey]);
 
   return null;
 };
@@ -149,7 +146,7 @@ export const StudioLayout: React.FC<StudioLayoutProps> = ({
     <StudioHydrationContext.Provider value={hydrationValue}>
       <StudioFontLoader />
       <Suspense fallback={null}>
-        <TemplateQuerySync />
+        <TemplateQuerySync expectedRouteKey={initialRepoKey} />
       </Suspense>
       <div className="flex flex-col h-screen w-screen overflow-hidden bg-zinc-950 text-zinc-100">
         <StudioHeader />
