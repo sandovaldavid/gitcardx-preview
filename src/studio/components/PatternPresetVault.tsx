@@ -6,6 +6,7 @@ import { useCardStore } from '../state/useCardStore';
 import { IndexedDBPatternPresetStorage } from '@/core/adapters/local/IndexedDBPatternPresetStorage';
 import { FreeTierEntitlement } from '@/core/adapters/local/FreeTierEntitlement';
 import { PatternPresetSchema, type PatternPreset } from '@/core/domain/schemas';
+import { sanitizeClientImageUrl } from '@/core/security/ssrf';
 
 const storage = new IndexedDBPatternPresetStorage();
 const entitlement = new FreeTierEntitlement();
@@ -61,7 +62,7 @@ export const PatternPresetVault: React.FC = () => {
       id: `pat_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
       name,
       pattern: config.backgroundPattern,
-      customBackgroundUrl: config.customBackgroundUrl,
+      customBackgroundUrl: sanitizeClientImageUrl(config.customBackgroundUrl) || undefined,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
@@ -83,7 +84,9 @@ export const PatternPresetVault: React.FC = () => {
   const handleApplyPreset = (preset: PatternPreset) => {
     setBackgroundPattern(preset.pattern);
     if (preset.customBackgroundUrl !== undefined) {
-      updateConfig({ customBackgroundUrl: preset.customBackgroundUrl });
+      updateConfig({
+        customBackgroundUrl: sanitizeClientImageUrl(preset.customBackgroundUrl) || undefined,
+      });
     }
     setAppliedId(preset.id);
     setTimeout(() => setAppliedId(null), 2000);

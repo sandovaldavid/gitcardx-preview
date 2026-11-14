@@ -18,6 +18,7 @@ import { useCardStore } from '../state/useCardStore';
 import { CARD_TEMPLATES } from '@/cards/templates/CardTemplateRegistry';
 import { PRESET_PALETTES, ThemeEngine } from '@/core/theme/ThemeEngine';
 import type { BackgroundPatternConfig } from '@/core/domain/schemas';
+import { sanitizeClientImageUrl } from '@/core/security/ssrf';
 import { BrandKitVault } from './BrandKitVault';
 import { PatternPresetVault } from './PatternPresetVault';
 import { FontPicker } from './FontPicker';
@@ -36,6 +37,29 @@ export const RightInspector: React.FC = () => {
   } = useCardStore();
 
   const [imageUploadError, setImageUploadError] = useState<string | null>(null);
+  const [bgUrlDraft, setBgUrlDraft] = useState<string | null>(null);
+
+  const displayedBgUrl = bgUrlDraft ?? (config.customBackgroundUrl || '');
+  const bgUrlError =
+    bgUrlDraft !== null && bgUrlDraft.trim() !== '' && !sanitizeClientImageUrl(bgUrlDraft)
+      ? 'Use an https:// URL or valid base64 image data URI.'
+      : null;
+
+  const handleBgUrlChange = (nextVal: string) => {
+    if (!nextVal.trim()) {
+      setBgUrlDraft(null);
+      updateConfig({ customBackgroundUrl: undefined });
+      return;
+    }
+
+    const safe = sanitizeClientImageUrl(nextVal);
+    if (safe) {
+      setBgUrlDraft(null);
+      updateConfig({ customBackgroundUrl: safe });
+    } else {
+      setBgUrlDraft(nextVal);
+    }
+  };
 
   const handleCustomImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -50,8 +74,14 @@ export const RightInspector: React.FC = () => {
     reader.onload = () => {
       const result = reader.result;
       if (typeof result === 'string') {
+        const safeResult = sanitizeClientImageUrl(result);
+        if (!safeResult) {
+          setImageUploadError('Unsupported image format. Use PNG, JPEG, WebP, or SVG.');
+          return;
+        }
         setImageUploadError(null);
-        updateConfig({ customBackgroundUrl: result });
+        setBgUrlDraft(null);
+        updateConfig({ customBackgroundUrl: safeResult });
       }
     };
     reader.onerror = () => {
@@ -450,15 +480,23 @@ export const RightInspector: React.FC = () => {
                     <input
                       type="url"
                       aria-label="Custom background texture URL"
-                      value={config.customBackgroundUrl || ''}
-                      onChange={(e) => updateConfig({ customBackgroundUrl: e.target.value })}
+                      value={displayedBgUrl}
+                      onChange={(e) => handleBgUrlChange(e.target.value)}
+                      onBlur={() => {
+                        if (bgUrlDraft !== null && !bgUrlDraft.trim()) {
+                          setBgUrlDraft(null);
+                        }
+                      }}
                       placeholder="https://... or data:image/..."
                       className="flex-1 h-8 px-2.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-100 placeholder-zinc-500 focus:border-blue-500 outline-none"
                     />
-                    {config.customBackgroundUrl && (
+                    {(config.customBackgroundUrl || bgUrlDraft) && (
                       <button
                         type="button"
-                        onClick={() => updateConfig({ customBackgroundUrl: undefined })}
+                        onClick={() => {
+                          setBgUrlDraft(null);
+                          updateConfig({ customBackgroundUrl: undefined });
+                        }}
                         className="p-1.5 rounded-lg bg-zinc-900 border border-zinc-800 hover:border-red-500/50 text-zinc-400 hover:text-red-400 transition-colors cursor-pointer"
                         title="Clear backdrop image"
                         aria-label="Clear backdrop image"
@@ -467,6 +505,7 @@ export const RightInspector: React.FC = () => {
                       </button>
                     )}
                   </div>
+                  {bgUrlError && <span className="text-[11px] text-red-400">{bgUrlError}</span>}
                 </div>
               </div>
             )}

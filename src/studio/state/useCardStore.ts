@@ -12,6 +12,7 @@ import type {
 import { normalizeTemplateId } from '@/core/domain/schemas';
 import { PRESET_PALETTES, ThemeEngine } from '@/core/theme/ThemeEngine';
 import { suggestInstallCommand } from '@/core/domain/stackMapper';
+import { sanitizeClientImageUrl } from '@/core/security/ssrf';
 import { TEMPLATE_SIGNATURE_PATTERNS } from '@/cards/templates/templateCapabilities';
 
 export { TEMPLATE_SIGNATURE_PATTERNS };
@@ -261,12 +262,21 @@ const useBaseCardStore = create<CardStoreState>((set, get) => ({
   },
 
   updateConfig: (partial) => {
+    const normalizedPartial: Partial<CardConfig> = { ...partial };
+    if (partial.customLogoUrl !== undefined) {
+      normalizedPartial.customLogoUrl = sanitizeClientImageUrl(partial.customLogoUrl) || undefined;
+    }
+    if (partial.customBackgroundUrl !== undefined) {
+      normalizedPartial.customBackgroundUrl =
+        sanitizeClientImageUrl(partial.customBackgroundUrl) || undefined;
+    }
+
     set((state) => ({
       past: [...state.past.slice(-(MAX_HISTORY - 1)), state.config],
       future: [],
       config: {
         ...state.config,
-        ...partial,
+        ...normalizedPartial,
       },
     }));
   },

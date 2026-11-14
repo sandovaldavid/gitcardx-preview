@@ -65,6 +65,12 @@ describe('BrandKitVault & Storage', () => {
 
     const result = BrandKitSchema.safeParse(invalidKit);
     expect(result.success).toBe(false);
+
+    const maliciousUrlKit = {
+      ...sampleKit,
+      customLogoUrl: 'javascript:alert(1)',
+    };
+    expect(BrandKitSchema.safeParse(maliciousUrlKit).success).toBe(false);
   });
 
   it('respects Free Tier limit of 10 Brand Kits', () => {

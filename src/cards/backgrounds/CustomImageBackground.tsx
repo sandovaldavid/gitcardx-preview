@@ -1,4 +1,5 @@
 import React from 'react';
+import { formatSafeCssUrl } from '@/core/security/ssrf';
 import type { CustomImageBackgroundProps } from './types';
 import { SvgPatternCanvas } from './SvgPatternCanvas';
 import { generateDynamicRays } from './generators/dynamicRays';
@@ -13,7 +14,8 @@ export const CustomImageBackground: React.FC<CustomImageBackgroundProps> = ({
   className,
   style,
 }) => {
-  if (imageUrl) {
+  const safeBackgroundImage = formatSafeCssUrl(imageUrl);
+  if (safeBackgroundImage) {
     const bgSize = scale === 1 ? 'cover' : `${Math.round(100 * scale)}%`;
     return (
       <div
@@ -24,7 +26,7 @@ export const CustomImageBackground: React.FC<CustomImageBackgroundProps> = ({
           left: 0,
           width: 1280,
           height: 640,
-          backgroundImage: `url(${imageUrl})`,
+          backgroundImage: safeBackgroundImage,
           backgroundSize: bgSize,
           backgroundPosition: 'center',
           opacity,

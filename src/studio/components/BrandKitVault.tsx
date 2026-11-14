@@ -6,6 +6,7 @@ import { useCardStore } from '../state/useCardStore';
 import { IndexedDBBrandKitStorage } from '@/core/adapters/local/IndexedDBBrandKitStorage';
 import { FreeTierEntitlement } from '@/core/adapters/local/FreeTierEntitlement';
 import { BrandKitSchema, type BrandKit } from '@/core/domain/schemas';
+import { sanitizeClientImageUrl } from '@/core/security/ssrf';
 
 const storage = new IndexedDBBrandKitStorage();
 const entitlement = new FreeTierEntitlement();
@@ -66,8 +67,8 @@ export const BrandKitVault: React.FC = () => {
       palette: config.palette,
       typography: config.typography,
       backgroundPattern: config.backgroundPattern,
-      customLogoUrl: config.customLogoUrl,
-      customBackgroundUrl: config.customBackgroundUrl,
+      customLogoUrl: sanitizeClientImageUrl(config.customLogoUrl) || undefined,
+      customBackgroundUrl: sanitizeClientImageUrl(config.customBackgroundUrl) || undefined,
       signature: newKitSignature.trim() || undefined,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -92,8 +93,8 @@ export const BrandKitVault: React.FC = () => {
     setBackgroundPattern(kit.backgroundPattern);
     updateConfig({
       typography: kit.typography,
-      customLogoUrl: kit.customLogoUrl,
-      customBackgroundUrl: kit.customBackgroundUrl,
+      customLogoUrl: sanitizeClientImageUrl(kit.customLogoUrl) || undefined,
+      customBackgroundUrl: sanitizeClientImageUrl(kit.customBackgroundUrl) || undefined,
     });
     setAppliedId(kit.id);
     setTimeout(() => setAppliedId(null), 2000);

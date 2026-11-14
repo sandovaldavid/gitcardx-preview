@@ -52,6 +52,12 @@ describe('PatternPresetVault & Storage', () => {
     };
     const result = PatternPresetSchema.safeParse(invalidPreset);
     expect(result.success).toBe(false);
+
+    const cssBreakoutPreset = {
+      ...samplePreset,
+      customBackgroundUrl: 'https://example.com/bg.png");background:red',
+    };
+    expect(PatternPresetSchema.safeParse(cssBreakoutPreset).success).toBe(false);
   });
 
   it('respects Free Tier limit of 10 Pattern Presets', () => {

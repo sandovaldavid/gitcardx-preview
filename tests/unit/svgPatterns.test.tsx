@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import React from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
 import { Resvg } from '@resvg/resvg-js';
 import {
   calculateArchitecturalGridMetrics,
@@ -296,6 +297,20 @@ describe('Modular SVG Pattern Architecture', () => {
       expect(
         <CustomImageBackground {...props} imageUrl="https://example.com/bg.png" />
       ).toBeDefined();
+
+      const validBgHtml = renderToStaticMarkup(
+        <CustomImageBackground {...props} imageUrl="https://example.com/bg.png" />
+      );
+      expect(validBgHtml).toContain('url(&quot;https://example.com/bg.png&quot;)');
+
+      const unsafeBgHtml = renderToStaticMarkup(
+        <CustomImageBackground
+          {...props}
+          imageUrl={'https://evil.example/a.png");background:url(https://evil.example/b)'}
+        />
+      );
+      expect(unsafeBgHtml).not.toContain('evil.example');
+      expect(unsafeBgHtml).toContain('<svg');
     });
 
     it('BackgroundRenderer dispatches all patterns and forwards idPrefix', () => {
