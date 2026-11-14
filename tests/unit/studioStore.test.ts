@@ -157,4 +157,22 @@ describe('useCardStore (Zustand state & history)', () => {
     expect(useCardStore.getState().repo.name).toBe('other-repo');
     expect(useCardStore.getState().repo.stars).toBe(0);
   });
+
+  it('sanitizes customLogoUrl and customBackgroundUrl inside updateConfig', () => {
+    const store = useCardStore.getState();
+
+    store.updateConfig({
+      customLogoUrl: 'javascript:alert(1)',
+      customBackgroundUrl: 'https://evil.example/bg.png");background:red',
+    });
+    expect(useCardStore.getState().config.customLogoUrl).toBeUndefined();
+    expect(useCardStore.getState().config.customBackgroundUrl).toBeUndefined();
+
+    store.updateConfig({
+      customLogoUrl: 'https://example.com/logo.png',
+      customBackgroundUrl: `data:image/png;base64,${'A'.repeat(250_000)}`,
+    });
+    expect(useCardStore.getState().config.customLogoUrl).toBe('https://example.com/logo.png');
+    expect(useCardStore.getState().config.customBackgroundUrl).toHaveLength(22 + 250_000);
+  });
 });

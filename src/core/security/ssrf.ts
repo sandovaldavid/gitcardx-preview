@@ -1,5 +1,7 @@
 const MAX_IMAGE_URL_LENGTH = 2048;
-const MAX_IMAGE_DATA_URI_LENGTH = 200_000;
+const MAX_IMAGE_DATA_URI_LENGTH = 700_000;
+const SAFE_BASE64_IMAGE_DATA_URI_REGEX =
+  /^data:image\/(?:png|jpeg|webp|svg\+xml);base64,[A-Za-z0-9+/=]+$/;
 
 const ALLOWED_IMAGE_HOSTS = new Set([
   'avatars.githubusercontent.com',
@@ -8,6 +10,42 @@ const ALLOWED_IMAGE_HOSTS = new Set([
   'github.com',
   'user-images.githubusercontent.com',
 ]);
+
+function hasUnsafeUrlChars(value: string): boolean {
+  for (let i = 0; i < value.length; i++) {
+    const code = value.charCodeAt(i);
+    if (code <= 32 || code === 127) {
+      return true;
+    }
+  }
+  return /["'\\()<>`]/.test(value);
+}
+
+function isSafeImageDataUri(trimmed: string, maxLength: number): boolean {
+  return trimmed.length <= maxLength && SAFE_BASE64_IMAGE_DATA_URI_REGEX.test(trimmed);
+}
+
+function isSafeHttpsUrl(trimmed: string): URL | null {
+  if (trimmed.length > MAX_IMAGE_URL_LENGTH || hasUnsafeUrlChars(trimmed)) {
+    return null;
+  }
+
+  try {
+    const parsed = new URL(trimmed);
+    if (
+      parsed.protocol !== 'https:' ||
+      parsed.username ||
+      parsed.password ||
+      (parsed.port && parsed.port !== '443') ||
+      isPrivateOrLocalHostname(parsed.hostname)
+    ) {
+      return null;
+    }
+    return parsed;
+  } catch {
+    return null;
+  }
+}
 
 function isPrivateOrLocalHostname(rawHostname: string): boolean {
   const hostname = rawHostname.toLowerCase();
@@ -36,39 +74,42 @@ export function sanitizeImageUrl(rawUrl?: string | null, fallbackUrl = ''): stri
 
   const trimmed = rawUrl.trim();
 
-  // Allow safe inline data URIs for client-uploaded logos/icons/textures
-  if (
-    trimmed.startsWith('data:image/png;base64,') ||
-    trimmed.startsWith('data:image/jpeg;base64,') ||
-    trimmed.startsWith('data:image/webp;base64,') ||
-    trimmed.startsWith('data:image/svg+xml;base64,')
-  ) {
-    return trimmed.length <= MAX_IMAGE_DATA_URI_LENGTH ? trimmed : fallbackUrl;
+  if (isSafeImageDataUri(trimmed, MAX_IMAGE_DATA_URI_LENGTH)) {
+    return trimmed;
   }
 
-  if (trimmed.length > MAX_IMAGE_URL_LENGTH) return fallbackUrl;
-
-  try {
-    const parsed = new URL(trimmed);
-
-    // Reject non-HTTPS protocols or custom ports
-    if (parsed.protocol !== 'https:' || (parsed.port && parsed.port !== '443')) {
-      return fallbackUrl;
-    }
-
-    if (isPrivateOrLocalHostname(parsed.hostname)) {
-      return fallbackUrl;
-    }
-
-    // Verify against trusted GitHub domains whitelist
-    if (ALLOWED_IMAGE_HOSTS.has(parsed.hostname.toLowerCase())) {
-      return trimmed;
-    }
-
-    return fallbackUrl;
-  } catch {
+  const parsed = isSafeHttpsUrl(trimmed);
+  if (!parsed) {
     return fallbackUrl;
   }
+
+  return ALLOWED_IMAGE_HOSTS.has(parsed.hostname.toLowerCase()) ? trimmed : fallbackUrl;
+}
+
+/**
+ * Validates user-supplied image URLs in the client Studio canvas and local Vaults.
+ * Allows any public HTTPS URL (without credentials or CSS/HTML breakout chars) or
+ * strict base64 image data URIs up to the Studio upload budget.
+ */
+export function sanitizeClientImageUrl(rawUrl?: string | null, fallbackUrl = ''): string {
+  if (!rawUrl) return fallbackUrl;
+
+  const trimmed = rawUrl.trim();
+
+  if (isSafeImageDataUri(trimmed, MAX_IMAGE_DATA_URI_LENGTH)) {
+    return trimmed;
+  }
+
+  return isSafeHttpsUrl(trimmed) ? trimmed : fallbackUrl;
+}
+
+/**
+ * Formats a client-sanitized image URL for inline CSS `backgroundImage: url("...")`
+ * so untrusted strings cannot break out of CSS url() context.
+ */
+export function formatSafeCssUrl(rawUrl?: string | null): string | undefined {
+  const safe = sanitizeClientImageUrl(rawUrl);
+  return safe ? `url("${safe}")` : undefined;
 }
 
 /**

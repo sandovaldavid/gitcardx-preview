@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import { useCardStore } from '../state/useCardStore';
 import { normalizeTemplateId, type CardVisibility } from '@/core/domain/schemas';
+import { sanitizeClientImageUrl } from '@/core/security/ssrf';
 import {
   CARD_TEMPLATES,
   getAllLayerVisibilityStates,
@@ -57,6 +58,29 @@ export const LeftInspector: React.FC = () => {
   const { config, updateConfig, setContentAlign, toggleVisibility, repo, updateRepo } =
     useCardStore();
   const [isManualModeOpen, setIsManualModeOpen] = useState(false);
+  const [logoDraft, setLogoDraft] = useState<string | null>(null);
+
+  const displayedLogoUrl = logoDraft ?? (config.customLogoUrl || '');
+  const logoUrlError =
+    logoDraft !== null && logoDraft.trim() !== '' && !sanitizeClientImageUrl(logoDraft)
+      ? 'Use an https:// URL or valid base64 image data URI.'
+      : null;
+
+  const handleLogoUrlChange = (nextVal: string) => {
+    if (!nextVal.trim()) {
+      setLogoDraft(null);
+      updateConfig({ customLogoUrl: undefined });
+      return;
+    }
+
+    const safe = sanitizeClientImageUrl(nextVal);
+    if (safe) {
+      setLogoDraft(null);
+      updateConfig({ customLogoUrl: safe });
+    } else {
+      setLogoDraft(nextVal);
+    }
+  };
 
   const templateId = normalizeTemplateId(config.templateId);
   const templateDef = CARD_TEMPLATES[templateId];
@@ -307,8 +331,13 @@ export const LeftInspector: React.FC = () => {
             id="card-logo-url-input"
             type="url"
             disabled={!customLogoSupported}
-            value={config.customLogoUrl || ''}
-            onChange={(e) => updateConfig({ customLogoUrl: e.target.value })}
+            value={displayedLogoUrl}
+            onChange={(e) => handleLogoUrlChange(e.target.value)}
+            onBlur={() => {
+              if (logoDraft !== null && !logoDraft.trim()) {
+                setLogoDraft(null);
+              }
+            }}
             placeholder="https://... or data:image/png;base64,..."
             title={
               !customLogoSupported
@@ -325,6 +354,7 @@ export const LeftInspector: React.FC = () => {
                   : ''
             }`}
           />
+          {logoUrlError && <span className="text-[11px] text-red-400">{logoUrlError}</span>}
         </div>
 
         {/* Card Elements & Layers Visibility */}

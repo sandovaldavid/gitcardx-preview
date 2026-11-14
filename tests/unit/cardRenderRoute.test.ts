@@ -145,6 +145,37 @@ describe('On-Demand Card Render Route (/api/card/render)', () => {
     expect(svg).toContain(validPng);
   });
 
+  it('exports Studio image uploads larger than 150 KB up to the 500 KB budget', async () => {
+    const paddedSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><!-- ${'a'.repeat(190_000)} --></svg>`;
+    const largeUploadDataUri = `data:image/svg+xml;base64,${Buffer.from(paddedSvg, 'utf8').toString('base64')}`;
+    expect(largeUploadDataUri.length).toBeGreaterThan(250_000);
+
+    const req = new NextRequest('https://gitframe.dev/api/card/render', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-real-ip': '203.0.113.77',
+      },
+      body: JSON.stringify({
+        repo: DEFAULT_REPO,
+        config: {
+          ...DEFAULT_CONFIG,
+          customBackgroundUrl: largeUploadDataUri,
+          backgroundPattern: {
+            id: 'custom-image',
+            opacity: 0.5,
+          },
+        },
+        format: 'svg',
+      }),
+    });
+
+    const res = await POST(req);
+    expect(res.status).toBe(200);
+    const svg = await res.text();
+    expect(svg).toContain(largeUploadDataUri);
+  });
+
   it('rejects non-JSON content types and malformed JSON with client errors', async () => {
     const textReq = new NextRequest('https://gitframe.dev/api/card/render', {
       method: 'POST',

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { sanitizeClientImageUrl } from '../security/ssrf';
 
 export const TemplateIdSchema = z.enum([
   'modern-minimal',
@@ -86,15 +87,15 @@ export const CardConfigSchema = z.object({
   installCommand: z.string().max(120).optional(),
   customLogoUrl: z
     .string()
-    .max(200_000)
+    .max(700_000)
     .url()
-    .or(z.string().startsWith('data:').max(200_000))
+    .or(z.string().startsWith('data:').max(700_000))
     .optional(),
   customBackgroundUrl: z
     .string()
-    .max(200_000)
+    .max(700_000)
     .url()
-    .or(z.string().startsWith('data:').max(200_000))
+    .or(z.string().startsWith('data:').max(700_000))
     .optional(),
   contentAlign: ContentAlignSchema,
   palette: PaletteSchema,
@@ -146,6 +147,13 @@ export const RepoMetadataSchema = z.object({
   discussionsCount: z.number().int().nonnegative().optional(),
 });
 
+const SafeClientImageUrlSchema = z
+  .string()
+  .refine((val) => val.trim() === '' || sanitizeClientImageUrl(val) !== '', {
+    message: 'Image URL must use https:// or valid base64 data:image format',
+  })
+  .optional();
+
 export const BrandKitSchema = z.object({
   id: z.string().min(1),
   name: z.string().min(1).max(60),
@@ -153,8 +161,8 @@ export const BrandKitSchema = z.object({
   palette: PaletteSchema,
   typography: TypographySchema,
   backgroundPattern: BackgroundPatternConfigSchema,
-  customLogoUrl: z.string().optional(),
-  customBackgroundUrl: z.string().optional(),
+  customLogoUrl: SafeClientImageUrlSchema,
+  customBackgroundUrl: SafeClientImageUrlSchema,
   signature: z.string().max(80).optional(),
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),
@@ -164,7 +172,7 @@ export const PatternPresetSchema = z.object({
   id: z.string().min(1),
   name: z.string().min(1).max(60),
   pattern: BackgroundPatternConfigSchema,
-  customBackgroundUrl: z.string().optional(),
+  customBackgroundUrl: SafeClientImageUrlSchema,
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),
 });

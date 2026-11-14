@@ -1,5 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { isAllowedEmojiUrl, isAllowedFontUrl, sanitizeImageUrl } from '@/core/security/ssrf';
+import {
+  formatSafeCssUrl,
+  isAllowedEmojiUrl,
+  isAllowedFontUrl,
+  sanitizeClientImageUrl,
+  sanitizeImageUrl,
+} from '@/core/security/ssrf';
 
 describe('sanitizeImageUrl (Anti-SSRF defense)', () => {
   const fallback = 'https://avatars.githubusercontent.com/u/0';
@@ -115,5 +121,29 @@ describe('isAllowedEmojiUrl (Twemoji CDN SSRF allowlist)', () => {
       isAllowedEmojiUrl('https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/UPPER.svg')
     ).toBe(false);
     expect(isAllowedEmojiUrl('https://evil.example.com/1f680.svg')).toBe(false);
+  });
+});
+
+describe('sanitizeClientImageUrl & formatSafeCssUrl (Client Studio UI defense)', () => {
+  it('allows public HTTPS URLs and base64 image data URIs up to Studio budget', () => {
+    expect(sanitizeClientImageUrl('https://example.com/banner.png')).toBe(
+      'https://example.com/banner.png'
+    );
+    const largeUploadPng = `data:image/png;base64,${'A'.repeat(250_000)}`;
+    expect(sanitizeClientImageUrl(largeUploadPng)).toBe(largeUploadPng);
+    expect(formatSafeCssUrl('https://example.com/banner.png')).toBe(
+      'url("https://example.com/banner.png")'
+    );
+  });
+
+  it('rejects javascript/http protocols, private hosts, malformed base64, and CSS breakout characters', () => {
+    expect(sanitizeClientImageUrl('javascript:alert(1)')).toBe('');
+    expect(sanitizeClientImageUrl('http://example.com/banner.png')).toBe('');
+    expect(sanitizeClientImageUrl('https://localhost:3000/img.png')).toBe('');
+    expect(sanitizeClientImageUrl('https://127.0.0.1/img.png')).toBe('');
+    expect(sanitizeClientImageUrl('https://user:pass@example.com/img.png')).toBe('');
+    expect(sanitizeClientImageUrl('https://example.com/bg.png");background:red')).toBe('');
+    expect(sanitizeClientImageUrl('data:image/svg+xml;base64,not)valid!')).toBe('');
+    expect(formatSafeCssUrl('https://example.com/bg.png");color:red')).toBeUndefined();
   });
 });
