@@ -27,10 +27,31 @@ describe('rateLimit', () => {
     expect(checkRateLimit('b', 1, 1000, 2001).allowed).toBe(true);
   });
 
-  it('extracts the first forwarded client address', () => {
+  it('prioritizes trusted platform IP headers over spoofable x-forwarded-for entries', () => {
+    const vercelReq = new Request('https://gitframe.dev', {
+      headers: {
+        'x-forwarded-for': '1.2.3.4, 10.0.0.1',
+        'x-real-ip': '198.51.100.7',
+        'x-vercel-forwarded-for': '203.0.113.9',
+      },
+    });
+    expect(getClientIp(vercelReq)).toBe('203.0.113.9');
+
+    const realIpReq = new Request('https://gitframe.dev', {
+      headers: {
+        'x-forwarded-for': '1.2.3.4, 10.0.0.1',
+        'x-real-ip': '198.51.100.7',
+      },
+    });
+    expect(getClientIp(realIpReq)).toBe('198.51.100.7');
+  });
+
+  it('extracts the rightmost non-empty x-forwarded-for address when proxy headers are absent', () => {
     const request = new Request('https://gitframe.dev', {
-      headers: { 'x-forwarded-for': '203.0.113.4, 10.0.0.1' },
+      headers: { 'x-forwarded-for': '198.51.100.99, 203.0.113.4, ' },
     });
     expect(getClientIp(request)).toBe('203.0.113.4');
+
+    expect(getClientIp(new Request('https://gitframe.dev'))).toBe('unknown');
   });
 });
