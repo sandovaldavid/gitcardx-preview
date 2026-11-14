@@ -28,11 +28,21 @@ function evictIfNeeded(now: number): void {
   }
 }
 
+function extractRightmostIp(headerValue: string | null): string | null {
+  if (!headerValue) return null;
+  const parts = headerValue
+    .split(',')
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+  return parts.length > 0 ? parts[parts.length - 1] : null;
+}
+
 export function getClientIp(request: Request): string {
-  const forwarded = request.headers.get('x-forwarded-for');
-  if (forwarded) return forwarded.split(',')[0]?.trim() || 'unknown';
   return (
-    request.headers.get('x-real-ip') || request.headers.get('x-vercel-forwarded-for') || 'unknown'
+    extractRightmostIp(request.headers.get('x-vercel-forwarded-for')) ||
+    request.headers.get('x-real-ip')?.trim() ||
+    extractRightmostIp(request.headers.get('x-forwarded-for')) ||
+    'unknown'
   );
 }
 
