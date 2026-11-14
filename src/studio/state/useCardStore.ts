@@ -12,6 +12,9 @@ import type {
 import { normalizeTemplateId } from '@/core/domain/schemas';
 import { PRESET_PALETTES, ThemeEngine } from '@/core/theme/ThemeEngine';
 import { suggestInstallCommand } from '@/core/domain/stackMapper';
+import { TEMPLATE_SIGNATURE_PATTERNS } from '@/cards/templates/templateCapabilities';
+
+export { TEMPLATE_SIGNATURE_PATTERNS };
 
 export const DEFAULT_REPO: RepoMetadata = {
   owner: {
@@ -73,14 +76,6 @@ export const DEFAULT_CONFIG: CardConfig = {
     issues: false,
     discussions: false,
   },
-};
-
-export const TEMPLATE_SIGNATURE_PATTERNS: Partial<
-  Record<TemplateId, BackgroundPatternConfig['id']>
-> = {
-  'aurora-glass': 'aurora-mesh',
-  'blueprint-grid': 'architectural-grid',
-  'version-hero': 'radial-spotlight',
 };
 
 export interface HydrateRepoOptions {

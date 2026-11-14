@@ -10,6 +10,17 @@ import { AuroraGlassTemplate } from './AuroraGlassTemplate';
 import { BlueprintGridTemplate } from './BlueprintGridTemplate';
 import { VersionHeroTemplate } from './VersionHeroTemplate';
 import { AuthorSpotlightTemplate } from './AuthorSpotlightTemplate';
+import { TEMPLATE_CAPABILITIES, type TemplateCapabilities } from './templateCapabilities';
+
+export {
+  TEMPLATE_CAPABILITIES,
+  getTemplateCapabilities,
+  getLayerVisibilityState,
+  getAllLayerVisibilityStates,
+  type TemplateCapabilities,
+  type LayerUnavailableReason,
+  type LayerVisibilityState,
+} from './templateCapabilities';
 
 export interface TemplateDefinition {
   id: TemplateId;
@@ -17,6 +28,7 @@ export interface TemplateDefinition {
   description: string;
   recommendedFor: string;
   component: CardTemplateComponent;
+  capabilities: TemplateCapabilities;
 }
 
 export const CARD_TEMPLATES: Record<TemplateId, TemplateDefinition> = {
@@ -26,6 +38,7 @@ export const CARD_TEMPLATES: Record<TemplateId, TemplateDefinition> = {
     description: 'Clean, refined layout with balanced negative space and high typographic clarity.',
     recommendedFor: 'High clarity, balanced spacing, and clean typography',
     component: ModernMinimalTemplate,
+    capabilities: TEMPLATE_CAPABILITIES['modern-minimal'],
   },
   'terminal-prompt': {
     id: 'terminal-prompt',
@@ -33,6 +46,7 @@ export const CARD_TEMPLATES: Record<TemplateId, TemplateDefinition> = {
     description: 'Terminal command window front and center with clean developer aesthetics.',
     recommendedFor: 'Quick install commands, developer tools, and console workflows',
     component: TerminalPromptTemplate,
+    capabilities: TEMPLATE_CAPABILITIES['terminal-prompt'],
   },
   'metric-showcase': {
     id: 'metric-showcase',
@@ -41,6 +55,7 @@ export const CARD_TEMPLATES: Record<TemplateId, TemplateDefinition> = {
       'High-density split layout highlighting repository metrics, traction, and community.',
     recommendedFor: 'Key metrics, community traction, and project impact',
     component: MetricShowcaseTemplate,
+    capabilities: TEMPLATE_CAPABILITIES['metric-showcase'],
   },
   'split-console': {
     id: 'split-console',
@@ -49,6 +64,7 @@ export const CARD_TEMPLATES: Record<TemplateId, TemplateDefinition> = {
       'Two-column balanced layout pairing repository identity with an interactive terminal box and stats.',
     recommendedFor: 'Two-column balance, code installation, and metadata',
     component: SplitConsoleTemplate,
+    capabilities: TEMPLATE_CAPABILITIES['split-console'],
   },
   'aurora-glass': {
     id: 'aurora-glass',
@@ -56,6 +72,7 @@ export const CARD_TEMPLATES: Record<TemplateId, TemplateDefinition> = {
     description: 'Vibrant fluid gradient glow behind a frosted glass container card.',
     recommendedFor: 'Modern fluid gradients, frosted glass, and vibrant visuals',
     component: AuroraGlassTemplate,
+    capabilities: TEMPLATE_CAPABILITIES['aurora-glass'],
   },
   'blueprint-grid': {
     id: 'blueprint-grid',
@@ -64,6 +81,7 @@ export const CARD_TEMPLATES: Record<TemplateId, TemplateDefinition> = {
       'Technical blueprint architecture with coordinate crosshairs and engineering badges.',
     recommendedFor: 'Technical precision, architectural grids, and coordinate lines',
     component: BlueprintGridTemplate,
+    capabilities: TEMPLATE_CAPABILITIES['blueprint-grid'],
   },
   'version-hero': {
     id: 'version-hero',
@@ -72,6 +90,7 @@ export const CARD_TEMPLATES: Record<TemplateId, TemplateDefinition> = {
       'Heroic centered layout with a prominent version or milestone badge above the title.',
     recommendedFor: 'Version milestones, prominent releases, and centered focus',
     component: VersionHeroTemplate,
+    capabilities: TEMPLATE_CAPABILITIES['version-hero'],
   },
   'author-spotlight': {
     id: 'author-spotlight',
@@ -80,6 +99,7 @@ export const CARD_TEMPLATES: Record<TemplateId, TemplateDefinition> = {
       'Two-column layout highlighting author profile and avatar alongside project identity.',
     recommendedFor: 'Prominent author avatar, developer profile, and project identity',
     component: AuthorSpotlightTemplate,
+    capabilities: TEMPLATE_CAPABILITIES['author-spotlight'],
   },
 };
 
