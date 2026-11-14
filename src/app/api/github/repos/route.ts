@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { parseGitHubInput } from '@/core/domain/parser';
+import { isValidGitHubOwner, parseGitHubInput } from '@/core/domain/parser';
 import { GitHubService } from '@/core/services/GitHubService';
 import { checkRateLimit, getClientIp, rateLimitHeaders } from '@/lib/rateLimit';
 
@@ -23,22 +23,33 @@ export async function GET(request: NextRequest) {
 
   if (input) {
     const parsed = parseGitHubInput(input);
-    if (parsed.type === 'owner') {
+    if (parsed.type === 'owner' || parsed.type === 'repo') {
       owner = parsed.owner;
-    } else if (parsed.type === 'repo') {
-      owner = parsed.owner;
+    } else {
+      return NextResponse.json(
+        { error: parsed.error || 'Invalid GitHub input query parameter' },
+        { status: 400, headers: rateLimitHeaders(limit) }
+      );
     }
   }
 
-  if (!owner) {
+  const normalizedOwner = owner?.trim();
+  if (!normalizedOwner) {
     return NextResponse.json(
       { error: 'Missing owner or input query parameter' },
       { status: 400, headers: rateLimitHeaders(limit) }
     );
   }
 
+  if (!isValidGitHubOwner(normalizedOwner)) {
+    return NextResponse.json(
+      { error: 'Invalid GitHub owner format' },
+      { status: 400, headers: rateLimitHeaders(limit) }
+    );
+  }
+
   try {
-    const repos = await githubService.getUserRepositories(owner);
+    const repos = await githubService.getUserRepositories(normalizedOwner);
     return NextResponse.json(repos, {
       status: 200,
       headers: {
