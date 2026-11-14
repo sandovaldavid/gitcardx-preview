@@ -6,7 +6,46 @@ import { checkRateLimit, getClientIp, rateLimitHeaders } from '@/lib/rateLimit';
 
 export const maxDuration = 30;
 
-const MAX_BODY_BYTES = 512_000;
+const MAX_BODY_BYTES = 800_000;
+
+class PayloadTooLargeError extends Error {}
+
+async function readTextWithByteLimit(request: Request, maxBytes: number): Promise<string> {
+  const bodyStream = request.body;
+  if (!bodyStream) {
+    return '';
+  }
+
+  const reader = bodyStream.getReader();
+  const chunks: Uint8Array[] = [];
+  let totalBytes = 0;
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      if (!value) continue;
+
+      totalBytes += value.byteLength;
+      if (totalBytes > maxBytes) {
+        await reader.cancel().catch(() => {});
+        throw new PayloadTooLargeError('Payload too large');
+      }
+      chunks.push(value);
+    }
+  } finally {
+    reader.releaseLock();
+  }
+
+  const combined = new Uint8Array(totalBytes);
+  let offset = 0;
+  for (const chunk of chunks) {
+    combined.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+
+  return new TextDecoder().decode(combined);
+}
 
 export async function POST(request: NextRequest) {
   const ip = getClientIp(request);
@@ -27,7 +66,7 @@ export async function POST(request: NextRequest) {
   }
 
   const contentLength = Number(request.headers.get('content-length') || 0);
-  if (contentLength > MAX_BODY_BYTES) {
+  if (Number.isFinite(contentLength) && contentLength > MAX_BODY_BYTES) {
     return NextResponse.json(
       { error: 'Payload too large' },
       { status: 413, headers: rateLimitHeaders(limit) }
@@ -36,8 +75,22 @@ export async function POST(request: NextRequest) {
 
   let body: Record<string, unknown>;
   try {
-    body = (await request.json()) as Record<string, unknown>;
-  } catch {
+    const rawBody = await readTextWithByteLimit(request, MAX_BODY_BYTES);
+    const parsed = JSON.parse(rawBody) as unknown;
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+      return NextResponse.json(
+        { error: 'Invalid JSON body' },
+        { status: 400, headers: rateLimitHeaders(limit) }
+      );
+    }
+    body = parsed as Record<string, unknown>;
+  } catch (err) {
+    if (err instanceof PayloadTooLargeError) {
+      return NextResponse.json(
+        { error: 'Payload too large' },
+        { status: 413, headers: rateLimitHeaders(limit) }
+      );
+    }
     return NextResponse.json(
       { error: 'Invalid JSON body' },
       { status: 400, headers: rateLimitHeaders(limit) }

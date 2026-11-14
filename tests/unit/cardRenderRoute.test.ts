@@ -1,9 +1,13 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { NextRequest } from 'next/server';
 import { POST } from '@/app/api/card/render/route';
+import { resetRateLimitForTesting } from '@/lib/rateLimit';
 import { DEFAULT_REPO, DEFAULT_CONFIG } from '@/studio/state/useCardStore';
 
 describe('On-Demand Card Render Route (/api/card/render)', () => {
+  beforeEach(() => {
+    resetRateLimitForTesting();
+  });
   it('renders a valid PNG buffer directly from client studio payload', async () => {
     const req = new NextRequest('https://gitframe.dev/api/card/render', {
       method: 'POST',
@@ -155,6 +159,52 @@ describe('On-Demand Card Render Route (/api/card/render)', () => {
       body: '{bad',
     });
     expect((await POST(malformedReq)).status).toBe(400);
+  });
+
+  it('rejects oversized bodies via Content-Length, spoofed Content-Length, or chunked streams with 413', async () => {
+    const declaredReq = new NextRequest('https://gitframe.dev/api/card/render', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Content-Length': String(900_000),
+        'x-real-ip': '203.0.113.55',
+      },
+      body: '{}',
+    });
+    expect((await POST(declaredReq)).status).toBe(413);
+
+    const oversizedPayload = JSON.stringify({ filler: 'a'.repeat(820_000) });
+    const spoofedHeaderReq = new NextRequest('https://gitframe.dev/api/card/render', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Content-Length': '64',
+        'x-real-ip': '203.0.113.55',
+      },
+      body: oversizedPayload,
+    });
+    expect((await POST(spoofedHeaderReq)).status).toBe(413);
+
+    const encoder = new TextEncoder();
+    const chunkedStream = new ReadableStream<Uint8Array>({
+      start(controller) {
+        controller.enqueue(encoder.encode('{"filler":"'));
+        controller.enqueue(encoder.encode('b'.repeat(420_000)));
+        controller.enqueue(encoder.encode('b'.repeat(420_000)));
+        controller.enqueue(encoder.encode('"}'));
+        controller.close();
+      },
+    });
+    const streamReq = new NextRequest('https://gitframe.dev/api/card/render', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-real-ip': '203.0.113.55',
+      },
+      body: chunkedStream,
+      duplex: 'half',
+    });
+    expect((await POST(streamReq)).status).toBe(413);
   });
 
   it('embeds description emojis in downloaded SVG and PNG exports via /api/card/render', async () => {
