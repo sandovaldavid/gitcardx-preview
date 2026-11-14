@@ -22,15 +22,14 @@ export function generateTopographicContours(
 ): SvgPatternDefinition {
   const { borderColor, scale = 1, width = 1280, height = 640 } = options;
   const { scale: s, strokeWidth } = calculateTopographicMetrics(scale);
+  const cx = width / 2;
+  const cy = height / 2;
+  // Use explicit SVG center translation because Satori/Resvg ignores CSS transform-origin.
+  const transform =
+    s === 1 ? undefined : `translate(${cx}, ${cy}) scale(${s}) translate(${-cx}, ${-cy})`;
 
   const content = (
-    <g
-      fill="none"
-      stroke={borderColor}
-      strokeWidth={strokeWidth}
-      transform={`scale(${s})`}
-      style={{ transformOrigin: 'center center' }}
-    >
+    <g fill="none" stroke={borderColor} strokeWidth={strokeWidth} transform={transform}>
       {CONTOUR_PATHS.map((path, idx) => (
         <path key={idx} d={path.d} strokeOpacity={path.opacity === 1 ? undefined : path.opacity} />
       ))}
@@ -40,9 +39,10 @@ export function generateTopographicContours(
   const pathsSvg = CONTOUR_PATHS.map((p) =>
     p.opacity === 1 ? `<path d="${p.d}" />` : `<path d="${p.d}" stroke-opacity="${p.opacity}" />`
   ).join('');
+  const transformAttr = transform ? ` transform="${transform}"` : '';
 
   const toSvgString = () =>
-    `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}"><g fill="none" stroke="${borderColor}" stroke-width="${strokeWidth}" transform="scale(${s})" style="transform-origin: center center;">${pathsSvg}</g></svg>`;
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}"><g fill="none" stroke="${borderColor}" stroke-width="${strokeWidth}"${transformAttr}>${pathsSvg}</g></svg>`;
 
   return {
     id: 'topographic-contours',

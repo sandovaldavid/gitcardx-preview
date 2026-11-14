@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import React from 'react';
+import { Resvg } from '@resvg/resvg-js';
 import {
   calculateArchitecturalGridMetrics,
   generateArchitecturalGrid,
@@ -174,7 +175,7 @@ describe('Modular SVG Pattern Architecture', () => {
       expect(svg).toContain('fill="url(#aurora-hero-aurora-blob-1)"');
     });
 
-    it('generates topographic contours paths and scaled stroke', () => {
+    it('generates topographic contours with centered SVG transform and Resvg parity', () => {
       const topo = generateTopographicContours({
         accentColor: '#3b82f6',
         borderColor: '#64748b',
@@ -183,8 +184,32 @@ describe('Modular SVG Pattern Architecture', () => {
 
       const svg = topo.toSvgString();
       expect(svg).toContain('stroke="#64748b"');
-      expect(svg).toContain('transform="scale(1.5)"');
+      expect(svg).toContain('transform="translate(640, 320) scale(1.5) translate(-640, -320)"');
+      expect(svg).not.toContain('transform-origin');
       expect(svg).toContain('<path d="M -100 200');
+
+      const scaledSvg = getPatternSvgString('topographic-contours', {
+        accentColor: '#236f90',
+        borderColor: '#236f90',
+        scale: 2.85,
+      });
+      const rendered = new Resvg(scaledSvg, {
+        fitTo: { mode: 'width', value: 1280 },
+        font: { loadSystemFonts: false },
+      }).render();
+      const pixels = rendered.pixels;
+      let topHalfPixels = 0;
+      let bottomHalfPixels = 0;
+      for (let y = 0; y < 640; y++) {
+        for (let x = 0; x < 1280; x++) {
+          if (pixels[(y * 1280 + x) * 4 + 3] > 20) {
+            if (y < 320) topHalfPixels++;
+            else bottomHalfPixels++;
+          }
+        }
+      }
+      expect(topHalfPixels).toBeGreaterThan(1000);
+      expect(bottomHalfPixels).toBeGreaterThan(1000);
     });
 
     it('generates dynamic rays fallback pattern', () => {
