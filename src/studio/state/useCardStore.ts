@@ -32,17 +32,24 @@ export const DEFAULT_REPO: RepoMetadata = {
     color: '#3178C6',
   },
   languages: [
-    { name: 'TypeScript', color: '#3178C6', size: 756970 },
+    { name: 'TypeScript', color: '#3178C6', size: 929409 },
     { name: 'JavaScript', color: '#F7DF1E', size: 10672 },
-    { name: 'CSS', color: '#1572B6', size: 2573 },
+    { name: 'CSS', color: '#1572B6', size: 4731 },
   ],
-  topics: ['nextjs', 'social-preview', 'developer-tools', 'typescript'],
-  license: 'MIT',
-  latestRelease: null,
+  topics: [],
+  license: null,
+  latestRelease: {
+    tag: 'v0.1.1',
+    publishedAt: '2026-11-13T15:34:29Z',
+  },
   contributors: [
     { login: 'sandovaldavid', avatarUrl: 'https://avatars.githubusercontent.com/u/102970701' },
+    {
+      login: 'github-actions[bot]',
+      avatarUrl: 'https://avatars.githubusercontent.com/in/15368?v=4',
+    },
   ],
-  contributorsCount: 1,
+  contributorsCount: 2,
   openIssuesCount: 0,
   discussionsCount: undefined,
 };
@@ -163,6 +170,7 @@ interface CardStoreState {
   // Actions
   setRepo: (repo: RepoMetadata, autoTheme?: boolean) => void;
   updateRepo: (partial: Partial<RepoMetadata>) => void;
+  syncDefaultRepoMetadata: (repo: RepoMetadata) => void;
   hydrateRepo: (repo: RepoMetadata, options?: HydrateRepoOptions) => void;
   updateConfig: (partial: Partial<CardConfig>) => void;
   setTemplateId: (templateId: TemplateId) => void;
@@ -224,6 +232,15 @@ const useBaseCardStore = create<CardStoreState>((set, get) => ({
       repo: { ...state.repo, ...partial },
       hasCustomRepo: true,
     }));
+  },
+
+  syncDefaultRepoMetadata: (repo) => {
+    set((state) => {
+      if (state.hasCustomRepo || state.hydratedRouteKey) {
+        return state;
+      }
+      return { repo };
+    });
   },
 
   hydrateRepo: (repo, options) => {

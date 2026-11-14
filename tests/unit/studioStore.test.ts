@@ -123,4 +123,38 @@ describe('useCardStore (Zustand state & history)', () => {
     expect(state.config.tagline).toBe('Blazing fast Rust microservice');
     expect(state.config.installCommand).toBe('cargo add rust-engine');
   });
+
+  it('matches live gitframe telemetry on DEFAULT_REPO without stale license or missing release', () => {
+    expect(DEFAULT_REPO.license).toBeNull();
+    expect(DEFAULT_REPO.latestRelease?.tag).toBe('v0.1.1');
+    expect(DEFAULT_REPO.contributorsCount).toBe(2);
+    expect(DEFAULT_REPO.topics).toEqual([]);
+  });
+
+  it('syncDefaultRepoMetadata updates default repo silently without overwriting config or custom repo', () => {
+    const store = useCardStore.getState();
+    store.updateConfig({ tagline: 'Custom studio tagline' });
+
+    store.syncDefaultRepoMetadata({
+      ...DEFAULT_REPO,
+      stars: 42,
+      forks: 7,
+      latestRelease: { tag: 'v0.2.0', publishedAt: '2026-11-14T00:00:00Z' },
+    });
+
+    const state = useCardStore.getState();
+    expect(state.repo.stars).toBe(42);
+    expect(state.repo.forks).toBe(7);
+    expect(state.repo.latestRelease?.tag).toBe('v0.2.0');
+    expect(state.config.title).toBe('Gitframe');
+    expect(state.config.tagline).toBe('Custom studio tagline');
+    expect(state.hasCustomRepo).toBe(false);
+    expect(state.past).toHaveLength(1);
+
+    // Once user loads a custom repo, background default sync cannot clobber it
+    state.setRepo({ ...DEFAULT_REPO, name: 'other-repo' }, true);
+    state.syncDefaultRepoMetadata({ ...DEFAULT_REPO, stars: 999 });
+    expect(useCardStore.getState().repo.name).toBe('other-repo');
+    expect(useCardStore.getState().repo.stars).toBe(0);
+  });
 });
