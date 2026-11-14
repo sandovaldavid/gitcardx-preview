@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.1.2](https://github.com/sandovaldavid/gitframe/compare/v0.1.1...v0.1.2) (2026-11-14)
+
+
+### Bug Fixes
+
+* **api:** add csp sandbox headers to svg cards ([#40](https://github.com/sandovaldavid/gitframe/issues/40)) ([2be13fc](https://github.com/sandovaldavid/gitframe/commit/2be13fce16ff07a027a8e901c1fef96a892622c6))
+* **api:** bound streamed render request body ([#42](https://github.com/sandovaldavid/gitframe/issues/42)) ([0a26598](https://github.com/sandovaldavid/gitframe/commit/0a26598e541f263d888aa8b5b605560e9e121ffc))
+* **api:** validate github owner in repos route ([#43](https://github.com/sandovaldavid/gitframe/issues/43)) ([c428db5](https://github.com/sandovaldavid/gitframe/commit/c428db5807dc2b8501911dd41c4d9e7df5f755d0))
+* **backgrounds:** center topographic contour scale ([#38](https://github.com/sandovaldavid/gitframe/issues/38)) ([1595880](https://github.com/sandovaldavid/gitframe/commit/1595880274bfef98236a9cb53ee4c49bfe28d2f0))
+* **cards:** fix layers, license, urls and favicon ([#36](https://github.com/sandovaldavid/gitframe/issues/36)) ([902e2f9](https://github.com/sandovaldavid/gitframe/commit/902e2f93c6a3e40ab77ccf606189d68c7d2be06a))
+* **config:** add hsts and content security policy ([#45](https://github.com/sandovaldavid/gitframe/issues/45)) ([e8161d1](https://github.com/sandovaldavid/gitframe/commit/e8161d17cf08f0e7320105ab7be5fe52941d1c6f))
+* **rate-limit:** harden client ip extraction ([#41](https://github.com/sandovaldavid/gitframe/issues/41)) ([d3cbf91](https://github.com/sandovaldavid/gitframe/commit/d3cbf912290dcab831b5f1a9564552ce6a33083f))
+* **studio:** sanitize client image urls and css ([#44](https://github.com/sandovaldavid/gitframe/issues/44)) ([c039ee5](https://github.com/sandovaldavid/gitframe/commit/c039ee5e4444d3c1a8be844cffc2762f574769a6))
+* **studio:** sync default repo with live api ([#39](https://github.com/sandovaldavid/gitframe/issues/39)) ([7a02c82](https://github.com/sandovaldavid/gitframe/commit/7a02c827078f7fb5f961675a3c49e3e9c8bd5224))
+
 ## [0.1.1](https://github.com/sandovaldavid/gitframe/compare/v0.1.0...v0.1.1) (2026-11-13)
 
 
