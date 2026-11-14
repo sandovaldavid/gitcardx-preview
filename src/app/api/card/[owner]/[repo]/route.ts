@@ -125,6 +125,9 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
       : 'public, s-maxage=86400, stale-while-revalidate=604800',
     'Content-Type': format === 'svg' ? 'image/svg+xml; charset=utf-8' : 'image/png',
     'X-Content-Type-Options': 'nosniff',
+    ...(format === 'svg'
+      ? { 'Content-Security-Policy': "default-src 'none'; style-src 'unsafe-inline'; sandbox" }
+      : {}),
     ...(degraded ? { 'X-Gitframe-Degraded': '1' } : {}),
     ...rlHeaders,
   };

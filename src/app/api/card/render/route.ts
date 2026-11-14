@@ -101,6 +101,7 @@ export async function POST(request: NextRequest) {
       return new Response(svg, {
         headers: {
           'Content-Type': 'image/svg+xml; charset=utf-8',
+          'Content-Security-Policy': "default-src 'none'; style-src 'unsafe-inline'; sandbox",
           'Cache-Control': 'no-store, max-age=0',
           'X-Content-Type-Options': 'nosniff',
           ...rateLimitHeaders(limit),

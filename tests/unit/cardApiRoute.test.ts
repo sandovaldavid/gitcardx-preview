@@ -63,6 +63,9 @@ describe('Dynamic Card Route (/api/card/[owner]/[repo])', () => {
 
     expect(res.status).toBe(200);
     expect(res.headers.get('Content-Type')).toContain('image/svg+xml');
+    expect(res.headers.get('Content-Security-Policy')).toBe(
+      "default-src 'none'; style-src 'unsafe-inline'; sandbox"
+    );
 
     const text = await res.text();
     expect(text.startsWith('<svg')).toBe(true);
@@ -79,6 +82,9 @@ describe('Dynamic Card Route (/api/card/[owner]/[repo])', () => {
 
     expect(res.status).toBe(200);
     expect(res.headers.get('Content-Type')).toContain('image/svg+xml');
+    expect(res.headers.get('Content-Security-Policy')).toBe(
+      "default-src 'none'; style-src 'unsafe-inline'; sandbox"
+    );
     const text = await res.text();
     expect(text.startsWith('<svg')).toBe(true);
   });
@@ -93,6 +99,9 @@ describe('Dynamic Card Route (/api/card/[owner]/[repo])', () => {
 
     expect(res.status).toBe(200);
     expect(res.headers.get('Content-Type')).toContain('image/svg+xml');
+    expect(res.headers.get('Content-Security-Policy')).toBe(
+      "default-src 'none'; style-src 'unsafe-inline'; sandbox"
+    );
     const text = await res.text();
     expect(text.startsWith('<svg')).toBe(true);
   });
@@ -107,6 +116,9 @@ describe('Dynamic Card Route (/api/card/[owner]/[repo])', () => {
 
     expect(res.status).toBe(200);
     expect(res.headers.get('Content-Type')).toContain('image/svg+xml');
+    expect(res.headers.get('Content-Security-Policy')).toBe(
+      "default-src 'none'; style-src 'unsafe-inline'; sandbox"
+    );
     const text = await res.text();
     expect(text.startsWith('<svg')).toBe(true);
     expect(text).toContain('dot-matrix-pattern');
@@ -124,6 +136,9 @@ describe('Dynamic Card Route (/api/card/[owner]/[repo])', () => {
 
     expect(res.status).toBe(200);
     expect(res.headers.get('Content-Type')).toContain('image/svg+xml');
+    expect(res.headers.get('Content-Security-Policy')).toBe(
+      "default-src 'none'; style-src 'unsafe-inline'; sandbox"
+    );
     const text = await res.text();
     expect(text.startsWith('<svg')).toBe(true);
   });
@@ -136,6 +151,9 @@ describe('Dynamic Card Route (/api/card/[owner]/[repo])', () => {
 
     expect(res.status).toBe(200);
     expect(res.headers.get('Content-Type')).toContain('image/svg+xml');
+    expect(res.headers.get('Content-Security-Policy')).toBe(
+      "default-src 'none'; style-src 'unsafe-inline'; sandbox"
+    );
     expect(res.headers.get('X-Gitframe-Degraded')).toBe('1');
     expect(res.headers.get('Cache-Control')).toContain('s-maxage=60');
     const text = await res.text();
@@ -196,6 +214,9 @@ describe('Dynamic Card Route (/api/card/[owner]/[repo])', () => {
 
     expect(res.status).toBe(200);
     expect(res.headers.get('Content-Type')).toContain('image/svg+xml');
+    expect(res.headers.get('Content-Security-Policy')).toBe(
+      "default-src 'none'; style-src 'unsafe-inline'; sandbox"
+    );
     const svg = await res.text();
     expect(svg.startsWith('<svg')).toBe(true);
     expect(svg).toContain('rgb(10,20,30)');
